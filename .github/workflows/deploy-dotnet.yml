@@ -50,7 +50,10 @@ jobs:
 
           cd "$FTP_REMOTE_DIR"
 
-          mirror -R --delete ./publish .
+          mirror -R --delete \
+            --exclude "^equipment-models\.json$" \
+            --exclude "^data(/.*)?$" \
+            ./publish .
 
           bye
           EOF
