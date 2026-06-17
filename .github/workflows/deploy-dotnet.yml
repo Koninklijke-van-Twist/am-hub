@@ -18,14 +18,11 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Enter project directory
-        run: cd MJOPCalculator
-
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore ./MJOPCalculator/MJOPCalculator.csproj
 
       - name: Publish
-        run: dotnet publish -c Release -o ./publish
+        run: dotnet publish ./MJOPCalculator/MJOPCalculator.csproj -c Release -o ./publish
 
       - name: Write deploy info
         run: |
