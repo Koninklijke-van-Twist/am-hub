@@ -27,6 +27,7 @@ jobs:
       - name: Write deploy info
         run: |
           echo "${{ github.sha }}" > ./publish/deploy-info.txt
+          mv ./MJOPCalculator/dllpointer ./publish/dllpointer
 
       - name: Install lftp
         run: |
