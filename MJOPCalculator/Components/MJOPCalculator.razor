@@ -1,0 +1,347 @@
+@page "/"
+@using MJOP.Calculator.Models
+@using MJOP.Calculator.Services
+@rendermode InteractiveServer
+@inject MJOPCalculatorService CalculatorService
+@inject EquipmentModelService ModelService
+
+<div class="container mt-5">
+    <h1 class="mb-4">MJOP Planner</h1>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>Onderhouds Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Model *</label>
+                        <select class="form-select" @onchange="HandleModelChange" required>
+                            <option value="">-- Selecteer een model --</option>
+                            @foreach (var model in availableModels)
+                            {
+                                <option value="@model.Id">@model.Brand - @model.ModelName</option>
+                            }
+                        </select>
+                        
+                    </div>
+                    
+@if (selectedEquipmentModel != null)
+{
+    <div class="mb-3">
+        <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="ToggleTaskExclusionMenu">
+            @(showTaskExclusionMenu ? "Taken verbergen" : "Taken uitsluiten voor deze berekening")
+        </button>
+
+        @if (excludedTaskNames.Count > 0)
+        {
+            <div class="form-text text-danger mt-1">
+                @excludedTaskNames.Count taak/taken uitgesloten voor deze berekening
+            </div>
+        }
+    </div>
+
+    @if (showTaskExclusionMenu)
+        {
+            <div class="card mb-3 border-secondary">
+                <div class="card-header bg-light">
+                    <strong>Onderhoudstaken van dit model</strong>
+                </div>
+                <div class="card-body p-2">
+                    @if (availableTaskNamesForSelectedModel.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var taskName in availableTaskNamesForSelectedModel)
+                            {
+                                var isExcluded = excludedTaskNames.Contains(taskName);
+
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span class="@(isExcluded ? "text-decoration-line-through text-muted" : "")">
+                                        @taskName
+                                    </span>
+                                    @if (taskName == "Proefdraaien")
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-secondary"
+                                                    @onclick="() => ToggleProefdraaiStand()">
+                                                    @proefdraaiStand
+                                            </button>
+                                        }
+                                    <button type="button"
+                                            class="btn btn-sm @(isExcluded ? "btn-success" : "btn-outline-danger")"
+                                            @onclick="() => ToggleTaskExclusion(taskName)">
+                                        @(isExcluded ? "Opnemen" : "Uitsluiten")
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-muted small">Geen taken gevonden voor dit model.</div>
+                    }
+                </div>
+            </div>
+        }
+    }
+
+
+                    <div class="mb-3">
+                        <label class="form-label">Bouwjaar *</label>
+                        <input type="number" class="form-control" @bind="equipment.BuildYear" />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Contract Start Jaar *</label>
+                        <input type="number" class="form-control" @bind="equipment.ContractStartYear" />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Aantal Jaren</label>
+                        <input type="number" class="form-control" @bind="numberOfYears" min="1" max="50" />
+                    </div>
+                    
+                    <button class="btn btn-primary w-100" @onclick="CalculatePlan" disabled="@(selectedEquipmentModel == null)">
+                        <span class="spinner-border spinner-border-sm" hidden="@(!isCalculating)"></span>
+                        Bereken Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            @if (plan != null)
+            {
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5>MJOP Overzicht</h5>
+                    </div>
+                    <div class="card-body">
+                        
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                
+                                <p class="mb-1"><strong>Merk:</strong> @selectedEquipmentModel?.Brand</p>
+                                <p class="mb-1"><strong>Model:</strong> @selectedEquipmentModel?.ModelName</p>
+                                <p class="mb-1"><strong>Bouwjaar:</strong> @equipment.BuildYear</p>
+                                <p><strong>Contract start:</strong> @equipment.ContractStartYear</p>
+                            </div>
+                            <div class="col-md-6">
+                                
+                                <p class="mb-1"><strong>Totale @numberOfYears-jaarbudget:</strong> €@plan.TotalCost.ToString("N2", new System.Globalization.CultureInfo("nl-NL"))</p>
+                                <p><strong>Gemiddelde per jaar:</strong> €@plan.AverageCostPerYear.ToString("N2", new System.Globalization.CultureInfo("nl-NL"))</p>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Jaar</th>
+                                        <th>Leeftijd</th>
+                                        <th>Aantal Taken</th>
+                                        <th class="text-end">Jaarlijkse Kosten</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var yearPlan in plan.YearPlans)
+                                    {
+                                        <tr @onclick="@(() => ToggleYearDetails(yearPlan.Year))" style="cursor: pointer;">
+                                            <td>@yearPlan.Year</td>
+                                            <td>@equipment.GetAgeInYear(yearPlan.Year) jaar</td>
+                                            <td>@yearPlan.Items.Count taken</td>
+                                            <td class="text-end"><strong>€@yearPlan.TotalCost.ToString("N2", new System.Globalization.CultureInfo("nl-NL"))</strong></td>
+                                        </tr>
+                                        
+                                        @if (expandedYears.Contains(yearPlan.Year))
+                                        {
+                                            @foreach (var item in yearPlan.Items)
+                                            {
+                                                <tr class="table-light">
+                                                    <td colspan="4">
+                                                        <div class="ps-4">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span>• @item.Name</span>
+                                                                <span>@item.Occurrences x €@item.CostPerOccurrence.ToString("N2", new System.Globalization.CultureInfo("nl-NL")) = <strong>€@item.TotalCost.ToString("N2", new System.Globalization.CultureInfo("nl-NL"))</strong></span>
+                                                            </div>
+                                                            <small class="text-muted">Frequentie: @item.Occurrences</small>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (errorMessage != null)
+            {
+                <div class="alert alert-danger mt-3">@errorMessage</div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private Equipment equipment = new();
+    private MaintenancePlan? plan;
+    private int numberOfYears = 20;
+    private bool isCalculating = false;
+    private string? errorMessage;
+    private HashSet<int> expandedYears = new();
+    private List<EquipmentModel> availableModels = new();
+    private EquipmentModel? selectedEquipmentModel;
+    private bool showTaskExclusionMenu = false;
+    private List<string> availableTaskNamesForSelectedModel = new();
+    private HashSet<string> excludedTaskNames = new(StringComparer.OrdinalIgnoreCase);
+    private string? proefdraaiStand = "Maandelijks";
+
+
+    protected override void OnInitialized()
+    {
+        // Set default values
+        equipment.ContractStartYear = DateTime.Now.Year;
+        equipment.BuildYear = DateTime.Now.Year - 10;
+        LoadModels();
+    }
+
+    private void LoadModels()
+    {
+        availableModels = ModelService.GetAllModels();
+    }
+
+    private void HandleModelChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int modelId))
+        {
+            selectedEquipmentModel = ModelService.GetModel(modelId);
+
+            if (selectedEquipmentModel != null)
+            {
+                availableTaskNamesForSelectedModel = CalculatorService.GetMaintenanceTaskNames(selectedEquipmentModel);
+            }
+            else
+            {
+                availableTaskNamesForSelectedModel = new();
+            }
+        }
+        else
+        {
+            selectedEquipmentModel = null;
+            availableTaskNamesForSelectedModel = new();
+        }
+
+        // Reset tijdelijke selectie bij wisselen van model
+        excludedTaskNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        showTaskExclusionMenu = false;
+
+        // Eventueel oud plan wissen zodat je geen berekening van vorig model blijft zien
+        plan = null;
+        expandedYears.Clear();
+    }
+
+    private async Task CalculatePlan()
+    {
+        try
+        {
+            errorMessage = null;
+            isCalculating = true;
+            
+            // Validate input
+            if (selectedEquipmentModel == null)
+            {
+                errorMessage = "Model moet geselecteerd zijn.";
+                return;
+            }
+            
+            if (equipment.BuildYear <= 0)
+            {
+                errorMessage = "Bouwjaar moet ingevuld zijn.";
+                return;
+            }
+            
+            if (equipment.ContractStartYear < equipment.BuildYear)
+            {
+                errorMessage = "Contract start jaar mag niet voor bouwjaar liggen.";
+                return;
+            }
+            
+            if (numberOfYears < 1 || numberOfYears > 50)
+            {
+                errorMessage = "Aantal jaren moet tussen 1 en 50 liggen.";
+                return;
+            }
+            
+            // Calculate the plan
+            plan = CalculatorService.CalculatePlan(
+                equipment,
+                numberOfYears,
+                selectedEquipmentModel,
+                excludedTaskNames,
+                proefdraaiStand);
+            expandedYears.Clear();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Fout bij berekening: {ex.Message}";
+        }
+        finally
+        {
+            isCalculating = false;
+        }
+    }
+
+    private void ToggleYearDetails(int year)
+    {
+        if (expandedYears.Contains(year))
+        {
+            expandedYears.Remove(year);
+        }
+        else
+        {
+            expandedYears.Add(year);
+        }
+    }
+
+    private void ToggleTaskExclusionMenu()
+    {
+        showTaskExclusionMenu = !showTaskExclusionMenu;
+    }
+
+    private void ToggleTaskExclusion(string taskName)
+    {
+        if (excludedTaskNames.Contains(taskName))
+        {
+            excludedTaskNames.Remove(taskName);
+        }
+        else
+        {
+            excludedTaskNames.Add(taskName);
+        }
+    }
+    
+    private void ToggleProefdraaiStand()
+    {
+        switch (proefdraaiStand)
+        {
+            case "Maandelijks":
+                proefdraaiStand = "2-Maandelijks";
+                break;
+            case "2-Maandelijks":
+                proefdraaiStand = "3-Maandelijks";
+                break;
+            case "3-Maandelijks":
+                proefdraaiStand = "Maandelijks";
+                break;
+            default:
+                proefdraaiStand = "Maandelijks";
+                break;
+        }
+    }
+
+}
