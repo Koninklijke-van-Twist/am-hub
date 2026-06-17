@@ -18,6 +18,9 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Enter project directory
+        run: cd MJOPCalculator
+
       - name: Restore
         run: dotnet restore
 
