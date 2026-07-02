@@ -10,17 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Add custom services
-builder.Services.AddScoped<MJOPCalculatorService>();
-builder.Services.AddSingleton<EquipmentModelService>();
-builder.Services.AddScoped<BusinessCentralApiService>();
-builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
-
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
-
-builder.Services.AddAuthorization();
-
 
 
 
@@ -49,6 +38,19 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 
 
+
+
+
+// Add custom services
+builder.Services.AddScoped<MJOPCalculatorService>();
+builder.Services.AddSingleton<EquipmentModelService>();
+builder.Services.AddScoped<BusinessCentralApiService>();
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.AddAuthorization();
 
 
 var app = builder.Build();
