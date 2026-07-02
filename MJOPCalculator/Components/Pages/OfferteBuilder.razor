@@ -1,0 +1,1112 @@
+@page "/offertes"
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Authorization
+@using System.Text.Json
+@using MJOP.Calculator.Models.BusinessCentral
+
+@inject IJSRuntime JS
+@inject BusinessCentralApiService BusinessCentralApiService
+
+<div class="quote-page">
+
+    <div class="quote-header">
+       
+    </div>
+
+    <div class="card p-4 shadow-sm mb-4">
+        <div class="row align-items-end">
+            <div class="col-md-8">
+                <label class="form-label">Offertenummer</label>
+                <input class="form-control" @bind="configurationNo" placeholder="Bijv. SQ12604147" />
+            </div>
+
+            <div class="col-md-4 mt-3 mt-md-0">
+                <button class="btn btn-primary w-100" @onclick="LoadConfigurationDataAsync" disabled="@isLoading">
+                    @(isLoading ? "Laden..." : "Offerte ophalen")
+                </button>
+            </div>
+        </div>
+
+        @if (hasSearched && !string.IsNullOrWhiteSpace(error))
+        {
+            <div class="alert alert-danger mt-3 mb-0">
+                @error
+            </div>
+        }
+    </div>
+
+    @if (hasSearched && components.Any() && taskTypes.Any())
+    {
+        <div class="quote-grid">
+
+            <div class="quote-main">
+
+                <div class="quote-info-row">
+                    <div class="d-flex align-items-center gap-2">
+                <h3 class="mb-0">Offerte @configurationNo</h3>
+
+                @if (hasSearched && components.Any())
+                {
+                    <span class="badge bg-primary-subtle text-primary">Concept</span>
+                }
+            </div>
+
+            <div class="text-muted small mt-1">
+                Aangemaakt op Placeholder
+                door Placeholder
+            </div>
+
+                    <div class="quote-card customer-card">
+                        <div class="card-title-row">
+                            <span class="card-icon">▣</span>
+                            <h5>Klantgegevens</h5>
+                        </div>
+
+                        <div class="customer-content">
+                            
+
+                            <div>
+                                <h6>@(string.IsNullOrWhiteSpace(quoteDetails.CustomerName) ? "Klantnaam placeholder B.V." : quoteDetails.CustomerName)</h6>
+                                <div class="text-muted small">
+                                    Klantnummer: placeholder<br />
+                                    placeholder<br />
+                                    1234 AB placeholder
+                                </div>
+                            </div>
+
+                            <div class="customer-contact">
+                                <div class="info-line">
+                                    <strong>Contactpersoon</strong><br />
+                                    @(string.IsNullOrWhiteSpace(quoteDetails.ContactPerson) ? "Contactpersoon placeholder" : quoteDetails.ContactPerson)
+                                </div>
+
+                                <div class="info-line">
+                                    <strong>E-mail</strong><br />
+                                    @(string.IsNullOrWhiteSpace(quoteDetails.Email) ? "email@placeholder.nl" : quoteDetails.Email)
+                                </div>
+
+                                <div class="info-line">
+                                    <strong>Telefoon</strong><br />
+                                    +31 12 34 56 78 9
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quote-card offer-info-card">
+                        <div class="card-title-row">
+                            <span class="card-icon">i</span>
+                            <h5>Offerte informatie</h5>
+                        </div>
+
+                        <div class="details-list">
+                            <div>
+                                <span>Offertenummer</span>
+                                <strong>@(string.IsNullOrWhiteSpace(quoteDetails.QuoteNo) ? configurationNo : quoteDetails.QuoteNo)</strong>
+                            </div>
+                            <div>
+                                <span>Status</span>
+                                <strong><span class="badge bg-primary-subtle text-primary">placeholder</span></strong>
+                            </div>
+                            <div>
+                                <span>Geldigheid</span>
+                                <strong>30 dagen</strong>
+                            </div>
+                            <div>
+                                <span>Startdatum</span>
+                                <strong>placeholder</strong>
+                            </div>
+                            <div>
+                                <span>Einddatum</span>
+                                <strong>placeholder</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="quote-card mt-4">
+                    <div class="section-header">
+                        <h5>Componenten & werkzaamheden</h5>
+
+                        
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table quote-lines-table">
+                            <thead>
+                                <tr>
+                                    <th>Taak</th>
+
+                                    @foreach (var component in components)
+                                    {
+                                        <th>@component.ComponentNo</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var taskType in taskTypes)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@taskType</strong>
+                                        </td>
+
+                                        @foreach (var component in components)
+                                        {
+                                            var task = component.ComponentTasks
+                                                .FirstOrDefault(t => t.Type == taskType);
+
+                                            <td>
+                                                @if (task?.Price != null)
+                                                {
+                                                    @:€ @task.Price.Value.ToString("N2", new System.Globalization.CultureInfo("nl-NL"))
+                                                }
+                                                else
+                                                {
+                                                    @:-
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+
+                                <tr class="total-row">
+                                    <td><strong>Totaal</strong></td>
+
+                                    @foreach (var component in components)
+                                    {
+                                        <td>
+                                            <strong>
+                                                € @component.TotalPrice.ToString("N2", new System.Globalization.CultureInfo("nl-NL"))
+                                            </strong>
+                                        </td>
+                                    }
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    
+                </div>
+
+                <div class="bottom-cards">
+                    
+                    <div class="quote-card">
+                        <div class="section-header">
+                            <h5>Bijlagen</h5>
+                            
+                        </div>
+
+                        <div class="attachment-box">
+                            <span class="pdf-icon">PDF</span>
+                            <div>
+                                <strong>Algemene_voorwaarden_KVT_2024.pdf</strong><br />
+                                <span class="text-muted small">PDF • 248 KB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="quote-sidebar">
+
+                <div>
+                    @if (hasSearched && components.Any() && taskTypes.Any())
+                    {
+                        <button class="btn btn-outline-primary" @onclick="PrintPdf">
+                            Preview PDF
+                        </button>
+
+                        <button class="btn btn-primary" @onclick="DownloadPdf">
+                            Genereer PDF
+                        </button>
+                    }
+                </div>
+
+                <div class="quote-card mt-4">
+                    <h5>Offerte samenvatting</h5>
+
+                    <div class="summary-line">
+                        <span>Aantal componenten</span>
+                        <strong>@(components.Count())</strong>
+                    </div>
+
+                    <div class="summary-line">
+                        <span>aantal taken</span>
+                        <strong></strong>
+                    </div>
+
+                    <hr />
+
+                    <div class="summary-total">
+                        <span>Totaalbedrag</span>
+                        <strong>
+                            € @( (components.Sum(c => c.TotalPrice)).ToString("N2", new System.Globalization.CultureInfo("nl-NL")) )
+                        </strong>
+                    </div>
+
+                    
+                </div>
+
+                
+
+            </div>
+
+        </div>
+    }
+
+    @if (hasSearched &&
+        string.IsNullOrWhiteSpace(error) &&
+        !isLoading &&
+        (!components.Any() || !taskTypes.Any()))
+    {
+        <div class="alert alert-warning mt-3">
+            Er zijn geen gegevens gevonden voor dit offertenummer.
+        </div>
+    }
+
+</div>
+            
+
+<style>
+    .quote-page {
+        background: #f6f8fc;
+        padding: 1.25rem;
+        min-height: 100vh;
+    }
+
+    .quote-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .quote-header h3 {
+        color: #172554;
+        font-weight: 700;
+    }
+
+    .quote-actions {
+        display: flex;
+        gap: .75rem;
+        flex-wrap: wrap;
+    }
+
+    .quote-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 1rem;
+    }
+
+    .quote-main {
+        min-width: 0;
+    }
+
+    .quote-info-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(280px, .9fr);
+        gap: 1rem;
+    }
+
+    .quote-card {
+        background: #fff;
+        border: 1px solid #e5eaf5;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .quote-card h5 {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #172554;
+        margin-bottom: 1rem;
+    }
+
+    .card-title-row {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        margin-bottom: 1rem;
+    }
+
+    .card-title-row h5 {
+        margin: 0;
+    }
+
+    .card-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        background: #eaf2ff;
+        color: #0d6efd;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    .customer-content {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 2rem;
+        align-items: start;
+
+    }
+
+    
+
+    .customer-content h6 {
+        color: #0d6efd;
+        font-weight: 700;
+        margin-bottom: .35rem;
+    }
+
+    .customer-contact {
+        border-left: 1px solid #eef2f7;
+        padding-left: 1rem;
+    }
+
+    .info-line {
+        font-size: .8rem;
+        color: #475569;
+        margin-bottom: .75rem;
+    }
+
+    .info-line strong {
+        color: #64748b;
+        font-size: .75rem;
+    }
+
+    .details-list {
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+    }
+
+    .details-list div,
+    .summary-line,
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .details-list span,
+    .summary-line span {
+        color: #64748b;
+        font-size: .82rem;
+    }
+
+    .details-list strong,
+    .summary-line strong {
+        color: #172554;
+        font-size: .85rem;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-header h5 {
+        margin: 0;
+    }
+
+    .quote-lines-table {
+        margin-bottom: 0;
+        font-size: .83rem;
+    }
+
+    .quote-lines-table th {
+        color: #475569;
+        font-weight: 700;
+        background: #f8fafc;
+        border-color: #eef2f7;
+        white-space: nowrap;
+    }
+
+    .quote-lines-table td {
+        border-color: #eef2f7;
+        vertical-align: middle;
+        color: #334155;
+    }
+
+    .quote-lines-table tbody tr:hover td {
+        background: #f8fbff;
+    }
+
+    .quote-lines-table .total-row td {
+        background: #eef6ff;
+        font-weight: 700;
+        color: #172554;
+    }
+
+    .bottom-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .attachment-box {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        border: 1px solid #eef2f7;
+        border-radius: 10px;
+        padding: .75rem;
+    }
+
+    .pdf-icon {
+        background: #fee2e2;
+        color: #dc2626;
+        border-radius: 6px;
+        padding: .35rem .45rem;
+        font-size: .7rem;
+        font-weight: 700;
+    }
+
+    .summary-card {
+        position: sticky;
+        top: 1rem;
+    }
+
+    .summary-total {
+        align-items: center;
+        color: #172554;
+        font-weight: 700;
+    }
+
+    .summary-total strong {
+        color: #0d6efd;
+        font-size: 1.35rem;
+    }
+
+    .validity-box {
+        background: #eef6ff;
+        border-radius: 10px;
+        padding: .75rem;
+        color: #475569;
+        font-size: .8rem;
+    }
+
+    .quick-action {
+        border-bottom: 1px solid #eef2f7;
+        padding: .75rem 0;
+    }
+
+    .quick-action:last-child {
+        border-bottom: none;
+    }
+
+    .quick-action strong {
+        display: block;
+        color: #0d6efd;
+        font-size: .85rem;
+    }
+
+    .quick-action span {
+        color: #64748b;
+        font-size: .75rem;
+    }
+
+    .quick-action.danger strong {
+        color: #dc2626;
+    }
+
+    
+</style>
+        
+
+
+
+@code {
+    private string contextUserName = "Lars Lissenberg";
+    private string configurationNo = "SQ12604147";
+    private string result = "";
+    private string error = "";
+
+    private bool hasSearched = false;
+    private bool isLoading = false;
+
+    private QuoteDetailsDto quoteDetails = new();
+    private List<Component> components = new();
+    private List<string> taskTypes = new();
+
+    private List<ConfigurationRuleDto> configurationRules = new();
+    private List<ConfigurationRuleDetailDto> configurationRulesDetails = new();
+
+    private async Task LoadConfigurationDataAsync()
+    {
+        try
+        {
+            hasSearched = true;
+            isLoading = true;
+            error = "";
+            result = "";
+
+            components = new();
+            taskTypes = new();
+            configurationRules = new();
+            configurationRulesDetails = new();
+
+            await GetConfigurationRulesAsync();
+            await GetConfigurationRulesDetailsAsync();
+            await GetQuoteDetailsAsync();
+
+            AttachComponentNosToConfigurationRules();
+            BuildComponents();
+        }
+        catch (Exception ex)
+        {
+            components = new();
+            taskTypes = new();
+            configurationRules = new();
+            configurationRulesDetails = new();
+
+            result = "";
+            error = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task GetConfigurationRulesAsync()
+    {
+        var json = await BusinessCentralApiService.GetBCFilteredDataAsync(
+            "ConfigurationRules",
+            $"Configuration_No eq '{configurationNo}' and Selected eq true and Job_Task_Type eq 'Posting'");
+
+        result = json;
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        var response = JsonSerializer.Deserialize<ODataResponse<ConfigurationRuleDto>>(json, options);
+
+        configurationRules = response?.Value ?? new List<ConfigurationRuleDto>();
+    }
+
+    private async Task GetConfigurationRulesDetailsAsync()
+    {
+        var json = await BusinessCentralApiService.GetBCFilteredDataAsync(
+            "ConfigurationRulesDetails",
+            $"Configuration_No eq '{configurationNo}'");
+
+        result = json;
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        var response = JsonSerializer.Deserialize<ODataResponse<ConfigurationRuleDetailDto>>(json, options);
+
+        configurationRulesDetails = response?.Value ?? new List<ConfigurationRuleDetailDto>();
+    }
+
+    private async Task GetQuoteDetailsAsync()
+    {
+        var json = await BusinessCentralApiService.GetBCFilteredDataAsync(
+            "SalesQuote",
+            $"No eq '{configurationNo}'");
+
+        result = json;
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        var response = JsonSerializer.Deserialize<ODataResponse<QuoteDetailsDto>>(json, options);
+
+        quoteDetails = response?.Value.FirstOrDefault() ?? new QuoteDetailsDto();
+    }
+
+    private void AttachComponentNosToConfigurationRules()
+    {
+        foreach (var rule in configurationRules)
+        {
+            rule.ComponentNos = configurationRulesDetails
+                .Where(detail => detail.ConfigurationLineNo == rule.LineNo)
+                .Select(detail => detail.ComponentNo)
+                .ToList();
+        }
+    }
+
+    private void BuildComponents()
+    {
+        components = configurationRulesDetails
+            .GroupBy(detail => detail.ComponentNo)
+            .Select(group =>
+            {
+                var component = new Component
+                {
+                    ComponentNo = group.Key
+                };
+
+                var lineNumbersForThisComponent = group
+                    .Select(x => x.ConfigurationLineNo)
+                    .Distinct()
+                    .ToList();
+
+                component.ComponentTasks = configurationRules
+                    .Where(rule => lineNumbersForThisComponent.Contains(rule.LineNo))
+                    .OrderBy(rule => rule.LineNo)
+                    .Select(rule => new ComponentTask
+                    {
+                        Type = rule.ItemNo,
+                        Description = rule.Description,
+                        Price = rule.UnitPrice > 0 ? rule.UnitPrice : null
+                    })
+                    .ToList();
+
+                return component;
+            })
+            .OrderBy(c => c.ComponentNo)
+            .ToList();
+
+        taskTypes = components
+            .SelectMany(c => c.ComponentTasks)
+            .Select(t => t.Type)
+            .Distinct()
+            .ToList();
+    }
+
+    private string BuildHtml()
+    {
+        var culture = new System.Globalization.CultureInfo("nl-NL");
+
+        string Encode(string value)
+        {
+            return System.Net.WebUtility.HtmlEncode(value ?? "");
+        }
+
+        var headerCells = new System.Text.StringBuilder();
+
+        foreach (var component in components)
+        {
+            headerCells.Append($"<th>{Encode(component.ComponentNo)}</th>");
+        }
+
+        var bodyRows = new System.Text.StringBuilder();
+
+        foreach (var taskType in taskTypes)
+        {
+            var rowCells = new System.Text.StringBuilder();
+
+            foreach (var component in components)
+            {
+                var task = component.ComponentTasks
+                    .FirstOrDefault(t => t.Type == taskType);
+
+                var priceText = task?.Price != null
+                    ? $"€ {task.Price.Value.ToString("N2", culture)}"
+                    : "-";
+
+                rowCells.Append($"<td>{Encode(priceText)}</td>");
+            }
+
+            bodyRows.Append($@"
+                <tr>
+                    <td>{Encode(taskType)}</td>
+                    {rowCells}
+                </tr>");
+        }
+
+        var totalCells = new System.Text.StringBuilder();
+
+        foreach (var component in components)
+        {
+            totalCells.Append($"<th>€ {component.TotalPrice.ToString("N2", culture)}</th>");
+        }
+
+        return $@"
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='utf-8'>
+        <title>Offerte {Encode(quoteDetails.QuoteNo)}</title>
+
+        <style>
+            @page {{
+                size: A4;
+                margin: 0;
+            }}
+
+            * {{
+                box-sizing: border-box;
+            }}
+
+            html,
+            body {{
+                margin: 0;
+                padding: 0;
+                width: 210mm;
+                height: 297mm;
+                font-family: Arial, Helvetica, sans-serif;
+                color: #000;
+                background: #fff;
+                font-size: 9.2px;
+                line-height: 1.15;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }}
+
+            .page {{
+                position: relative;
+                width: 210mm;
+                height: 297mm;
+                padding: 22mm 17mm 14mm 24mm;
+                overflow: hidden;
+            }}
+
+            .top-header {{
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 20mm;
+            }}
+
+            .logo {{
+                width: 49mm;
+                height: auto;
+                display: block;
+            }}
+
+            .company-info {{
+                display: flex;
+                gap: 18mm;
+                color: #0069b4;
+                font-size: 6.4px;
+                line-height: 1.25;
+                white-space: nowrap;
+                margin-top: 1mm;
+            }}
+
+            .company-info strong {{
+                display: inline-block;
+                width: 13mm;
+                color: #00529b;
+            }}
+
+            .date-line {{
+                margin-bottom: 7mm;
+            }}
+
+            .quote-details {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 12mm;
+                font-size: 9.2px;
+                line-height: 1.15;
+            }}
+
+            .quote-details td {{
+                border: none;
+                padding: 0.45mm 0;
+                vertical-align: top;
+            }}
+
+            .quote-details .label {{
+                width: 38mm;
+            }}
+
+            .quote-details .separator {{
+                width: 4mm;
+            }}
+
+            .highlight-email {{
+                display: inline-block;
+                background: #0070c0;
+                color: #fff;
+                padding: 0.2mm 1mm;
+                line-height: 1.1;
+            }}
+
+            p {{
+                margin: 0 0 8mm 0;
+            }}
+
+            .intro {{
+                margin-bottom: 6mm;
+            }}
+
+            table.lines {{
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 8.7px;
+                line-height: 1.1;
+                margin: 0 0 5mm 0;
+                page-break-inside: avoid;
+            }}
+
+            table.lines th,
+            table.lines td {{
+                border: none;
+                border-left: 1px solid #ffffff;s
+                padding: 1.15mm 1.4mm;
+                vertical-align: middle;
+                text-align: center;
+            }}
+
+
+            table.lines th {{
+                background-color: #e6eef7;
+                font-weight: bold;
+                text-align: center;
+            }}
+
+            
+            table.lines tbody tr:nth-child(odd) td {{
+                background-color: #ffffff;
+                color: #000000;
+            }}
+
+            table.lines tbody tr:nth-child(even) td {{
+                background-color: #0099cc;
+                color: #ffffff;
+            }}
+
+
+            table.lines td:last-child,
+            table.lines th:last-child {{
+                text-align: center;
+                white-space: nowrap;
+            }}
+
+            .total-row th,
+            .total-row td {{
+                font-weight: bold;
+                background-color: #dceaf7 !important;
+            }}
+
+            .note {{
+                margin-top: 5mm;
+                font-size: 8.7px;
+                line-height: 1.18;
+            }}
+
+            .section-title {{
+                margin-top: 11mm;
+                margin-bottom: 8mm;
+                font-weight: bold;
+                font-size: 9px;
+            }}
+
+            .mjop-text {{
+                font-size: 8.7px;
+                line-height: 1.18;
+                margin-bottom: 0;
+            }}
+
+            .footer {{
+                position: absolute;
+                left: 24mm;
+                right: 24mm;
+                bottom: 9mm;
+                color: #0070c0;
+                font-size: 5.8px;
+                line-height: 1.25;
+            }}
+
+            .footer-main {{
+                margin-bottom: 3mm;
+            }}
+
+            .footer-small {{
+                font-size: 5.3px;
+                line-height: 1.25;
+            }}
+
+            .blue-corner {{
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                width: 0;
+                height: 0;
+                border-style: solid;
+                border-width: 0 0 16mm 26mm;
+                border-color: transparent transparent #0098d8 transparent;
+            }}
+
+            @media print {{
+                html,
+                body {{
+                    width: 210mm;
+                    height: 297mm;
+                    overflow: hidden;
+                }}
+
+                .page {{
+                    page-break-after: avoid;
+                    page-break-inside: avoid;
+                }}
+            }}
+        </style>
+    </head>
+
+    <body>
+        <div class='page'>
+
+            <div class='top-header'>
+                <div class='logo-wrapper'>
+                    <img class='logo' src='images/logo.png' />
+                </div>
+
+                <div class='company-info'>
+                    <div>
+                        Keerweer 62, 3316 KA Dordrecht<br />
+                        Postbus 156, 3300 AD Dordrecht<br />
+                        +31(0)78 - 632 66 00<br />
+                        info@kvt.nl&nbsp;&nbsp;&nbsp;&nbsp; www.kvt.nl
+                    </div>
+
+                    <div>
+                        <strong>IBAN</strong> NL98INGB0664086446<br />
+                        <strong>BIC</strong> INGBNL2A<br />
+                        <strong>KVK</strong> 23022060<br />
+                        <strong>BTW/VAT</strong> NL001575429B01
+                    </div>
+                </div>
+            </div>
+
+            <div class='date-line'>
+                Dordrecht, {DateTime.Now.ToString("d MMMM yyyy", culture)}
+            </div>
+
+            <table class='quote-details'>
+                <tr>
+                    <td class='label'>Aan</td>
+                    <td class='separator'>:</td>
+                    <td>{Encode(quoteDetails.CustomerName)}</td>
+                </tr>
+                <tr>
+                    <td class='label'>Ter attentie van</td>
+                    <td class='separator'>:</td>
+                    <td>{Encode(quoteDetails.ContactPerson)}</td>
+                </tr>
+                <tr>
+                    <td class='label'>Email</td>
+                    <td class='separator'>:</td>
+                    <td><span>{Encode(quoteDetails.Email)}</span></td>
+                </tr>
+                <tr>
+                    <td class='label'>Behandeld door</td>
+                    <td class='separator'>:</td>
+                    <td>{Encode(quoteDetails.SalespersonCode)}</td>
+                </tr>
+                <tr>
+                    <td class='label'>Betreft</td>
+                    <td class='separator'>:</td>
+                    <td>{Encode(quoteDetails.Reference)}</td>
+                </tr>
+                <tr>
+                    <td class='label'>Offertenummer</td>
+                    <td class='separator'>:</td>
+                    <td>{Encode(quoteDetails.QuoteNo)}</td>
+                </tr>
+            </table>
+
+            <p>Geachte relatie,</p>
+
+            <div class='intro'>
+                Hierbij ontvangt u ons voorstel voor de onderstaande werkzaamheden / diensten.
+            </div>
+
+            <table class='lines'>
+                <thead>
+                    <tr>
+                        <th>Taak</th>
+                        {headerCells}
+                    </tr>
+                </thead>
+                <tbody>
+                    {bodyRows}
+                    <tr class='total-row'>
+                        <td><strong>Totaal</strong></td>
+                        {totalCells}
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class='note'>
+                <strong>Let op:</strong> Genoemde prijzen zijn exclusief BTW, tenzij anders vermeld.
+                Eventuele aanvullende werkzaamheden worden uitsluitend uitgevoerd na overleg.
+            </div>
+
+            <div class='note'>
+                <strong>Let op:</strong> Deze offerte is opgesteld op basis van de op dit moment bekende gegevens.
+                Afwijkingen in configuratie of uitvoering kunnen invloed hebben op de uiteindelijke prijsstelling.
+            </div>
+
+            <div class='section-title'>
+                Meer Jaren Onderhoud Plan (MJOP):
+            </div>
+
+            <div class='mjop-text'>
+                Er kunnen onderdelen aanwezig zijn die aanvullend op het jaarlijks preventief onderhoud,
+                periodiek gecontroleerd of preventief vervangen moeten worden.
+            </div>
+
+            <div class='footer'>
+                <div class='footer-main'>
+                    Koninklijke Van Twist is een ISO 9001, ISO 14001 en VCA** gecertificeerde organisatie.
+                </div>
+
+                <div class='footer-small'>
+                    Op alle aanbiedingen en overeenkomsten inzake door ons te verrichten leveringen en/of diensten
+                    zijn van toepassing de algemene verkoop- en leveringsvoorwaarden van Koninklijke van Twist.
+                    Een exemplaar van deze voorwaarden is reeds in uw bezit en is beschikbaar op www.kvt.nl.
+                    Uitdrukkelijk worden andersluidende voorwaarden afgewezen.
+                </div>
+            </div>
+
+            <div class='blue-corner'></div>
+
+        </div>
+    </body>
+    </html>";
+    }
+
+
+
+    private async Task PrintPdf()
+    {
+        if (!components.Any() || !taskTypes.Any())
+        {
+            error = "Haal eerst configuratiegegevens op.";
+            return;
+        }
+
+        var html = BuildHtml();
+        await JS.InvokeVoidAsync("exportHtmlToPrint", html);
+    }
+
+    private async Task DownloadPdf()
+    {
+        if (!components.Any() || !taskTypes.Any())
+        {
+            error = "Haal eerst configuratiegegevens op.";
+            return;
+        }
+
+        var html = BuildHtml();
+        await JS.InvokeVoidAsync("exportHtmlToDownload", html, $"Offerte_{configurationNo}.pdf");
+    }
+}

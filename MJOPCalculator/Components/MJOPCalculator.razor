@@ -1,12 +1,15 @@
-@page "/mjop"
+@page "/mjob"
+@attribute [Authorize]
 @using MJOP.Calculator.Models
 @using MJOP.Calculator.Services
+@using Microsoft.AspNetCore.Authorization
+
 @rendermode InteractiveServer
 @inject MJOPCalculatorService CalculatorService
 @inject EquipmentModelService ModelService
 
 <div class="container mt-5">
-    <h1 class="mb-4">MJOP Planner</h1>
+    <h1 class="mb-4">MJOB Planner</h1>
     
     <div class="row">
         <div class="col-md-4">

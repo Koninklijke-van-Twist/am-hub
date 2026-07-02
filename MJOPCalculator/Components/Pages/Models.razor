@@ -1,6 +1,8 @@
-@page "/models"
+@page "/modellen"
+@attribute [Authorize]
 @using MJOP.Calculator.Models
 @using MJOP.Calculator.Services
+@using Microsoft.AspNetCore.Authorization
 @rendermode InteractiveServer
 @inject EquipmentModelService ModelService
 @inject IJSRuntime JS

@@ -1,5 +1,7 @@
 using MJOP.Calculator.Components;
 using MJOP.Calculator.Services;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,14 @@ builder.Services.AddRazorComponents()
 // Add custom services
 builder.Services.AddScoped<MJOPCalculatorService>();
 builder.Services.AddSingleton<EquipmentModelService>();
+builder.Services.AddScoped<BusinessCentralApiService>();
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.AddAuthorization();
+
 
 var app = builder.Build();
 
@@ -28,6 +38,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAntiforgery();
 
