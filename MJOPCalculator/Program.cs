@@ -2,43 +2,12 @@ using MJOP.Calculator.Components;
 using MJOP.Calculator.Services;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
-using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
-
-
-
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
-
-{
-
-    options.ForwardedHeaders =
-
-        ForwardedHeaders.XForwardedFor |
-
-        ForwardedHeaders.XForwardedProto |
-
-        ForwardedHeaders.XForwardedHost;
-
-
-
-    // Required on Linux behind a proxy — otherwise headers are ignored
-
-    options.KnownNetworks.Clear();
-
-    options.KnownProxies.Clear();
-
-});
-
-
-
-
-
 
 
 // Add custom services
@@ -73,13 +42,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-
-
-
-app.UseForwardedHeaders();
-
-
 
 
 app.UseAntiforgery();
