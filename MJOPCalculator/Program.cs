@@ -15,7 +15,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
     // Tijdelijk toestaan van forwarded headers vanaf je Apache proxy.
     // Voor productie later beter KnownProxies/KnownNetworks specifiek instellen.
-    options.KnownNetworks.Clear();
+    options.KnownIPNetworks.Clear();
     options.KnownProxies.Clear();
 });
 
