@@ -2,8 +2,23 @@ using MJOP.Calculator.Components;
 using MJOP.Calculator.Services;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto |
+        ForwardedHeaders.XForwardedHost;
+
+    // Tijdelijk toestaan van forwarded headers vanaf je Apache proxy.
+    // Voor productie later beter KnownProxies/KnownNetworks specifiek instellen.
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -36,6 +51,9 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
+
+
+app.UseForwardedHeaders();
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
