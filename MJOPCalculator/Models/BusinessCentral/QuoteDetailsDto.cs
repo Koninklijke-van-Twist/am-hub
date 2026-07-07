@@ -2,6 +2,10 @@ using System.Text.Json.Serialization;
 
 namespace MJOP.Calculator.Models.BusinessCentral;
 
+/// <summary>
+/// offerte details zoals opgehaald uit Business Central
+/// </summary>
+
 public class QuoteDetailsDto
 {
     [JsonPropertyName("No")]

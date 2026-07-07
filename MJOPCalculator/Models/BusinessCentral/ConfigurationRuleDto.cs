@@ -1,7 +1,9 @@
 using System.Text.Json.Serialization;
 
 namespace MJOP.Calculator.Models.BusinessCentral;
-
+/// <summary>
+/// een regel uit de configuratieregel van een offerte
+/// </summary>
 public class ConfigurationRuleDto
 {
     [JsonPropertyName("Configuration_No")]
