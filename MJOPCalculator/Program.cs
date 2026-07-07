@@ -29,6 +29,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<MJOPCalculatorService>();
 builder.Services.AddSingleton<EquipmentModelService>();
 builder.Services.AddScoped<BusinessCentralApiService>();
+builder.Services.AddScoped<PdfExportService>();
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
