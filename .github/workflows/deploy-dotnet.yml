@@ -51,10 +51,11 @@ jobs:
           cd "$FTP_REMOTE_DIR"
 
           mirror -R --delete \
-            --exclude "^equipment-models\.json$" \
-            --exclude "^appsettings\.Local\.json$" \
-            --exclude "^data(/.*)?$" \
-            ./publish .
+          --exclude "^equipment-models\.json$" \
+          --exclude "^appsettings\.Local\.json$" \
+          --exclude "^data(/.*)?$" \
+          --exclude "^App\.razor$" \
+          ./publish .
 
           bye
           EOF

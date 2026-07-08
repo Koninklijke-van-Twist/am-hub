@@ -26,6 +26,7 @@ builder.Services.AddRazorComponents()
 
 
 // Add custom services
+
 builder.Services.AddScoped<MJOPCalculatorService>();
 builder.Services.AddSingleton<EquipmentModelService>();
 builder.Services.AddScoped<BusinessCentralApiService>();

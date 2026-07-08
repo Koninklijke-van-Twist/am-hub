@@ -1,11 +1,13 @@
 @page "/offertes"
 @page "/offertes/{OfferteNo}"
 @attribute [Authorize]
+
 @rendermode InteractiveServer
 
 @using Microsoft.AspNetCore.Authorization
 @using System.Text.Json
 @using MJOP.Calculator.Models.BusinessCentral
+@using MJOP.Calculator.Services
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject BusinessCentralApiService BusinessCentralApiService
@@ -458,14 +460,15 @@
     
     private async Task SearchQuoteAsync()
     {
+
         Navigation.NavigateTo(
-            $"/offertes/{Uri.EscapeDataString(configurationNo)}",
+            $"{Navigation.BaseUri}/offertes/{Uri.EscapeDataString(configurationNo)}",
             replace: true);
     }
 
     private void OpenQuote(string quoteNo)
     {
-        Navigation.NavigateTo($"/offertes/{Uri.EscapeDataString(quoteNo)}");
+        Navigation.NavigateTo($"{Navigation.BaseUri}/offertes/{Uri.EscapeDataString(quoteNo)}");
     }
 
 
