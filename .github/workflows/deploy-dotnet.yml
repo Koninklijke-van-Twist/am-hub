@@ -54,7 +54,6 @@ jobs:
           --exclude "^equipment-models\.json$" \
           --exclude "^appsettings\.Local\.json$" \
           --exclude "^data(/.*)?$" \
-          --exclude "^App\.razor$" \
           ./publish .
 
           bye
