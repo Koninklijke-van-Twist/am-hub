@@ -1,6 +1,8 @@
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+using MJOP.Calculator.Models.BusinessCentral;
 
 namespace MJOP.Calculator.Services;
 
@@ -13,7 +15,7 @@ public class BusinessCentralApiService
         _configuration = configuration;
     }
 
-    public async Task<string> GetBCFilteredDataAsync(string subUrl, string filter)
+    public async Task<string> GetBCFilteredDataAsJsonAsync(string subUrl, string filter)
     {
         if (string.IsNullOrWhiteSpace(subUrl))
             throw new ArgumentException("SubUrl is verplicht.", nameof(subUrl));
@@ -38,11 +40,11 @@ public class BusinessCentralApiService
         using var client = new HttpClient();
 
         var credentials = Convert.ToBase64String(
-            System.Text.Encoding.ASCII.GetBytes($"{username}:{password}")
+            Encoding.ASCII.GetBytes($"{username}:{password}")
         );
 
         client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", credentials);
+            new AuthenticationHeaderValue("Basic", credentials);
 
         var response = await client.GetAsync(fullUrl);
         var body = await response.Content.ReadAsStringAsync();
@@ -53,5 +55,19 @@ public class BusinessCentralApiService
         }
 
         return body;
+    }
+
+    public async Task<List<T>> GetBCFilteredDataAsync<T>(string subUrl, string filter)
+    {
+        var json = await GetBCFilteredDataAsJsonAsync(subUrl, filter);
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        var response = JsonSerializer.Deserialize<ODataResponse<T>>(json, options);
+
+        return response?.Value ?? new List<T>();
     }
 }

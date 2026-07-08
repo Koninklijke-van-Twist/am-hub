@@ -10,9 +10,12 @@ public class QuoteDetailsDto
 {
     [JsonPropertyName("No")]
     public string QuoteNo { get; set; } = "";
+    
+    [JsonPropertyName("KVT_Quote_Description ")]
+    public string Description { get; set; } = "";
 
     [JsonPropertyName("Sell_to_Customer_No")]
-    public string Customer { get; set; } = "";
+    public string CustomerNo { get; set; } = "";
 
     [JsonPropertyName("Sell_to_Customer_Name")]
     public string CustomerName { get; set; } = "";
@@ -26,8 +29,14 @@ public class QuoteDetailsDto
     [JsonPropertyName("SellToEmail")]
     public string Email { get; set; } = "";
 
+    [JsonPropertyName("SellToPhoneNo")]
+    public string Phone { get; set; } = "";
+
     [JsonPropertyName("Salesperson_Code")]
     public string SalespersonCode { get; set; } = "";
+
+    [JsonPropertyName("LVS_Document_Status")]
+    public string DocumentStatus { get; set; } = "";
 
     
     

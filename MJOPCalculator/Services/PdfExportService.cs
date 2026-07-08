@@ -18,7 +18,7 @@ public class PdfExportService
 
             foreach (var component in components)
             {
-                headerCells.Append($"<th>{Encode(component.ComponentNo)}</th>");
+                headerCells.Append($"<th>{Encode(component.CustomerNo)}</th>");
             }
 
             var bodyRows = new StringBuilder();

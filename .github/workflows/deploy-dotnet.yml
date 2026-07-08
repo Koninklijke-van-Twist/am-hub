@@ -52,6 +52,7 @@ jobs:
 
           mirror -R --delete \
             --exclude "^equipment-models\.json$" \
+            --exclude "^appsettings\.Local\.json$" \
             --exclude "^data(/.*)?$" \
             ./publish .
 

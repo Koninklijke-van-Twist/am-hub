@@ -1,0 +1,652 @@
+@page "/offertes"
+@page "/offertes/{OfferteNo}"
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Authorization
+@using System.Text.Json
+@using MJOP.Calculator.Models.BusinessCentral
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject BusinessCentralApiService BusinessCentralApiService
+@inject PdfExportService PdfExportService
+
+<div class="quote-page">
+
+    <div class="quote-header">
+       
+    </div>
+
+    <div class="card p-4 shadow-sm mb-4">
+        <div class="row align-items-end">
+            <div class="col-md-8">
+                <label class="form-label">Offertenummer</label>
+                <input class="form-control" @bind="configurationNo" placeholder="Bijv. SQ12604147" />
+            </div>
+
+            <div class="col-md-4 mt-3 mt-md-0">
+                <button class="btn btn-primary w-100" @onclick="SearchQuoteAsync" disabled="@isLoading">
+                    @(isLoading ? "Laden..." : "Offerte ophalen")
+                </button>
+            </div>
+        </div>
+
+        @if (hasSearched && !string.IsNullOrWhiteSpace(error))
+        {
+            <div class="alert alert-danger mt-3 mb-0">
+                @error
+            </div>
+        }
+    </div>
+    @if (!HasSelectedQuote)
+    {
+        <div class="offers-overview-page">
+
+            <div class="overview-header">
+                <div>
+                    <h3>Offertes</h3>
+                    <p>Overzicht van alle offertes. Zoek of filter om snel de juiste offerte te vinden.</p>
+                </div>
+
+                
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📄</div>
+                    <div>
+                        <span>Totaal offertes</span>
+                        <strong>@quoteOverviewItems.Count</strong>
+                        
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">📄</div>
+                    <div>
+                        <span>Open offertes</span>
+                        <strong>@quoteOverviewItems.Count(q => q.DocumentStatus == "01_OPEN" || q.DocumentStatus == "03_REOPENED")</strong>
+                        
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">📄</div>
+                    <div>
+                        <span>Vrijgegeven offertes</span>
+                        <strong>@quoteOverviewItems.Count(q => q.DocumentStatus == "02_RELEASED")</strong>
+                        
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">✓</div>
+                    <div>
+                        <span>Gewonnen offertes</span>
+                        <strong>@quoteOverviewItems.Count(q => q.DocumentStatus == "05_WON")</strong>
+                        
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon red">⏱</div>
+                    <div>
+                        <span>Verloren offertes</span>
+                        <strong>@quoteOverviewItems.Count(q => q.DocumentStatus == "06_LOST")</strong>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="overview-layout">
+
+                <div class="overview-main-card">
+
+                    <div class="filter-row">
+                        <div class="search-box">
+                            <span>🔍</span>
+                            <input placeholder="Zoek op klant, offerte nr., status of omschrijving..." />
+                        </div>
+
+                        <select class="form-select">
+                            <option>Status</option>
+                            <option>Open</option>
+                            <option>Verstuurd</option>
+                            <option>Geaccepteerd</option>
+                            <option>Verlopen</option>
+                        </select>
+
+                        <select class="form-select">
+                            <option>Accountmanager</option>
+                            <option>Lars Lissenberg</option>
+                            <option>Mark van Dijk</option>
+                        </select>
+
+                        <button class="btn btn-outline-secondary">
+                            Filters wissen
+                        </button>
+                    </div>
+
+                    <div class="table-responsive mt-4">
+                        <table class="table offers-table">
+                            <thead>
+                                <tr>
+                                    <th>Offertenummer</th>
+                                    <th>Klant</th>
+                                    <th>Omschrijving</th>
+                                    <th>Status</th>
+                                    <th>Accountmanager</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var quote in quoteOverviewItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <button class="quote-link" @onclick="() => OpenQuote(quote.QuoteNo)">
+                                                @quote.QuoteNo
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <strong>@quote.CustomerName</strong>
+                                        </td>
+                                        <td>@quote.Description</td>
+                                        <td>
+                                            <span class="status-badge PlaceHolder">
+                                                @quote.DocumentStatus
+                                            </span>
+                                        </td>
+                                        
+                                        
+                                        <td>@quote.SalespersonCode</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-light" @onclick="() => OpenQuote(quote.QuoteNo)">
+                                                ⋮
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    
+
+                </div>
+
+                
+
+            </div>
+        </div>
+    }
+    else
+    {
+    
+        @if (hasSearched && components.Any() && taskTypes.Any())
+        {
+            <div class="quote-grid">
+
+                <div class="quote-main">
+
+                    <div class="quote-info-row">
+                        <div class="d-flex align-items-center gap-2">
+                    <h3 class="mb-0">Offerte @quoteDetails.QuoteNo</h3>
+
+                    @if (hasSearched && components.Any())
+                    {
+                        <span class="badge bg-primary-subtle text-primary">Concept</span>
+                    }
+                </div>
+
+                <div class="text-muted small mt-1">
+                    Aangemaakt op Placeholder
+                    door Placeholder
+                </div>
+
+                        <div class="quote-card customer-card">
+                            <div class="card-title-row">
+                                <span class="card-icon">▣</span>
+                                <h5>Klantgegevens</h5>
+                            </div>
+
+                            <div class="customer-content">
+                                
+
+                                <div>
+                                    <h6>@(string.IsNullOrWhiteSpace(quoteDetails.CustomerName) ? "onbekend" : quoteDetails.CustomerName)</h6>
+                                    <div class="text-muted small">
+                                        @(string.IsNullOrWhiteSpace(customer.No) ? "onbekend" : $"Klantnummer: {customer.No}")<br />
+                                        @(string.IsNullOrWhiteSpace(customer.Address) ? "onbekend" : customer.Address)<br />
+                                        @(string.IsNullOrWhiteSpace(customer.PostCode) ? "onbekend" : $"{customer.PostCode} {customer.City}")
+                                    </div>
+                                </div>
+
+                                <div class="customer-contact">
+                                    <div class="info-line">
+                                        <strong>Contactpersoon</strong><br />
+                                        @(string.IsNullOrWhiteSpace(quoteDetails.ContactPerson) ? "onbekend" : quoteDetails.ContactPerson)
+                                    </div>
+
+                                    <div class="info-line">
+                                        <strong>E-mail</strong><br />
+                                        @(string.IsNullOrWhiteSpace(quoteDetails.Email) ? "onbekend" : quoteDetails.Email)
+                                    </div>
+
+                                    <div class="info-line">
+                                        <strong>Telefoon</strong><br />
+                                        @(string.IsNullOrWhiteSpace(quoteDetails.Phone) ? "onbekend" : quoteDetails.Phone)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="quote-card offer-info-card">
+                            <div class="card-title-row">
+                                <span class="card-icon">i</span>
+                                <h5>Offerte informatie</h5>
+                            </div>
+
+                            <div class="details-list">
+                                <div>
+                                    <span>Offertenummer</span>
+                                    <strong>@(string.IsNullOrWhiteSpace(quoteDetails.QuoteNo) ? configurationNo : quoteDetails.QuoteNo)</strong>
+                                </div>
+                                <div>
+                                    <span>Status</span>
+                                    <strong><span class="badge bg-primary-subtle text-primary">placeholder</span></strong>
+                                </div>
+                                <div>
+                                    <span>Geldigheid</span>
+                                    <strong>30 dagen</strong>
+                                </div>
+                                <div>
+                                    <span>Startdatum</span>
+                                    <strong>placeholder</strong>
+                                </div>
+                                <div>
+                                    <span>Einddatum</span>
+                                    <strong>placeholder</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="quote-card mt-4">
+                        <div class="section-header">
+                            <h5>Componenten & werkzaamheden</h5>
+
+                            
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table quote-lines-table">
+                                <thead>
+                                    <tr>
+                                        <th>Taak</th>
+
+                                        @foreach (var component in components)
+                                        {
+                                            <th>@component.No <br> @component.Description <br> @component.LocationName</th>
+                                        }
+                                    </tr>
+                                    
+                                </thead>
+                                <tbody>
+                                    @foreach (var taskType in taskTypes)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@taskType</strong>
+                                            </td>
+
+                                            @foreach (var component in components)
+                                            {
+                                                var task = component.ComponentTasks
+                                                    .FirstOrDefault(t => t.Type == taskType);
+
+                                                <td>
+                                                    @if (task?.Price != null)
+                                                    {
+                                                        @:€ @task.Price.Value.ToString("N2", new System.Globalization.CultureInfo("nl-NL"))
+                                                    }
+                                                    else
+                                                    {
+                                                        @:-
+                                                    }
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+
+                                    <tr class="total-row">
+                                        <td><strong>Totaal</strong></td>
+
+                                        @foreach (var component in components)
+                                        {
+                                            <td>
+                                                <strong>
+                                                    € @component.TotalPrice.ToString("N2", new System.Globalization.CultureInfo("nl-NL"))
+                                                </strong>
+                                            </td>
+                                        }
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        
+                    </div>
+
+                    <div class="bottom-cards">
+                        
+                        <div class="quote-card">
+                            <div class="section-header">
+                                <h5>Bijlagen</h5>
+                                
+                            </div>
+
+                            <div class="attachment-box">
+                                <span class="pdf-icon">PDF</span>
+                                <div>
+                                    <strong>Algemene_voorwaarden_KVT_2024.pdf</strong><br />
+                                    <span class="text-muted small">PDF • 248 KB</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="quote-sidebar">
+
+                    <div>
+                        @if (hasSearched && components.Any() && taskTypes.Any())
+                        {
+                            <button class="btn btn-outline-primary" @onclick="PrintPdf">
+                                Preview PDF
+                            </button>
+
+                            <button class="btn btn-primary" @onclick="DownloadPdf">
+                                Genereer PDF
+                            </button>
+                        }
+                    </div>
+
+                    <div class="quote-card mt-4">
+                        <h5>Offerte samenvatting</h5>
+
+                        <div class="summary-line">
+                            <span>Aantal componenten</span>
+                            <strong>@(components.Count())</strong>
+                        </div>
+
+                        <div class="summary-line">
+                            <span>aantal taken</span>
+                            <strong></strong>
+                        </div>
+
+                        <hr />
+
+                        <div class="summary-total">
+                            <span>Totaalbedrag</span>
+                            <strong>
+                                € @( (components.Sum(c => c.TotalPrice)).ToString("N2", new System.Globalization.CultureInfo("nl-NL")) )
+                            </strong>
+                        </div>
+
+                        
+                    </div>
+
+                    
+
+                </div>
+
+            </div>
+        }
+    }
+
+    @if (hasSearched &&
+        string.IsNullOrWhiteSpace(error) &&
+        !isLoading &&
+        (!components.Any() || !taskTypes.Any()))
+    {
+        <div class="alert alert-warning mt-3">
+            Er zijn geen gegevens gevonden voor dit offertenummer.
+        </div>
+    }
+
+</div>
+            
+
+
+
+@code {
+    
+    [Parameter]
+    public string? OfferteNo { get; set; }
+    private bool HasSelectedQuote => !string.IsNullOrWhiteSpace(OfferteNo);
+    private Customer customer = new();
+    private string configurationNo = "SQ12604147";
+    private string error = "";
+    private bool hasSearched = false;
+    private bool isLoading = false;
+
+    private List<QuoteDetailsDto> quoteOverviewItems = new();
+    
+    private QuoteDetailsDto quoteDetails = new();
+    private List<Component> components = new();
+    private List<string> taskTypes = new();
+
+    private List<ConfigurationRuleDto> configurationRules = new();
+    private List<ConfigurationRuleDetailDto> configurationRulesDetails = new();
+    
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(OfferteNo))
+        {
+            configurationNo = OfferteNo;
+            await LoadConfigurationDataAsync();
+        }
+        else
+        {
+            _ = GetquoteOverviewItemsAsync();
+        }
+    }
+    
+    private async Task SearchQuoteAsync()
+    {
+        Navigation.NavigateTo(
+            $"/offertes/{Uri.EscapeDataString(configurationNo)}",
+            replace: true);
+    }
+
+    private void OpenQuote(string quoteNo)
+    {
+        Navigation.NavigateTo($"/offertes/{Uri.EscapeDataString(quoteNo)}");
+    }
+
+
+    private async Task LoadConfigurationDataAsync()
+    {
+
+        try
+        {
+            hasSearched = true;
+            isLoading = true;
+            error = "";
+
+            components = new();
+            taskTypes = new();
+            configurationRules = new();
+            configurationRulesDetails = new();
+
+            await GetConfigurationRulesAsync();
+            await GetConfigurationRulesDetailsAsync();
+            await GetQuoteDetailsAsync();
+            await GetComponentsAsync();
+            await GetCustomersAsync();
+
+            AttachTasksToComponents();
+            AttachComponentNosToConfigurationRules();
+            
+        }
+        catch (Exception ex)
+        {
+            components = new();
+            taskTypes = new();
+            configurationRules = new();
+            configurationRulesDetails = new();
+
+            error = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task GetConfigurationRulesAsync()
+    {
+        configurationRules = await BusinessCentralApiService.GetBCFilteredDataAsync<ConfigurationRuleDto>(
+            "ConfigurationRules",
+            $"Configuration_No eq '{configurationNo}' and Selected eq true and Job_Task_Type eq 'Posting'");
+    }
+
+    private async Task GetConfigurationRulesDetailsAsync()
+    {
+        configurationRulesDetails = await BusinessCentralApiService.GetBCFilteredDataAsync<ConfigurationRuleDetailDto>(
+            "ConfigurationRulesDetails",
+            $"Configuration_No eq '{configurationNo}'");
+    }
+
+    private async Task GetquoteOverviewItemsAsync()
+    {
+        quoteOverviewItems = await BusinessCentralApiService.GetBCFilteredDataAsync<QuoteDetailsDto>(
+            "SalesQuote",
+            $"Document_Type eq 'Quote' and Salesperson_Code eq 'NZ'");
+    }
+
+
+    private async Task GetQuoteDetailsAsync()
+    {
+        var quoteDetailsList = await BusinessCentralApiService.GetBCFilteredDataAsync<QuoteDetailsDto>(
+            "SalesQuote",
+            $"No eq '{configurationNo}'");
+
+        quoteDetails = quoteDetailsList.FirstOrDefault() ?? new QuoteDetailsDto();
+    }
+
+    private async Task GetCustomersAsync()
+    {
+        var customerList = await BusinessCentralApiService.GetBCFilteredDataAsync<Customer>(
+            "AppCustomerCard",
+            $"No eq '{quoteDetails.CustomerNo}'");
+
+        customer = customerList.FirstOrDefault() ?? new Customer();
+    }
+
+    private async Task GetComponentsAsync()
+    {
+        components = new();
+
+        var componentNos = configurationRulesDetails
+            .Select(detail => detail.ComponentNo)
+            .Where(componentNo => !string.IsNullOrWhiteSpace(componentNo))
+            .Distinct()
+            .ToList();
+
+        foreach (var componentNo in componentNos)
+        {
+            var safeComponentNo = componentNo.Replace("'", "''");
+
+            var componentData = await BusinessCentralApiService.GetBCFilteredDataAsync<Component>(
+                "AppComponentCard",
+                $"No eq '{safeComponentNo}'");
+
+            var component = componentData.FirstOrDefault();
+
+            if (component != null)
+            {
+                component.ComponentTasks = new();
+                components.Add(component);
+            }
+            else
+            {
+                components.Add(new Component
+                {
+                    No = componentNo,
+                    ComponentTasks = new()
+                });
+            }
+        }
+    }
+
+
+    private void AttachComponentNosToConfigurationRules()
+    {
+        foreach (var rule in configurationRules)
+        {
+            rule.ComponentNos = configurationRulesDetails
+                .Where(detail => detail.ConfigurationLineNo == rule.LineNo)
+                .Select(detail => detail.ComponentNo)
+                .ToList();
+        }
+    }
+
+    private void AttachTasksToComponents()
+    {
+        foreach (var component in components)
+        {
+            var lineNumbersForThisComponent = configurationRulesDetails
+                .Where(detail => detail.ComponentNo == component.No)
+                .Select(detail => detail.ConfigurationLineNo)
+                .Distinct()
+                .ToHashSet();
+
+            component.ComponentTasks = configurationRules
+                .Where(rule => lineNumbersForThisComponent.Contains(rule.LineNo))
+                .OrderBy(rule => rule.LineNo)
+                .Select(rule => new ComponentTask
+                {
+                    Type = rule.ItemNo,
+                    Description = rule.Description,
+                    Price = rule.UnitPrice > 0 ? rule.UnitPrice : null
+                })
+                .ToList();
+        }
+
+        taskTypes = components
+            .SelectMany(component => component.ComponentTasks)
+            .Select(task => task.Type)
+            .Where(type => !string.IsNullOrWhiteSpace(type))
+            .Distinct()
+            .ToList();
+    }
+
+    private async Task PrintPdf()
+    {
+        if (!components.Any() || !taskTypes.Any())
+        {
+            error = "Haal eerst configuratiegegevens op.";
+            return;
+        }
+
+        var html = PdfExportService.BuildQuoteHtml(quoteDetails, components, taskTypes);
+        await JS.InvokeVoidAsync("exportHtmlToPrint", html);
+    }
+
+    private async Task DownloadPdf()
+    {
+        if (!components.Any() || !taskTypes.Any())
+        {
+            error = "Haal eerst configuratiegegevens op.";
+            return;
+        }
+
+        var html = PdfExportService.BuildQuoteHtml(quoteDetails, components, taskTypes);
+        await JS.InvokeVoidAsync("exportHtmlToDownload", html, $"Offerte_{configurationNo}.pdf");
+    }
+}
