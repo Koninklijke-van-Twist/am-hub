@@ -1,4 +1,4 @@
-name: Deploy .NET to FTP on master push
+name: Deploy .NET to FTP on main push
 
 on:
   push:
@@ -16,17 +16,18 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore ./MJOPCalculator/MJOPCalculator.csproj
 
       - name: Publish
-        run: dotnet publish -c Release -o ./publish
+        run: dotnet publish ./MJOPCalculator/MJOPCalculator.csproj -c Release -o ./publish
 
       - name: Write deploy info
         run: |
           echo "${{ github.sha }}" > ./publish/deploy-info.txt
+          mv ./MJOPCalculator/dllpointer ./publish/dllpointer
 
       - name: Install lftp
         run: |
@@ -49,7 +50,11 @@ jobs:
 
           cd "$FTP_REMOTE_DIR"
 
-          mirror -R --delete ./publish .
+          mirror -R --delete \
+          --exclude "^equipment-models\.json$" \
+          --exclude "^appsettings\.Local\.json$" \
+          --exclude "^data(/.*)?$" \
+          ./publish .
 
           bye
           EOF
