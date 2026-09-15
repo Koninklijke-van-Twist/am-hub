@@ -27,9 +27,9 @@ jobs:
           dotnet publish ./AM-Hub/AM-Hub.csproj -c Release -o ./publish
           echo "Published entry assemblies:"
           ls -1 ./publish/*.dll
-          test -f ./publish/MJOPCalculator.dll
-          test -f ./publish/MJOPCalculator.runtimeconfig.json
-          grep -F '"version": "8.0' ./publish/MJOPCalculator.runtimeconfig.json
+          test -f ./publish/AM-Hub.dll
+          test -f ./publish/AM-Hub.runtimeconfig.json
+          grep -F '"version": "8.0' ./publish/AM-Hub.runtimeconfig.json
 
       - name: Write deploy info
         run: |
@@ -41,6 +41,7 @@ jobs:
             ls -1 ./publish/*.dll >&2
             exit 1
           fi
+          cp ./AM-Hub/dllpointer ./publish/dllpointer
           printf '%s\n' "${expected}" > ./publish/dllpointer
           echo "dllpointer -> ${expected}"
 
