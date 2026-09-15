@@ -40,7 +40,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedHost;
 
     // Apache on sleutels.kvt.nl terminates TLS and proxies to Kestrel.
-    options.KnownNetworks.Clear();
+    options.KnownIPNetworks.Clear();
     options.KnownProxies.Clear();
 });
 
@@ -54,12 +54,6 @@ builder.Services.AddHttpClient<IBusinessCentralClient, BusinessCentralClient>(
         var options = serviceProvider
             .GetRequiredService<IOptions<BusinessCentralOptions>>()
             .Value;
-
-        if (string.IsNullOrWhiteSpace(options.BaseUrl))
-        {
-            throw new InvalidOperationException(
-                "BusinessCentral:BaseUrl is missing. Set it in appsettings.json or appsettings.Local.json.");
-        }
 
         client.BaseAddress = new Uri(options.BaseUrl);
         client.Timeout = TimeSpan.FromSeconds(60);
@@ -92,17 +86,12 @@ builder.Services.AddScoped<ISalesPersonService, SalesPersonService>();
 
 var app = builder.Build();
 
-var localSettingsPath = Path.Combine(
-    app.Environment.ContentRootPath,
-    "appsettings.Local.json");
-
 app.Logger.LogInformation(
-    "AM-Hub starting. ContentRoot={ContentRoot} LocalSettings={LocalSettings} AzureAdClientId={ClientIdState} PathBase={PathBase}",
+    "AM-Hub starting. ContentRoot={ContentRoot} PathBase={PathBase}",
     app.Environment.ContentRootPath,
-    File.Exists(localSettingsPath) ? "present" : "missing",
-    string.IsNullOrWhiteSpace(app.Configuration["AzureAd:ClientId"]) ? "missing" : "configured",
     app.Configuration["ASPNETCORE_PATHBASE"] ?? "(none)");
 
+// Last known-good host (8 Jul) applied forwarded headers + PathBase before mapping endpoints.
 app.UseForwardedHeaders();
 
 var pathBase = builder.Configuration["ASPNETCORE_PATHBASE"];
@@ -118,13 +107,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
+
+app.MapStaticAssets();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
