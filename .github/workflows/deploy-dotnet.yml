@@ -3,7 +3,7 @@ name: Deploy .NET to FTP on master push
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
