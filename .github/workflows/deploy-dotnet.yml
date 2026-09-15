@@ -19,15 +19,15 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore
-        run: dotnet restore ./MJOPCalculator/MJOPCalculator.csproj
+        run: dotnet restore ./AM-HUB/HUB.csproj
 
       - name: Publish
-        run: dotnet publish ./MJOPCalculator/MJOPCalculator.csproj -c Release -o ./publish
+        run: dotnet publish ./HUB/HUB.csproj -c Release -o ./publish
 
       - name: Write deploy info
         run: |
           echo "${{ github.sha }}" > ./publish/deploy-info.txt
-          mv ./MJOPCalculator/dllpointer ./publish/dllpointer
+          mv ./HUB/dllpointer ./publish/dllpointer
 
       - name: Install lftp
         run: |
