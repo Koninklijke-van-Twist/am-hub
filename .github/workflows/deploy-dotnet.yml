@@ -16,18 +16,33 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Restore
         run: dotnet restore ./AM-Hub/AM-Hub.csproj
 
       - name: Publish
-        run: dotnet publish ./AM-Hub/AM-Hub.csproj -c Release -o ./publish
+        run: |
+          set -euo pipefail
+          dotnet publish ./AM-Hub/AM-Hub.csproj -c Release -o ./publish
+          echo "Published entry assemblies:"
+          ls -1 ./publish/*.dll
+          test -f ./publish/MJOPCalculator.dll
+          test -f ./publish/MJOPCalculator.runtimeconfig.json
+          grep -F '"version": "8.0' ./publish/MJOPCalculator.runtimeconfig.json
 
       - name: Write deploy info
         run: |
+          set -euo pipefail
           echo "${{ github.sha }}" > ./publish/deploy-info.txt
-          mv ./AM-Hub/dllpointer ./publish/dllpointer
+          expected="$(tr -d '[:space:]' < ./AM-Hub/dllpointer)"
+          if [ ! -f "./publish/${expected}" ]; then
+            echo "dllpointer says '${expected}' but that file is not in publish/:" >&2
+            ls -1 ./publish/*.dll >&2
+            exit 1
+          fi
+          printf '%s\n' "${expected}" > ./publish/dllpointer
+          echo "dllpointer -> ${expected}"
 
       - name: Install lftp
         run: |

@@ -63,20 +63,26 @@ builder.Services.AddScoped<ISalesPersonService, SalesPersonService>();
 
 var app = builder.Build();
 
+var pathBase = builder.Configuration["ASPNETCORE_PATHBASE"];
+
+if (!string.IsNullOrWhiteSpace(pathBase))
+{
+    app.UsePathBase(pathBase);
+}
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseAntiforgery();
-
-app.MapStaticAssets();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
@@ -107,12 +113,5 @@ app.MapGet(
             enableRangeProcessing: true);
     })
     .RequireAuthorization();
-
-var pathBase = builder.Configuration["ASPNETCORE_PATHBASE"];
-
-if (!string.IsNullOrWhiteSpace(pathBase))
-{
-    app.UsePathBase(pathBase);
-}
 
 app.Run();

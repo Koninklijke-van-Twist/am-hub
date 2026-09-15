@@ -57,3 +57,10 @@ TestResult.xml
 nunit-*.xml
 
 appsettings.Local.json
+
+# Visual Studio / local scratch from "omgebouwde pdf exporter"
+.vs/
+*.csproj.user
+.tmp-footer-*/
+.tmp-footer-*
+AM-Hub/.tmp-footer-verify.cjs

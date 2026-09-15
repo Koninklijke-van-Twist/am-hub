@@ -1,12 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <!-- net8.0 matches the Ubuntu host's ASP.NET Core 8 runtime (systemd cannot install frameworks). -->
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>AM_Hub</RootNamespace>
-    <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
-    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <!-- Stable entry assembly for systemd/dllpointer. Do not rename without updating ExecStart. -->
+    <AssemblyName>MJOPCalculator</AssemblyName>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/.tmp-*/**;**/.tmp-*;**/.vs/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
