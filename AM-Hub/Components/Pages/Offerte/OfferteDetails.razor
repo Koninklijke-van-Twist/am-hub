@@ -1,0 +1,193 @@
+@page "/offerte/{OfferteNummer}"
+@using System.Globalization
+@using AMHub.Models.BusinessCentral
+@using AMHub.Models.ViewModels
+@using AMHub.Services.SalesQuotes
+@using AMHub.Services.ConfigurationRules
+@using AMHub.Services.Customers
+@using AMHub.Services.SalesPersons
+@inject ISalesQuoteService SalesQuoteService
+@inject IConfigurationRuleService ConfigurationRuleService
+@inject IAppCustomerService AppCustomerService
+@inject ISalesPersonService SalesPersonService
+@inject ILogger<OfferteDetails> Logger
+
+<PageTitle>Offerte @OfferteNummer</PageTitle>
+<div class="quote-page">
+    <nav class="quote-nav" aria-label="Offertenavigatie"><a href="/offerte">← Offerte zoeken</a><span>Offerte / @OfferteNummer</span></nav>
+    @if (loading)
+    {
+        <div class="state-panel" role="status">Offerte wordt geladen…</div>
+    }
+    else if (loadFailed)
+    {
+        <div class="state-panel" role="alert">De offerte kon niet worden geladen. Vernieuw de pagina om het opnieuw te proberen.</div>
+    }
+    else if (quote is null)
+    {
+        <div class="state-panel">Offerte <strong>@OfferteNummer</strong> is niet gevonden.</div>
+    }
+    else
+    {
+        <div class="quote-overview">
+        <header class="quote-hero">
+            <div>
+                
+                <h1>Offerte @OfferteNummer</h1>
+                <p class="quote-description">@Display(quote.Description)</p>
+                <div class="hero-tags">
+                    <span class="status-badge">@Display(quote.DocumentStatus)</span>
+                    <span>@Display(quote.JobType)</span>
+                    <span>Orderdatum @(quote.OrderDate?.ToString("dd MMM yyyy", Nl) ?? "Niet ingevuld")</span>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <a class="action action-primary" href="@PdfUrl(true)">Download offerte</a>
+                <a class="action action-secondary" href="@PdfUrl(false)" target="_blank" rel="noopener">Bekijk PDF ↗</a>
+            </div>
+        </header>
+        <section class="quote-summary" aria-labelledby="quote-summary-title">
+            <h2 id="quote-summary-title">Samenvatting offerte</h2>
+            <div class="summary-values">
+                <div class="summary-total"><span>Totaal jaarprijs</span><strong>@Money(Total)</strong><small>Exclusief btw</small></div>
+                <dl class="summary-counts" aria-label="Omvang offerte">
+                    <dt>Componenten:</dt><dd>@(matrix?.Components.Count ?? 0)</dd>
+                    <dt>Locaties:</dt><dd>@LocationCount</dd>
+                    <dt>Werkzaamheden:</dt><dd>@WorkCount</dd>
+                </dl>
+            </div>
+        </section>
+        </div>
+        <section class="info-grid" aria-label="Klant en accountmanager">
+            <article class="info-card">
+                <h2>Klantgegevens</h2>
+                <p class="customer-name">@Display(customer?.Name ?? quote.CustomerName)</p>
+                <dl>
+                    <dt>Klantnummer</dt><dd>@Display(quote.CustomerNumber)</dd>
+                    <dt>Adres</dt><dd>@Display(string.Join(" ", new[] { customer?.Address, customer?.Address2 }.Where(x => !string.IsNullOrWhiteSpace(x))))</dd>
+                    <dt>Postcode / plaats</dt><dd>@Display(string.Join(" ", new[] { customer?.PostCode, customer?.City }.Where(x => !string.IsNullOrWhiteSpace(x))))</dd>
+                </dl>
+            </article>
+            <article class="info-card">
+                <h2>Contactpersoon</h2>
+                <dl><dt>Naam</dt><dd>@Display(quote.ContactName)</dd><dt>E-mail</dt><dd>@Display(quote.ContactEmail)</dd></dl>
+            </article>
+            <article class="info-card">
+                <h2>Accountmanager</h2>
+                <dl><dt>Naam</dt><dd>@Display(salesPerson?.Name)</dd><dt>E-mail</dt><dd>@Display(salesPerson?.Email)</dd></dl>
+            </article>
+        </section>
+        <section class="scope-panel" aria-labelledby="scope-title">
+            <div class="section-heading">
+                <h2 id="scope-title">Werkzaamhedenmatrix</h2>
+                <span>Bedragen per jaar, exclusief btw</span>
+            </div>
+            @if (matrix is null || matrix.Components.Count == 0)
+            {
+                <p class="empty-message">Er zijn nog geen componenten en werkzaamheden beschikbaar voor deze offerte.</p>
+            }
+            else
+            {
+                    <div class="table-scroll" tabindex="0" role="region" aria-label="Werkzaamheden en prijzen per component">
+                        <table>
+                            <caption>Jaarprijzen per component. Een streepje betekent dat geen prijs is gekoppeld.</caption>
+                            <thead><tr><th scope="col">Werkzaamheid</th>
+                                @foreach (var component in matrix.Components)
+                                {
+                                    <th scope="col">
+                                        <span class="component-number">@component.ComponentNo</span>
+                                        <span class="component-description">@Display(component.ComponentDescription)</span>
+                                        <small>@Display(component.LocationDescription)</small>
+                                    </th>
+                                }
+                            </tr></thead>
+                            <tbody>
+                                @foreach (var task in matrix.Tasks)
+                                {
+                                    <tr><th scope="row"><small>@task.TaskCode</small>@task.Description</th>
+                                        @foreach (var component in matrix.Components)
+                                        {
+                                            <td>@(task.Prices.TryGetValue(component.ComponentNo, out var price) && price.HasValue ? Money(price.Value) : "—")</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot><tr><th scope="row">Totaal per component</th>
+                                @foreach (var component in matrix.Components)
+                                {
+                                    <td>@Money(ComponentTotal(component.ComponentNo))</td>
+                                }
+                            </tr></tfoot>
+                        </table>
+                    </div>
+
+            }
+        </section>
+    }
+</div>
+
+@code {
+    [Parameter] public string OfferteNummer { get; set; } = string.Empty;
+    private static readonly CultureInfo Nl = CultureInfo.GetCultureInfo("nl-NL");
+    private SalesQuote? quote;
+    private ConfigurationMatrix? matrix;
+    private AppCustomerCard? customer;
+    private SalesPersonCard? salesPerson;
+    private bool loading = true;
+    private bool loadFailed;
+    private int loadVersion;
+
+    private decimal ComponentTotal(string number) => matrix?.Tasks.Sum(task =>
+        task.Prices.TryGetValue(number, out var price) ? price ?? 0m : 0m) ?? 0m;
+    private decimal Total => matrix?.Components.Sum(c => ComponentTotal(c.ComponentNo)) ?? 0m;
+    private int WorkCount => matrix?.Components.Sum(c => matrix.Tasks.Count(t =>
+        t.Prices.TryGetValue(c.ComponentNo, out var price) && price.HasValue)) ?? 0;
+    private int LocationCount => matrix?.Components.Select(c => c.LocationDescription.Trim())
+        .Where(location => location.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Count() ?? 0;
+    private static string Display(string? value) => string.IsNullOrWhiteSpace(value) ? "Niet ingevuld" : value;
+    private static string Money(decimal value) => value.ToString("C2", Nl);
+    private string PdfUrl(bool download) => $"/api/offertes/{Uri.EscapeDataString(OfferteNummer)}/pdf" + (download ? "?download=true" : "");
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var version = ++loadVersion;
+        var number = OfferteNummer;
+        loading = true;
+        loadFailed = false;
+        quote = null;
+        matrix = null;
+        customer = null;
+        salesPerson = null;
+        try
+        {
+            var loadedQuote = await SalesQuoteService.GetByNumberAsync(number);
+            if (version != loadVersion || loadedQuote is null)
+                return;
+            var matrixTask = ConfigurationRuleService.GetMatrixAsync(number);
+            var customerTask = string.IsNullOrWhiteSpace(loadedQuote.CustomerNumber)
+                ? Task.FromResult<AppCustomerCard?>(null)
+                : AppCustomerService.GetByNumberAsync(loadedQuote.CustomerNumber);
+            var salesPersonTask = string.IsNullOrWhiteSpace(loadedQuote.SalespersonCode)
+                ? Task.FromResult<SalesPersonCard?>(null)
+                : SalesPersonService.GetByCodeAsync(loadedQuote.SalespersonCode);
+            await Task.WhenAll(matrixTask, customerTask, salesPersonTask);
+            if (version != loadVersion)
+                return;
+            quote = loadedQuote;
+            matrix = await matrixTask;
+            customer = await customerTask;
+            salesPerson = await salesPersonTask;
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Offerte {OfferteNummer} kon niet worden geladen.", number);
+            if (version == loadVersion)
+                loadFailed = true;
+        }
+        finally
+        {
+            if (version == loadVersion)
+                loading = false;
+        }
+    }
+}

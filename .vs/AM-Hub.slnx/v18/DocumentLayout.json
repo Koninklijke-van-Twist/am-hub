@@ -1,0 +1,633 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\pdf\\offertehtmlrenderer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\pdf\\offertehtmlrenderer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\pdf\\templates\\offerte-static.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\pdf\\templates\\offerte-static.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\components\\pages\\offerte\\offertedetails.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\components\\pages\\offerte\\offertedetails.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\businesscentral\\businesscentralclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\businesscentral\\businesscentralclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\pdf\\templates\\offerte.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\pdf\\templates\\offerte.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\pdf\\offertepdfservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\pdf\\offertepdfservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\models\\business central\\configurationruledetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\models\\business central\\configurationruledetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\models\\documents\\offertedocumentmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\models\\documents\\offertedocumentmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\models\\business central\\configurationrule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\models\\business central\\configurationrule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\configurationrules\\configurationruleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\configurationrules\\configurationruleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\models\\viewmodels\\configurationmatrix.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\models\\viewmodels\\configurationmatrix.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\documents\\offertedocumentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\documents\\offertedocumentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\documents\\ioffertedocumentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\documents\\ioffertedocumentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\models\\business central\\salespersoncard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\models\\business central\\salespersoncard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\salespersons\\salespersonservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\salespersons\\salespersonservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\customers\\appcustomerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\customers\\appcustomerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\customers\\iappcustomerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\customers\\iappcustomerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\models\\business central\\appcustomercard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\models\\business central\\appcustomercard.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\components\\pages\\offerte\\offerte.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\components\\pages\\offerte\\offerte.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\pdf\\templates\\offertestaticcontent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\pdf\\templates\\offertestaticcontent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\pdf\\ioffertepdfservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\pdf\\ioffertepdfservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\pdf\\ioffertehtmlrenderer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\pdf\\ioffertehtmlrenderer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\models\\business central\\salesquote.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\models\\business central\\salesquote.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\appsettings.local.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\appsettings.local.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\components\\pages\\offerte\\offertedetails.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\components\\pages\\offerte\\offertedetails.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\configurationrules\\iconfigurationruleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\configurationrules\\iconfigurationruleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\models\\business central\\odataresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\models\\business central\\odataresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\components\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\components\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\salesquotes\\isalesquoteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\salesquotes\\isalesquoteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\salesquotes\\salesquoteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\salesquotes\\salesquoteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\businesscentral\\odataquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\businesscentral\\odataquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\services\\businesscentral\\ibusinesscentralclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\services\\businesscentral\\ibusinesscentralclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\configuration\\businesscentraloptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\configuration\\businesscentraloptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|c:\\users\\llissenberg.kvt\\source\\repos\\am-hub\\am-hub\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2D626FEC-A5D4-B2F4-C8CA-53CB4E95C282}|AM-Hub\\AM-Hub.csproj|solutionrelative:am-hub\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "OfferteHtmlRenderer.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\OfferteHtmlRenderer.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Pdf\\OfferteHtmlRenderer.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\OfferteHtmlRenderer.cs*",
+              "RelativeToolTip": "AM-Hub\\Services\\Pdf\\OfferteHtmlRenderer.cs*",
+              "ViewState": "AgIAACgCAAAAAAAAAAAAAEkCAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-27T10:02:41.924Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "BusinessCentralClient.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\BusinessCentral\\BusinessCentralClient.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\BusinessCentral\\BusinessCentralClient.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\BusinessCentral\\BusinessCentralClient.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\BusinessCentral\\BusinessCentralClient.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAewCsAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T06:56:41.921Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "OfferteDetails.razor",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Pages\\Offerte\\OfferteDetails.razor",
+              "RelativeDocumentMoniker": "AM-Hub\\Components\\Pages\\Offerte\\OfferteDetails.razor",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Pages\\Offerte\\OfferteDetails.razor",
+              "RelativeToolTip": "AM-Hub\\Components\\Pages\\Offerte\\OfferteDetails.razor",
+              "ViewState": "AgIAANEAAAAAAAAAAAAowOsAAABJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-25T08:17:49.892Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "offerte-static.html",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\Templates\\offerte-static.html",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Pdf\\Templates\\offerte-static.html",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\Templates\\offerte-static.html",
+              "RelativeToolTip": "AM-Hub\\Services\\Pdf\\Templates\\offerte-static.html",
+              "ViewState": "AgIAALsAAAAAAAAAAAAMwM0AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-08-31T10:18:13.065Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "OffertePdfService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\OffertePdfService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Pdf\\OffertePdfService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\OffertePdfService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\Pdf\\OffertePdfService.cs",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAewGsAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-31T07:13:18.887Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "offerte.css",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\Templates\\offerte.css",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Pdf\\Templates\\offerte.css",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\Templates\\offerte.css",
+              "RelativeToolTip": "AM-Hub\\Services\\Pdf\\Templates\\offerte.css",
+              "ViewState": "AgIAADAGAAAAAAAAAAAowFYGAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-08-31T07:07:15.556Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ConfigurationRuleDetail.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\ConfigurationRuleDetail.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Models\\Business Central\\ConfigurationRuleDetail.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\ConfigurationRuleDetail.cs",
+              "RelativeToolTip": "AM-Hub\\Models\\Business Central\\ConfigurationRuleDetail.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T11:22:48.922Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ConfigurationMatrix.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\ViewModels\\ConfigurationMatrix.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Models\\ViewModels\\ConfigurationMatrix.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\ViewModels\\ConfigurationMatrix.cs",
+              "RelativeToolTip": "AM-Hub\\Models\\ViewModels\\ConfigurationMatrix.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T13:02:20.184Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ConfigurationRuleService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\ConfigurationRules\\ConfigurationRuleService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\ConfigurationRules\\ConfigurationRuleService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\ConfigurationRules\\ConfigurationRuleService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\ConfigurationRules\\ConfigurationRuleService.cs",
+              "ViewState": "AgIAAFgAAAAAAAAAAAAAAGoAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T10:24:27.503Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "OfferteDocumentModel.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Documents\\OfferteDocumentModel.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Models\\Documents\\OfferteDocumentModel.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Documents\\OfferteDocumentModel.cs",
+              "RelativeToolTip": "AM-Hub\\Models\\Documents\\OfferteDocumentModel.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAA8wCQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-07T05:48:21.152Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ConfigurationRule.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\ConfigurationRule.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Models\\Business Central\\ConfigurationRule.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\ConfigurationRule.cs",
+              "RelativeToolTip": "AM-Hub\\Models\\Business Central\\ConfigurationRule.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAAABYAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-07T09:22:51.767Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "OfferteDocumentService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Documents\\OfferteDocumentService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Documents\\OfferteDocumentService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Documents\\OfferteDocumentService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\Documents\\OfferteDocumentService.cs",
+              "ViewState": "AgIAAGsAAAAAAAAAAAAswIcAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-07T09:02:58.165Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "SalesPersonService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\SalesPersons\\SalesPersonService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\SalesPersons\\SalesPersonService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\SalesPersons\\SalesPersonService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\SalesPersons\\SalesPersonService.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAswDAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T09:12:13.409Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "IOfferteDocumentService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Documents\\IOfferteDocumentService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Documents\\IOfferteDocumentService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Documents\\IOfferteDocumentService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\Documents\\IOfferteDocumentService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-27T09:45:19.361Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "SalesPersonCard.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\SalesPersonCard.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Models\\Business Central\\SalesPersonCard.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\SalesPersonCard.cs",
+              "RelativeToolTip": "AM-Hub\\Models\\Business Central\\SalesPersonCard.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T09:09:11.732Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "AppCustomerCard.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\AppCustomerCard.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Models\\Business Central\\AppCustomerCard.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\AppCustomerCard.cs",
+              "RelativeToolTip": "AM-Hub\\Models\\Business Central\\AppCustomerCard.cs",
+              "ViewState": "AgIAADMAAAAAAAAAAAAQwFwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T05:51:20.09Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "IAppCustomerService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Customers\\IAppCustomerService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Customers\\IAppCustomerService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Customers\\IAppCustomerService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\Customers\\IAppCustomerService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T05:52:05.112Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "AppCustomerService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Customers\\AppCustomerService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Customers\\AppCustomerService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Customers\\AppCustomerService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\Customers\\AppCustomerService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T05:52:19.113Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "OfferteStaticContent.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\Templates\\OfferteStaticContent.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Pdf\\Templates\\OfferteStaticContent.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\Templates\\OfferteStaticContent.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\Pdf\\Templates\\OfferteStaticContent.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAABOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-31T07:10:09.356Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Offerte.razor",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Pages\\Offerte\\Offerte.razor",
+              "RelativeDocumentMoniker": "AM-Hub\\Components\\Pages\\Offerte\\Offerte.razor",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Pages\\Offerte\\Offerte.razor",
+              "RelativeToolTip": "AM-Hub\\Components\\Pages\\Offerte\\Offerte.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-25T08:16:25.936Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "IOfferteHtmlRenderer.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\IOfferteHtmlRenderer.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Pdf\\IOfferteHtmlRenderer.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\IOfferteHtmlRenderer.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\Pdf\\IOfferteHtmlRenderer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-27T10:02:36.805Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "IOffertePdfService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\IOffertePdfService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\Pdf\\IOffertePdfService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\Pdf\\IOffertePdfService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\Pdf\\IOffertePdfService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-27T10:02:38.649Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "appsettings.Local.json",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\appsettings.Local.json",
+              "RelativeDocumentMoniker": "AM-Hub\\appsettings.Local.json",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\appsettings.Local.json",
+              "RelativeToolTip": "AM-Hub\\appsettings.Local.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-08-24T07:37:12.81Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\appsettings.json",
+              "RelativeDocumentMoniker": "AM-Hub\\appsettings.json",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\appsettings.json",
+              "RelativeToolTip": "AM-Hub\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-08-24T10:45:32.076Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "SalesQuote.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\SalesQuote.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Models\\Business Central\\SalesQuote.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\SalesQuote.cs",
+              "RelativeToolTip": "AM-Hub\\Models\\Business Central\\SalesQuote.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T07:21:38.228Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "AM-Hub\\appsettings.Development.json",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\appsettings.Development.json",
+              "RelativeToolTip": "AM-Hub\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-08-24T10:45:47.431Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "ODataResponse.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\ODataResponse.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Models\\Business Central\\ODataResponse.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Models\\Business Central\\ODataResponse.cs",
+              "RelativeToolTip": "AM-Hub\\Models\\Business Central\\ODataResponse.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T06:28:22.074Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "IConfigurationRuleService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\ConfigurationRules\\IConfigurationRuleService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\ConfigurationRules\\IConfigurationRuleService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\ConfigurationRules\\IConfigurationRuleService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\ConfigurationRules\\IConfigurationRuleService.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAswBAAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T10:23:43.909Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "OfferteDetails.razor.css",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Pages\\Offerte\\OfferteDetails.razor.css",
+              "RelativeDocumentMoniker": "AM-Hub\\Components\\Pages\\Offerte\\OfferteDetails.razor.css",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Pages\\Offerte\\OfferteDetails.razor.css",
+              "RelativeToolTip": "AM-Hub\\Components\\Pages\\Offerte\\OfferteDetails.razor.css",
+              "ViewState": "AgIAAEQAAAAAAAAAAAAgwFYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-08-25T13:09:27.096Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "_Imports.razor",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\_Imports.razor",
+              "RelativeDocumentMoniker": "AM-Hub\\Components\\_Imports.razor",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\_Imports.razor",
+              "RelativeToolTip": "AM-Hub\\Components\\_Imports.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-24T11:25:44.245Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "NavMenu.razor",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Layout\\NavMenu.razor",
+              "RelativeDocumentMoniker": "AM-Hub\\Components\\Layout\\NavMenu.razor",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Layout\\NavMenu.razor",
+              "RelativeToolTip": "AM-Hub\\Components\\Layout\\NavMenu.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-24T07:38:22.591Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "ISalesQuoteService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\SalesQuotes\\ISalesQuoteService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\SalesQuotes\\ISalesQuoteService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\SalesQuotes\\ISalesQuoteService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\SalesQuotes\\ISalesQuoteService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T07:26:48.763Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "SalesQuoteService.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\SalesQuotes\\SalesQuoteService.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\SalesQuotes\\SalesQuoteService.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\SalesQuotes\\SalesQuoteService.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\SalesQuotes\\SalesQuoteService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADcAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T07:27:12.676Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "ODataQuery.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\BusinessCentral\\ODataQuery.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\BusinessCentral\\ODataQuery.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\BusinessCentral\\ODataQuery.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\BusinessCentral\\ODataQuery.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T06:56:10.621Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "IBusinessCentralClient.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\BusinessCentral\\IBusinessCentralClient.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Services\\BusinessCentral\\IBusinessCentralClient.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Services\\BusinessCentral\\IBusinessCentralClient.cs",
+              "RelativeToolTip": "AM-Hub\\Services\\BusinessCentral\\IBusinessCentralClient.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T06:50:57.59Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "BusinessCentralOptions.cs",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Configuration\\BusinessCentralOptions.cs",
+              "RelativeDocumentMoniker": "AM-Hub\\Configuration\\BusinessCentralOptions.cs",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Configuration\\BusinessCentralOptions.cs",
+              "RelativeToolTip": "AM-Hub\\Configuration\\BusinessCentralOptions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-25T06:26:24.341Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "AM-Hub\\Components\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Components\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "AM-Hub\\Components\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-24T11:23:49.276Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "AM-Hub\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\llissenberg.KVT\\source\\repos\\AM-Hub\\AM-Hub\\Properties\\launchSettings.json",
+              "RelativeToolTip": "AM-Hub\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-08-24T10:56:51.78Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+﻿@page "/offerte"
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<PageTitle>Offerte zoeken</PageTitle>
+
+<div class="container py-4">
+    <h1>Offerte</h1>
+
+    <div class="mt-4">
+        <div class="input-group">
+            <input class="form-control"
+                   placeholder="Voer een offertenummer in..."
+                   @bind="searchTerm"
+                   @bind:event="oninput" />
+
+            <button class="btn btn-primary"
+                    type="button"
+                    @onclick="Search">
+                Zoeken
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string searchTerm = string.Empty;
+
+    private void Search()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+            return;
+
+        Navigation.NavigateTo(
+            $"/offerte/{Uri.EscapeDataString(searchTerm.Trim())}");
+    }
+}

@@ -1,0 +1,1719 @@
+@page {
+    size: A4;
+    margin: 28mm 14mm 18mm;
+
+    @bottom-left {
+        content: "Pagina " counter(page) " van " counter(pages);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 7px;
+        color: #64748b;
+        vertical-align: middle;
+    }
+}
+
+@page :first {
+    margin-top: 14mm;
+    /* De PDF-service reserveert hier de gemeten footerhoogte plus tussenruimte. */
+
+    @bottom-left {
+        content: none;
+    }
+}
+
+
+/* =========================================================
+   KVT HUISSTIJL
+   ========================================================= */
+
+:root {
+    --perkins-blue: #00529B;
+    --bright-blue: #0099CC;
+    --light-blue: #33CCFF;
+    --dark-blue: #00529B;
+    --navy: #003B70;
+    --soft-blue: #EAF7FC;
+    --lighter-blue: #F4FBFE;
+    --component-blue: #F4FAFD;
+    --task-blue: #F6FBFE;
+    --border: #C9E5F0;
+    --text: #1B2A3A;
+    --muted: #5D6B78;
+    --body-size: 8.5pt;
+    --body-leading: 1.5;
+    --notice-size: 8pt;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: white;
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: var(--body-size);
+    line-height: var(--body-leading);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+
+/* =========================================================
+   TYPOGRAFIE
+   ========================================================= */
+
+h1,
+h2,
+h3,
+.eyebrow,
+.page-title,
+.small-header-title,
+.component-title,
+.investment-summary h3,
+.number,
+.logo-fallback {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+}
+
+
+strong,
+th,
+tfoot td {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+}
+
+
+a {
+    color: var(--bright-blue);
+}
+
+
+/* =========================================================
+   ALGEMENE PAGINERING
+   ========================================================= */
+
+.document-chapter,
+.document-section {
+    position: relative;
+    width: 100%;
+}
+
+
+.page-start {
+    break-before: page;
+    page-break-before: always;
+}
+
+
+/* =========================================================
+   COVER
+   ========================================================= */
+
+.cover {
+    position: relative;
+    box-sizing: border-box;
+    break-after: page;
+    page-break-after: always;
+}
+
+
+/* =========================================================
+   BEDRIJFSHEADER COVER
+   ========================================================= */
+
+.company-header {
+    display: grid;
+    grid-template-columns: 50% 25% 25%;
+    align-items: center;
+    min-height: 20mm;
+    padding: 0 0 8mm 0;
+    background: #ffffff;
+    color: #7fa9d7;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+.company-header-logo {
+    display: flex;
+    align-items: flex-start;
+}
+
+
+.company-logo {
+    display: block;
+    width: 70mm;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+
+.company-header-contact,
+.company-header-details {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 8.5px;
+    line-height: 1.65;
+    color: #7fa9d7;
+}
+
+
+    .company-header-contact div {
+        white-space: nowrap;
+    }
+
+
+.company-detail-row {
+    display: grid;
+    grid-template-columns: 18mm 1fr;
+    gap: 2mm;
+}
+
+
+    .company-detail-row strong {
+        font-weight: 700;
+        color: #6d9ed4;
+    }
+
+
+    .company-detail-row span {
+        font-weight: 400;
+        white-space: nowrap;
+    }
+
+
+.company-contact-rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2mm;
+}
+
+
+/* =========================================================
+   LOGO'S
+   ========================================================= */
+
+.logo-image {
+    display: block;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+
+.logo-cover {
+    max-width: 40mm;
+    max-height: 22mm;
+}
+
+
+.logo-small {
+    max-width: 25mm;
+    max-height: 14mm;
+}
+
+
+.logo-fallback {
+    color: var(--perkins-blue);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero {
+    position: relative;
+    height: 50mm;
+    overflow: hidden;
+    padding: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10mm;
+    color: white;
+    background: none;
+}
+
+
+.hero-small {
+    margin-bottom: 2mm;
+    font-size: 7.5pt;
+    font-weight: 500;
+}
+
+
+.hero h1 {
+    margin: 0 0 3mm;
+    max-width: 110mm;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 19pt;
+    font-weight: 700;
+    line-height: 1.05;
+}
+
+
+.hero p {
+    margin: 0;
+    color: white;
+    font-size: 8pt;
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   COVER INTRO
+   ========================================================= */
+
+.cover-intro {
+    padding: 7mm 0 5mm;
+}
+
+
+    .cover-intro h2 {
+        margin: 0 0 1mm;
+        color: var(--bright-blue);
+        font-size: 16pt;
+    }
+
+
+    .cover-intro h3 {
+        margin: 0 0 4mm;
+        color: var(--dark-blue);
+        font-size: 10.5pt;
+    }
+
+
+    .cover-intro p {
+        margin: 0;
+        font-size: var(--body-size);
+        line-height: 1.5;
+    }
+
+
+/* =========================================================
+   SAMENVATTING INVESTERING COVER
+   ========================================================= */
+
+.investment-summary {
+    break-inside: auto;
+    page-break-inside: auto;
+}
+
+
+    .investment-summary h3 {
+        margin: 0 0 3mm;
+        color: var(--dark-blue);
+        text-transform: uppercase;
+        font-size: 9.5pt;
+    }
+
+
+    .investment-summary table {
+        width: 100%;
+        border-collapse: collapse;
+        border: none;
+        font-size: 8pt;
+    }
+
+
+    .investment-summary thead {
+        display: table-header-group;
+    }
+
+
+    .investment-summary th,
+    .investment-summary td {
+        padding: 3mm;
+        border: none;
+        vertical-align: middle;
+    }
+
+
+    .investment-summary th {
+        background: var(--perkins-blue);
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 7.5pt;
+        font-weight: 700;
+        text-align: left;
+    }
+
+
+    .investment-summary tbody tr {
+        background: var(--component-blue);
+        color: var(--perkins-blue);
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 700;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .investment-summary tbody tr:nth-child(even) {
+        background: white;
+    }
+
+    .investment-component-number,
+    .aggregate-summary-component-number {
+        margin-left: 1mm;
+        color: var(--muted);
+        font-weight: 400;
+    }
+
+    .investment-location {
+        margin-top: 1mm;
+        color: var(--muted);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 6.8pt;
+        font-weight: 400;
+        line-height: 1.25;
+    }
+
+    .investment-summary .money {
+        text-align: right;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+
+
+    .investment-summary tfoot {
+        display: table-row-group;
+    }
+
+
+        .investment-summary tfoot td {
+            background: var(--perkins-blue);
+            color: white;
+            font-weight: 700;
+            border-top: 2px solid var(--bright-blue);
+        }
+
+
+.investment-more-row td {
+    padding: 2.5mm 3mm;
+    background: var(--lighter-blue);
+    color: var(--perkins-blue);
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-align: center;
+}
+
+
+.money {
+    text-align: right !important;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   COVER FOOTER
+   ========================================================= */
+
+.cover-footer-anchor {
+    /* Tijdelijk rendergebied; de PDF-service verplaatst dit naar de eerste paginamarge. */
+    width: 182mm;
+}
+
+.cover-footer {
+    display: grid;
+    /*
+     * Gebruik fr in plaats van percentages.
+     * Dan wordt de gap automatisch van de beschikbare
+     * breedte afgetrokken.
+     */
+    grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+    gap: 6mm;
+    align-items: end;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+/* =========================================================
+   FOOTER LINKS
+   ========================================================= */
+
+.cover-footer-left {
+    padding-right: 3mm;
+}
+
+
+.cover-footer-certification {
+    margin: 0 0 4mm 0;
+    color: #78a9d4;
+    font-size: 8px;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+
+.cover-footer-conditions {
+    margin: 0;
+    color: #5fc5f2;
+    font-size: 7px;
+    line-height: 1.45;
+    font-weight: 400;
+}
+
+
+/* =========================================================
+   FOOTER CONTACTPERSOON
+   ========================================================= */
+
+.cover-footer-right {
+    padding: 5mm 6mm;
+    background: var(--lighter-blue);
+    border: 1px solid var(--border);
+    border-left: 1mm solid var(--bright-blue);
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+
+.footer-contact-title {
+    margin-bottom: 4mm;
+    color: var(--perkins-blue);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.footer-contact-content {
+    display: flex;
+    align-items: center;
+    gap: 5mm;
+}
+
+
+/* =========================================================
+   ACCOUNTMANAGER FOTO
+   ========================================================= */
+
+.footer-contact-photo {
+    width: 22mm;
+    height: 22mm;
+    flex: 0 0 22mm;
+}
+
+
+    .footer-contact-photo .contact-photo {
+        display: block;
+        width: 22mm;
+        height: 22mm;
+        object-fit: cover;
+        object-position: center;
+    }
+
+
+    .footer-contact-photo .contact-photo-placeholder {
+        width: 22mm;
+        height: 22mm;
+        background: var(--border);
+    }
+
+
+/* =========================================================
+   ACCOUNTMANAGER TEKST
+   ========================================================= */
+
+.footer-contact-details {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+
+.footer-contact-name {
+    margin-bottom: 1mm;
+    color: var(--perkins-blue);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+
+.footer-contact-function {
+    margin-bottom: 2mm;
+    color: var(--muted);
+    font-size: 8px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+
+.footer-contact-phone,
+.footer-contact-email {
+    margin-top: 0.6mm;
+    color: var(--text);
+    font-size: 8px;
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   KLEINE HEADER VERVOLGPAGINA'S
+   ========================================================= */
+
+.small-header {
+    display: grid;
+    grid-template-columns: 48mm 1fr 45mm;
+    gap: 4mm;
+    align-items: start;
+    min-height: 22mm;
+    margin-bottom: 5mm;
+    padding-bottom: 3mm;
+    border-bottom: 1px solid var(--border);
+    break-after: avoid;
+    page-break-after: avoid;
+}
+
+
+    .small-header .logo-image {
+        max-width: 38mm;
+        max-height: 15mm;
+    }
+
+
+.small-header-title {
+    padding-top: 1.5mm;
+    color: var(--perkins-blue);
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+
+.small-header-meta {
+    padding-top: 1.5mm;
+    color: var(--muted);
+    text-align: right;
+    font-size: 6.5pt;
+}
+
+
+/* =========================================================
+   PAGINATITELS
+   ========================================================= */
+
+.page-title {
+    margin: 0 0 4mm;
+    color: var(--perkins-blue);
+    font-size: 15pt;
+    break-after: avoid;
+    page-break-after: avoid;
+}
+
+
+    /*
+ * Eventuele oude blauwe accentstreep uitschakelen.
+ */
+    .page-title::after,
+    .document-section h1::after,
+    .document-section h2::after,
+    .document-section h3::after {
+        display: none !important;
+        content: none !important;
+    }
+
+
+.page-subtitle {
+    margin: 0 0 6mm;
+    color: var(--muted);
+    font-size: var(--body-size);
+}
+
+
+/* =========================================================
+   ALGEMENE TABELLEN
+   ========================================================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    break-inside: auto;
+    page-break-inside: auto;
+}
+
+
+thead {
+    display: table-header-group;
+}
+
+
+tfoot {
+    display: table-row-group;
+}
+
+
+tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+th,
+td {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+/* =========================================================
+   SAMENVATTING PER AGGREGAAT
+   ========================================================= */
+
+/*
+ * Bewust GEEN buitenborder.
+ *
+ * De lijst kan over meerdere PDF-pagina's lopen.
+ * Een border om de volledige container veroorzaakt anders
+ * verticale lijnen tot aan de onderkant van de pagina.
+ */
+.aggregate-summary-table {
+    width: 100%;
+    border: none;
+    font-size: 7.5pt;
+}
+
+
+/* =========================================================
+   KOLOMKOP SAMENVATTING
+   ========================================================= */
+
+.aggregate-summary-columns {
+    display: grid;
+    grid-template-columns: 54% 26% 20%;
+    align-items: center;
+    min-height: 9mm;
+    padding: 0 3mm;
+    background: var(--perkins-blue);
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 7.5pt;
+    font-weight: 700;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+    .aggregate-summary-columns > div:last-child {
+        text-align: right;
+    }
+
+
+/* =========================================================
+   COMPONENTBLOK
+   ========================================================= */
+
+.aggregate-summary-component {
+    width: 100%;
+    /*
+     * Geen zichtbare lijnen tussen componenten.
+     */
+    border: none;
+    margin: 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+/* =========================================================
+   COMPONENT HOOFDREGEL
+   ========================================================= */
+
+.aggregate-summary-component-row {
+    display: grid;
+    grid-template-columns: 54% 26% 20%;
+    align-items: center;
+    min-height: 13mm;
+    padding: 2.3mm 3mm;
+    /*
+     * Heel subtiel lichtblauw.
+     */
+    background: var(--component-blue);
+    border: none;
+}
+
+
+.aggregate-summary-component-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 3mm;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   COMPONENT NUMMER
+   ========================================================= */
+
+.aggregate-summary-number {
+    display: flex;
+    width: 6mm;
+    height: 6mm;
+    flex: 0 0 6mm;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.3mm;
+    border-radius: 50%;
+    background: var(--perkins-blue);
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 6.5pt;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   COMPONENT INFO
+   ========================================================= */
+
+.aggregate-summary-component-info {
+    min-width: 0;
+}
+
+
+.aggregate-summary-component-title {
+    color: var(--perkins-blue);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 8pt;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+
+.aggregate-summary-location {
+    margin-top: 1mm;
+    color: var(--muted);
+    font-size: 6.8pt;
+    line-height: 1.25;
+}
+
+
+/* =========================================================
+   COMPONENT TOTAAL
+   ========================================================= */
+
+.aggregate-summary-component-total {
+    color: var(--perkins-blue);
+    text-align: right;
+    white-space: nowrap;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 8pt;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   TAKENLIJST
+   ========================================================= */
+
+.aggregate-summary-tasks {
+    /*
+     * De boomstructuur iets laten inspringen.
+     */
+    padding-left: 6mm;
+    border: none;
+}
+
+
+/* =========================================================
+   TAAKREGELS
+   ========================================================= */
+
+.aggregate-summary-task-row {
+    display: grid;
+    grid-template-columns: 13mm 1fr 28mm;
+    align-items: center;
+    min-height: 8mm;
+    padding-right: 3mm;
+    /*
+     * Geen lijnen meer tussen de taken.
+     */
+    border: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+    /*
+ * Taak 1, 3, 5, 7...
+ */
+    .aggregate-summary-task-row:nth-child(odd) {
+        background: #ffffff;
+    }
+
+
+    /*
+ * Taak 2, 4, 6, 8...
+ */
+    .aggregate-summary-task-row:nth-child(even) {
+        background: var(--task-blue);
+    }
+
+
+/* =========================================================
+   BOOM / VERTAKKING
+   ========================================================= */
+
+.aggregate-summary-tree {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    white-space: nowrap;
+}
+
+
+.aggregate-summary-branch {
+    color: #82C8EA;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9pt;
+    line-height: 1;
+}
+
+
+/* =========================================================
+   TAAKNUMMER
+   ========================================================= */
+
+.aggregate-summary-task-number {
+    display: inline-flex;
+    width: 4.5mm;
+    height: 4.5mm;
+    margin-left: 1.2mm;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #EEF8FD;
+    color: var(--perkins-blue);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 6pt;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   TAAKOMSCHRIJVING
+   ========================================================= */
+
+.aggregate-summary-task-description {
+    padding: 2mm 2mm;
+    color: var(--text);
+    font-size: 7pt;
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   TAAKPRIJS
+   ========================================================= */
+
+.aggregate-summary-task-price {
+    padding-right: 0;
+    color: var(--text);
+    text-align: right;
+    white-space: nowrap;
+    font-size: 7pt;
+}
+
+
+/* =========================================================
+   TOTAAL SAMENVATTING
+   ========================================================= */
+
+.aggregate-summary-grand-total {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8mm;
+    align-items: center;
+    margin-top: 5mm;
+    padding: 4mm 5mm;
+    border: 1px solid var(--border);
+    background: var(--lighter-blue);
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+    .aggregate-summary-grand-total strong {
+        color: var(--perkins-blue);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--body-size);
+        font-weight: 700;
+    }
+
+
+    .aggregate-summary-grand-total span {
+        margin-left: 1mm;
+        color: var(--text);
+        font-size: 7pt;
+    }
+
+
+.aggregate-summary-grand-total-subtitle {
+    margin-top: 1mm;
+    color: var(--muted);
+    font-size: 6.5pt;
+}
+
+
+.aggregate-summary-grand-total-price {
+    color: var(--perkins-blue);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13pt;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   DETAIL SPECIFICATIE
+   ========================================================= */
+
+.detail-component {
+    margin-bottom: 6mm;
+    break-inside: auto;
+    page-break-inside: auto;
+}
+
+
+.component-title {
+    margin: 5mm 0 2mm;
+    color: var(--perkins-blue);
+    font-size: 9pt;
+    break-after: avoid;
+    page-break-after: avoid;
+}
+
+
+.detail-table {
+    border: 1px solid var(--border);
+    font-size: 7.5pt;
+}
+
+
+    .detail-table th,
+    .detail-table td {
+        padding: 2.2mm;
+        border-bottom: 1px solid var(--border);
+    }
+
+
+    .detail-table thead th {
+        background: var(--lighter-blue);
+        color: var(--perkins-blue);
+        text-align: left;
+    }
+
+
+    .detail-table tfoot td {
+        background: var(--soft-blue);
+        color: var(--dark-blue);
+        font-weight: 700;
+    }
+
+
+    .detail-table tbody tr:nth-child(even) {
+        background: #FBFDFF;
+    }
+
+
+/* =========================================================
+   WERKZAAMHEDENTABEL
+   ========================================================= */
+
+.work-table {
+    font-size: 7.5pt;
+}
+
+
+    .work-table th,
+    .work-table td {
+        padding: 2.2mm;
+        border-bottom: 1px solid var(--border);
+    }
+
+
+    .work-table thead th {
+        background: var(--perkins-blue);
+        color: white;
+        text-align: left;
+        border-bottom: 2px solid var(--bright-blue);
+    }
+
+
+    .work-table tfoot td {
+        color: var(--dark-blue);
+        font-weight: 700;
+    }
+
+
+        .work-table tfoot td:first-child {
+            text-align: right;
+        }
+
+
+    .work-table tbody tr:nth-child(even) {
+        background: #FBFDFF;
+    }
+
+
+/* =========================================================
+   MJOP
+   ========================================================= */
+
+.mjop-table {
+    margin-top: 4mm;
+    border: 1px solid var(--border);
+    font-size: 7.5pt;
+}
+
+
+    .mjop-table th,
+    .mjop-table td {
+        padding: 2.2mm;
+        border-bottom: 1px solid var(--border);
+    }
+
+
+    .mjop-table thead th {
+        background: var(--lighter-blue);
+        color: var(--dark-blue);
+    }
+
+
+    .mjop-table .group-row td {
+        padding-top: 4mm;
+        background: white;
+        color: var(--dark-blue);
+        font-weight: 700;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+
+    .mjop-table tbody tr:nth-child(even) {
+        background: #FBFDFF;
+    }
+
+
+.dot {
+    color: var(--bright-blue);
+    text-align: center;
+}
+
+
+/* =========================================================
+   INFO BOX
+   ========================================================= */
+
+.info-box {
+    margin-top: 7mm;
+    padding: 5mm;
+    border: 1px solid #cdddf7;
+    border-radius: 2.2mm;
+    background: var(--soft-blue);
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+    .info-box strong {
+        color: var(--bright-blue);
+        font-size: 9pt;
+    }
+
+
+    .info-box p {
+        margin: 2mm 0 0;
+        font-size: 8pt;
+        line-height: 1.5;
+    }
+
+
+/* =========================================================
+   VASTE SOC TEKST
+   ========================================================= */
+
+.document-section {
+    font-size: var(--body-size);
+    line-height: var(--body-leading);
+}
+
+
+    .document-section h1 {
+        margin: 0 0 4mm;
+        color: var(--perkins-blue);
+        font-size: 15pt;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+
+    .document-section h2 {
+        margin: 5mm 0 2mm;
+        color: var(--perkins-blue);
+        font-size: 10pt;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+
+    .document-section h3 {
+        margin: 4mm 0 1.5mm;
+        color: var(--perkins-blue);
+        font-size: 9pt;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+
+    .document-section p {
+        margin: 0 0 3mm;
+        orphans: 3;
+        widows: 3;
+    }
+
+
+    .document-section ul {
+        margin: 2mm 0 4mm;
+        padding-left: 6mm;
+    }
+
+
+    .document-section li {
+        margin-bottom: 1.2mm;
+        orphans: 2;
+        widows: 2;
+    }
+
+
+/* =========================================================
+   STATISCHE TABELLEN
+   ========================================================= */
+
+.static-table {
+    width: 100%;
+    margin: 4mm 0 6mm;
+    font-size: 8pt;
+    border: 1px solid var(--border);
+}
+
+
+    .static-table th,
+    .static-table td {
+        padding: 2mm 2.5mm;
+        border: 1px solid var(--border);
+    }
+
+
+    .static-table th {
+        background: var(--lighter-blue);
+        color: var(--dark-blue);
+        text-align: left;
+    }
+
+
+/* =========================================================
+   NOTICE
+   ========================================================= */
+
+.notice {
+    margin: 4mm 0;
+    padding: 3mm 4mm;
+    border-left: 1mm solid var(--bright-blue);
+    background: var(--soft-blue);
+}
+
+
+.keep-together {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+
+    a {
+        color: var(--perkins-blue);
+        text-decoration: none;
+    }
+}
+
+
+/* =========================================================
+   MEERJARIG ONDERHOUDSBUDGET
+   ========================================================= */
+
+.mjop-component-list {
+    width: 100%;
+}
+
+
+/* =========================================================
+   ÉÉN COMPONENT
+   ========================================================= */
+
+.mjop-component {
+    margin-bottom: 5mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+/* =========================================================
+   COMPONENT HEADER
+   ========================================================= */
+
+.mjop-component-header {
+    padding: 2.5mm 3mm;
+    background: var(--component-blue);
+    break-after: avoid;
+    page-break-after: avoid;
+}
+
+
+.mjop-component-header-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 3mm;
+}
+
+
+.mjop-component-number {
+    display: flex;
+    width: 6mm;
+    height: 6mm;
+    flex: 0 0 6mm;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.2mm;
+    border-radius: 50%;
+    background: var(--perkins-blue);
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 6.5pt;
+    font-weight: 700;
+}
+
+
+.mjop-component-title {
+    color: var(--perkins-blue);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 8pt;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+
+.mjop-component-location {
+    margin-top: 1mm;
+    color: var(--muted);
+    font-size: 6.8pt;
+    line-height: 1.25;
+}
+
+
+/* =========================================================
+   MJOP TABEL
+   ========================================================= */
+
+.mjop-budget-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 6.8pt;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+    /*
+ * Eerste kolom: Jaar / Budget
+ */
+    .mjop-budget-table th:first-child,
+    .mjop-budget-table td:first-child {
+        width: 16mm;
+    }
+
+
+/* =========================================================
+   JAARREGEL
+   ========================================================= */
+
+.mjop-year-row th {
+    padding: 1.8mm 1mm;
+    background: var(--perkins-blue);
+    color: white;
+    border-right: 1px solid rgba(255, 255, 255, 0.25);
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 6.5pt;
+    font-weight: 700;
+}
+
+
+    .mjop-year-row th:first-child {
+        text-align: left;
+        padding-left: 2.5mm;
+    }
+
+
+    .mjop-year-row th:last-child {
+        border-right: none;
+    }
+
+
+/* =========================================================
+   BUDGETREGEL
+   ========================================================= */
+
+.mjop-budget-row th,
+.mjop-budget-row td {
+    padding: 1.8mm 1mm;
+    background: #ffffff;
+    text-align: center;
+    font-size: 6.5pt;
+    white-space: nowrap;
+}
+
+
+.mjop-budget-row th {
+    padding-left: 2.5mm;
+    background: var(--task-blue);
+    color: var(--perkins-blue);
+    text-align: left;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+}
+
+
+/*
+ * Subtiel om-en-om effect voor budgetcellen
+ */
+.mjop-budget-row td:nth-child(even) {
+    background: var(--task-blue);
+}
+
+
+.mjop-budget-row td:nth-child(odd) {
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   RUIMTE TUSSEN 1-10 EN 11-20
+   ========================================================= */
+
+.mjop-budget-row + .mjop-year-row th {
+    border-top: 2mm solid white;
+}
+
+
+/* =========================================================
+   VERREKENTARIEVEN CORRECTIEVE WERKZAAMHEDEN
+   ========================================================= */
+
+.corrective-chapter {
+    font-size: var(--body-size);
+    line-height: 1.5;
+}
+
+.corrective-intro {
+    margin: 0 0 5mm;
+    color: var(--text);
+    font-size: var(--body-size);
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   TARIEVENTABEL
+   ========================================================= */
+
+.corrective-rate-table {
+    width: 100%;
+    margin-bottom: 5mm;
+    border-collapse: collapse;
+    font-size: 8pt;
+    break-inside: auto;
+    page-break-inside: auto;
+}
+
+    .corrective-rate-table thead {
+        display: table-header-group;
+    }
+
+    .corrective-rate-table th {
+        padding: 2.5mm 3mm;
+        background: var(--perkins-blue);
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 7.5pt;
+        font-weight: 700;
+        text-align: left;
+    }
+
+        .corrective-rate-table th:last-child {
+            text-align: right;
+        }
+
+    .corrective-rate-table td {
+        padding: 2.2mm 3mm;
+        border: none;
+        color: var(--text);
+        vertical-align: middle;
+    }
+
+    .corrective-rate-table tbody tr:nth-child(odd) {
+        background: #ffffff;
+    }
+
+    .corrective-rate-table tbody tr:nth-child(even) {
+        background: var(--task-blue);
+    }
+
+    .corrective-rate-table tbody tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+
+/* =========================================================
+   OPMERKING REISUREN
+   ========================================================= */
+
+.corrective-note {
+    margin: 4mm 0 6mm;
+    padding: 3mm 4mm;
+    background: var(--lighter-blue);
+    border-left: 1mm solid var(--bright-blue);
+    color: var(--perkins-blue);
+    font-size: 7.5pt;
+    line-height: 1.45;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+
+/* =========================================================
+   SUBSECTIES
+   ========================================================= */
+
+.corrective-subsection {
+    margin-top: 6mm;
+}
+
+    .corrective-subsection h2 {
+        margin: 0 0 3mm;
+        color: var(--perkins-blue);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 10pt;
+        font-weight: 700;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+    .corrective-subsection p {
+        margin: 0 0 4mm;
+        font-size: var(--body-size);
+        line-height: 1.5;
+        orphans: 3;
+        widows: 3;
+    }
+
+
+/* =========================================================
+   TOESLAGEN
+   ========================================================= */
+
+.corrective-surcharge-list {
+    margin: 0 0 5mm;
+    padding-left: 7mm;
+    counter-reset: surcharge;
+}
+
+    .corrective-surcharge-list li {
+        margin-bottom: 2.5mm;
+        padding-left: 1mm;
+        color: var(--text);
+        font-size: 8pt;
+        line-height: 1.45;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+        .corrective-surcharge-list li::marker {
+            color: var(--perkins-blue);
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 700;
+        }
+
+    .corrective-surcharge-list strong {
+        margin-left: 2mm;
+        color: var(--perkins-blue);
+    }
+
+
+/* =========================================================
+   STORINGSNUMMER
+   ========================================================= */
+
+.corrective-emergency {
+    margin: 6mm 0;
+    padding: 4mm 5mm;
+    background: var(--perkins-blue);
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9pt;
+    font-weight: 600;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+    .corrective-emergency strong {
+        margin-left: 2mm;
+        color: white;
+        white-space: nowrap;
+    }
+
+
+/* =========================================================
+   VOORWAARDEN
+   ========================================================= */
+
+.corrective-terms {
+    display: grid;
+    grid-template-columns: 45mm 1fr;
+    gap: 2.5mm 5mm;
+    margin: 5mm 0 0;
+    font-size: 8pt;
+    line-height: 1.45;
+}
+
+    .corrective-terms dt {
+        margin: 0;
+        color: var(--perkins-blue);
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 700;
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+    .corrective-terms dd {
+        margin: 0;
+        color: var(--text);
+        orphans: 3;
+        widows: 3;
+    }
+
+
+/* =========================================================
+   AFSLUITING
+   ========================================================= */
+
+.corrective-closing {
+    margin-top: 8mm;
+    font-size: var(--body-size);
+    line-height: 1.5;
+}
+
+    .corrective-closing p {
+        margin: 0 0 4mm;
+        orphans: 3;
+        widows: 3;
+    }
+
+.corrective-signature {
+    margin-top: 8mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+    .corrective-signature p {
+        margin: 0 0 2mm;
+    }
+
+.corrective-accountmanager {
+    margin-top: 6mm;
+    display: flex;
+    flex-direction: column;
+    gap: 1mm;
+}
+
+    .corrective-accountmanager strong {
+        color: var(--perkins-blue);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 9pt;
+        font-weight: 700;
+    }
+
+    .corrective-accountmanager span {
+        color: var(--muted);
+        font-size: 8pt;
+    }
+
+/* Dezelfde meldingstijl in dynamische hoofdstukken en vaste bijlagen. */
+.notice,
+.corrective-note {
+    margin: 4mm 0;
+    padding: 3mm 4mm;
+    border-left: 1mm solid var(--bright-blue);
+    background: var(--soft-blue);
+    color: var(--text);
+    font-size: var(--notice-size);
+    line-height: var(--body-leading);
+    font-weight: 400;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+.notice strong,
+.corrective-note strong {
+    font-size: inherit;
+    font-weight: 700;
+    color: var(--perkins-blue);
+}
+.money,
+.aggregate-summary-task-price,
+.aggregate-summary-component-total,
+.aggregate-summary-grand-total-price {
+    font-variant-numeric: tabular-nums;
+}
+.document-section h2,
+.corrective-subsection h2 {
+    margin: 5mm 0 3mm;
+    font-size: 10pt;
+    line-height: 1.25;
+}
+.document-section p,
+.corrective-subsection p,
+.corrective-closing p {
+    margin-bottom: 3mm;
+}
