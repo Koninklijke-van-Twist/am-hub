@@ -59,6 +59,8 @@ builder.Services.AddScoped<IOffertePdfService, OffertePdfService>();
 builder.Services.AddScoped< IAppCustomerService,AppCustomerService>();
 builder.Services.AddScoped<ISalesPersonService, SalesPersonService>();
 
+
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -105,5 +107,12 @@ app.MapGet(
             enableRangeProcessing: true);
     })
     .RequireAuthorization();
+
+var pathBase = builder.Configuration["ASPNETCORE_PATHBASE"];
+
+if (!string.IsNullOrWhiteSpace(pathBase))
+{
+    app.UsePathBase(pathBase);
+}
 
 app.Run();
