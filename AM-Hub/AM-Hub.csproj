@@ -1,12 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <!-- Last known-good production (8 Jul) was already net10.0. Do not retarget without a host runtime change. -->
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>AM_Hub</RootNamespace>
-    <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
+    <!-- systemd reads dllpointer; must match AM-Hub/dllpointer and the published file. -->
+    <AssemblyName>AM-Hub</AssemblyName>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <DefaultItemExcludes>$(DefaultItemExcludes);**/.tmp-*/**;**/.tmp-*;**/.vs/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
