@@ -14,7 +14,7 @@
 
 <PageTitle>Offerte @OfferteNummer</PageTitle>
 <div class="quote-page">
-    <nav class="quote-nav" aria-label="Offertenavigatie"><a href="/offerte">← Offerte zoeken</a><span>Offerte / @OfferteNummer</span></nav>
+    <nav class="quote-nav" aria-label="Offertenavigatie"><a href="offerte">← Offerte zoeken</a><span>Offerte / @OfferteNummer</span></nav>
     @if (loading)
     {
         <div class="state-panel" role="status">Offerte wordt geladen…</div>
@@ -146,7 +146,7 @@
         .Where(location => location.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Count() ?? 0;
     private static string Display(string? value) => string.IsNullOrWhiteSpace(value) ? "Niet ingevuld" : value;
     private static string Money(decimal value) => value.ToString("C2", Nl);
-    private string PdfUrl(bool download) => $"/api/offertes/{Uri.EscapeDataString(OfferteNummer)}/pdf" + (download ? "?download=true" : "");
+    private string PdfUrl(bool download) => $"api/offertes/{Uri.EscapeDataString(OfferteNummer)}/pdf" + (download ? "?download=true" : "");
 
     protected override async Task OnParametersSetAsync()
     {
