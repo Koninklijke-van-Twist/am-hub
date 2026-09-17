@@ -15,4 +15,11 @@
     <PackageReference Include="Microsoft.Playwright" Version="1.62.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Services/Pdf/Templates/**/*" />
+    <Content Include="Services/Pdf/Templates/**/*" Exclude="Services/Pdf/Templates/**/*.cs"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
