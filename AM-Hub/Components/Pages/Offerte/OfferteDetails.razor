@@ -42,7 +42,8 @@
                 </div>
             </div>
             <div class="hero-actions">
-                <a class="action action-primary" href="@PdfUrl(true)">Download offerte</a>
+                <button type="button" class="action action-primary" data-pdf-download data-url="@PdfUrl(true)" data-filename="@($"Offerte-{OfferteNummer}.pdf")">Download offerte</button>
+                <span class="pdf-download-status" role="status" aria-live="polite"></span>
                 <a class="action action-secondary" href="@PdfUrl(false)" target="_blank" rel="noopener">Bekijk PDF ↗</a>
             </div>
         </header>

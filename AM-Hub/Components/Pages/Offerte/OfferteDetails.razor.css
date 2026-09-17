@@ -29,6 +29,9 @@ h1 { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; margin: 10px 0; ov
 .action-primary { background: white; color: var(--navy); border: 1px solid white; }
 .action-secondary { color: white; border: 1px solid #8ec4df; }
 .action:hover { background: #eaf7fc; color: var(--navy); }
+.action[aria-disabled="true"] { opacity: .7; cursor: wait; }
+.pdf-download-status { grid-column: 1 / -1; order: 1; max-width: 260px; font-size: .78rem; color: #eaf7fc; }
+.pdf-download-status:empty { display: none; }
 .info-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
 .info-card { border: 1px solid var(--border); border-radius: 10px; padding: 22px; background: white; }
 h2 { font-size: 1.1rem; font-weight: 700; color: var(--blue); margin: 0 0 16px; }

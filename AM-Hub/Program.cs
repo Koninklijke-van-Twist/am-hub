@@ -57,6 +57,7 @@ builder.Services.AddScoped<IConfigurationRuleService, ConfigurationRuleService>(
 builder.Services.AddScoped<IOfferteDocumentService, OfferteDocumentService>();
 builder.Services.AddScoped<IOfferteHtmlRenderer, OfferteHtmlRenderer>();
 builder.Services.AddScoped<IOffertePdfService, OffertePdfService>();
+builder.Services.AddSingleton<PdfBrowser>();
 builder.Services.AddScoped< IAppCustomerService,AppCustomerService>();
 builder.Services.AddScoped<ISalesPersonService, SalesPersonService>();
 

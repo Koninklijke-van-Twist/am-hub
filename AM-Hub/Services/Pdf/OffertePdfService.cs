@@ -7,13 +7,16 @@ public class OffertePdfService : IOffertePdfService
 {
     private readonly IOfferteDocumentService _documents;
     private readonly IOfferteHtmlRenderer _renderer;
+    private readonly PdfBrowser _browser;
 
     public OffertePdfService(
         IOfferteDocumentService documents,
-        IOfferteHtmlRenderer renderer)
+        IOfferteHtmlRenderer renderer,
+        PdfBrowser browser)
     {
         _documents = documents;
         _renderer = renderer;
+        _browser = browser;
     }
 
     public async Task<byte[]> GenerateAsync(
@@ -34,25 +37,8 @@ public class OffertePdfService : IOffertePdfService
             model,
             cancellationToken);
 
-        using var playwright = await Playwright.CreateAsync();
-
-        await using var browser =
-            await playwright.Chromium.LaunchAsync(
-                new BrowserTypeLaunchOptions
-                {
-                    Headless = true
-                });
-
-        var page = await browser.NewPageAsync(
-            new BrowserNewPageOptions
-            {
-                ViewportSize = new ViewportSize
-                {
-                    Width = 1240,
-                    Height = 1754
-                },
-                DeviceScaleFactor = 3
-            });
+        await using var context = await _browser.CreateContextAsync(cancellationToken);
+        var page = await context.NewPageAsync();
 
         await page.SetContentAsync(
             html,
