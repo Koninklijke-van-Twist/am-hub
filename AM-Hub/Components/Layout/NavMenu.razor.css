@@ -4,13 +4,21 @@
     padding-block: 16px;
 }
 .navbar-brand {
-    color: white;
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: -.03em;
+    display: flex;
+    align-items: center;
+    max-width: calc(100% - 60px);
+    padding: 0;
+    margin: 0;
     text-decoration: none;
 }
-.navbar-brand:hover { color: #bdefff; }
+.brand-logo {
+    display: block;
+    width: 170px;
+    max-width: 100%;
+    height: 40px;
+    object-fit: contain;
+    object-position: left center;
+}
 .navbar-toggler {
     appearance: none;
     cursor: pointer;
@@ -53,6 +61,7 @@
 .nav-icon { flex-shrink: 0; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .navbar-brand:focus-visible, .navbar-toggler:focus-visible, .nav-item ::deep .nav-link:focus-visible { outline: 3px solid #33ccff; outline-offset: 3px; }
 @media (min-width: 641px) {
+    .navbar-brand { max-width: 100%; }
     .navbar-toggler { display: none; }
     .nav-scrollable { display: block; height: calc(100dvh - 4.5rem); overflow-y: auto; }
 }
