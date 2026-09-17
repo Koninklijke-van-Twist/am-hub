@@ -39,39 +39,41 @@ public class OfferteDocumentService : IOfferteDocumentService
                 offerteNummer,
                 cancellationToken);
 
-        await Task.WhenAll(
-            quoteTask,
-            matrixTask);
+        // Deze keten wacht alleen op de offerte, niet op de configuratiematrix.
+        async Task<(AppCustomerCard? Customer, SalesPersonCard? SalesPerson)> GetContactsAsync()
+        {
+            var quote = await quoteTask;
+            if (quote is null)
+                return (null, null);
 
-        var quote = await quoteTask;
-        var matrix = await matrixTask;
-
-        if (quote is null)
-            return null;
-
-        AppCustomerCard? customer = null;
-        SalesPersonCard? salesPerson = null;
-
-        var customerTask =
+            var customerTask =
             !string.IsNullOrWhiteSpace(quote.CustomerNumber)
                 ? _customers.GetByNumberAsync(
                     quote.CustomerNumber,
                     cancellationToken)
                 : Task.FromResult<AppCustomerCard?>(null);
 
-        var salesPersonTask =
+            var salesPersonTask =
             !string.IsNullOrWhiteSpace(quote.SalespersonCode)
                 ? _salesPersons.GetByCodeAsync(
                     quote.SalespersonCode,
                     cancellationToken)
                 : Task.FromResult<SalesPersonCard?>(null);
 
-        await Task.WhenAll(
-            customerTask,
-            salesPersonTask);
+            await Task.WhenAll(customerTask, salesPersonTask);
+            return (await customerTask, await salesPersonTask);
+        }
 
-        customer = await customerTask;
-        salesPerson = await salesPersonTask;
+        var contactsTask = GetContactsAsync();
+        // Wacht ook bij fouten op beide takken, zodat er geen aanvragen achterblijven.
+        await Task.WhenAll(matrixTask, contactsTask);
+
+        var quote = await quoteTask;
+        var matrix = await matrixTask;
+        if (quote is null)
+            return null;
+
+        var (customer, salesPerson) = await contactsTask;
 
         var model = new OfferteDocumentModel
             {
