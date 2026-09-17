@@ -9,6 +9,7 @@ using AMHub.Services.SalesPersons;
 using AMHub.Services.SalesQuotes;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 
@@ -63,6 +64,32 @@ builder.Services.AddScoped<ISalesPersonService, SalesPersonService>();
 
 var app = builder.Build();
 
+// Only accept forwarded headers from the default trusted loopback proxies.
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
+var pathBase = builder.Configuration["ASPNETCORE_PATHBASE"];
+
+if (!string.IsNullOrWhiteSpace(pathBase))
+{
+    var applicationPathBase = new PathString(pathBase.TrimEnd('/'));
+    app.UsePathBase(applicationPathBase);
+    // Apache may already have removed the application prefix from the path.
+    app.Use((context, next) =>
+    {
+        if (!context.Request.PathBase.HasValue)
+        {
+            context.Request.PathBase = applicationPathBase;
+        }
+
+        return next(context);
+    });
+}
+
+app.UseRouting();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -107,12 +134,5 @@ app.MapGet(
             enableRangeProcessing: true);
     })
     .RequireAuthorization();
-
-var pathBase = builder.Configuration["ASPNETCORE_PATHBASE"];
-
-if (!string.IsNullOrWhiteSpace(pathBase))
-{
-    app.UsePathBase(pathBase);
-}
 
 app.Run();
