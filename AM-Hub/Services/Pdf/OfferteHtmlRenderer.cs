@@ -84,17 +84,19 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
             @top-left {
                 content: "";
                 width: 45mm;
+                margin-top: 14mm;
                 background-image: url('{{kvtLogo}}');
                 background-repeat: no-repeat;
-                background-position: left center;
+                background-position: left top;
                 background-size: 45mm auto;
             }
             @top-right {
+                margin-top: 14mm;
                 content: "{{CssString("Offerte " + model.OfferteNummer)}}";
                 font-family: Arial, Helvetica, sans-serif;
                 font-size: 10px;
                 color: #5D6B78;
-                vertical-align: middle;
+                vertical-align: top;
                 text-align: right;
             }
         }
@@ -181,14 +183,14 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
 
                 <div class="cover-footer-right">
 
-                    <div class="footer-contact-title">
-                        Uw contactpersoon
-                    </div>
-
                     <div class="footer-contact-content">
 
                         <div class="footer-contact-photo">
                             {{AccountmanagerPhoto(accountmanagerPhoto)}}
+                        </div>
+
+                        <div class="footer-contact-title">
+                            Uw contactpersoon
                         </div>
 
                         <div class="footer-contact-details">

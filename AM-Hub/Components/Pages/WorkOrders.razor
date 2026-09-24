@@ -1,0 +1,216 @@
+@page "/werkorders"
+@rendermode InteractiveServer
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@implements IDisposable
+@using AMHub.Services.WorkOrders
+@using System.Globalization
+@inject WorkOrderCalendar Calendar
+@inject ILogger<WorkOrders> Logger
+
+<PageTitle>Mijn werkorders</PageTitle>
+<section class="calendar-page">
+    <header class="workorder-hero">
+        <div>
+            <span class="eyebrow">Planning &amp; service</span>
+            <h1>Mijn werkorders</h1>
+            <p>Alle werkzaamheden voor jouw klanten op één plek.</p>
+        </div>
+        @if (summary is not null)
+        {
+            <div class="hero-summary" role="status">
+                <strong>@summary.CustomerCount</strong><span>klanten · @summary.SalespersonCode</span>
+                <small>@summary.CustomerManagerField</small>
+            </div>
+        }
+    </header>
+    <div class="manager-picker">
+        <label for="manager-code">Accountmanager</label>
+        <select id="manager-code" @bind="managerCode" @bind:after="Load">
+            <option value="">@(ownManagerCode is null ? "Mijn accountmanagercode" : $"{ownManagerCode} (ikzelf)")</option>
+            @foreach (var manager in WorkOrderCalendar.SelectableManagers)
+            {
+                @if (manager != ownManagerCode) { <option value="@manager">@manager</option> }
+            }
+        </select>
+    </div>
+    @if (busy)
+    {
+        <div class="toolbar">
+            <button @onclick="() => ChangeWeek(-1)" aria-label="Vorige week">&#8592;</button>
+            <h2>@WeekLabel</h2>
+            <button @onclick="() => ChangeWeek(1)" aria-label="Volgende week">&#8594;</button>
+        </div>
+        <p class="state-panel" role="status">Werkorders worden geladen…</p>
+    }
+    else if (error is not null)
+    {
+        <div class="state-panel" role="alert"><p>@error</p><button @onclick="Load">Opnieuw proberen</button></div>
+    }
+    else
+    {
+        var agenda = items.Where(i => showAll || (i.Start <= selectedDay && i.EndExclusive > selectedDay))
+            .OrderBy(i => i.Order.Start).ThenBy(i => i.Order.MaintenanceWorkorderNumber).ToList();
+        var entityGroups = agenda.GroupBy(i => i.Order.MainEntity.Trim(), StringComparer.OrdinalIgnoreCase)
+            .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase).ToList();
+        <div class="workorder-layout">
+        <div class="workorder-content">
+        <section class="agenda" aria-labelledby="agenda-title">
+            <div class="toolbar">
+                <h2 id="agenda-title">@(showAll ? "Werkorders in de zichtbare week" : selectedDay.ToString("dddd dd MMMM yyyy", Dutch))</h2>
+                <button @onclick="ToggleScope">@(showAll ? "Alleen geselecteerde dag" : "Hele week")</button>
+            </div>
+            <p role="status">@agenda.Count werkorders</p>
+            @if (agenda.Count == 0) { <p>Geen werkorders voor deze selectie. Kies een andere dag of week.</p> }
+            <div class="order-list">
+                @foreach (var entity in entityGroups)
+                {
+                    <article class="entity-card">
+                        <header class="entity-heading">
+                            <h3>@(entity.Select(i => i.Order.MainEntityDescription).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d)) ?? "Hoofdentiteit zonder omschrijving")</h3>
+                            <p>@(string.IsNullOrWhiteSpace(entity.Key) ? "Hoofdentiteitnummer niet ingevuld" : entity.Key)</p>
+                            <p>@string.Join(" · ", entity.Select(i => i.Order.CustomerName).Where(name => !string.IsNullOrWhiteSpace(name)).Distinct(StringComparer.OrdinalIgnoreCase))</p>
+                        </header>
+                        @foreach (var component in entity.GroupBy(i => i.Order.ComponentNumber.Trim(), StringComparer.OrdinalIgnoreCase).OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
+                        {
+                            <section class="component-group">
+                                <h4>@(string.IsNullOrWhiteSpace(component.Key) ? "Componentnummer niet ingevuld" : component.Key)</h4>
+                                <p>@(component.Select(i => i.Order.ComponentDescription).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d)) ?? "Componentomschrijving niet ingevuld")</p>
+                                <div class="component-orders">
+                                    @foreach (var item in component)
+                                    {
+                                        <div class="order" style="border-left-color: @StatusColor(item.Order.Status)">
+                                            <span class="order-heading"><strong>@item.Order.MaintenanceWorkorderNumber</strong><span class="status-badge">@Display(item.Order.Status)</span></span>
+                                            <span>@item.Order.Description</span>
+                                            <small>@item.Order.Start.ToString("dd-MM-yyyy") – @(item.Order.OpenEnded ? "Doorlopend" : item.Order.End?.ToString("dd-MM-yyyy"))</small>
+                                        </div>
+                                    }
+                                </div>
+                            </section>
+                        }
+                    </article>
+                }
+            </div>
+        </section>
+        </div>
+        <aside class="calendar-panel" aria-labelledby="calendar-title">
+            <h2 id="calendar-title">Kalender</h2>
+            <div class="week-navigation">
+                <button @onclick="() => ChangeWeek(-1)" aria-label="Vorige week">&#8592;</button>
+                <strong>@WeekLabel</strong>
+                <button @onclick="() => ChangeWeek(1)" aria-label="Volgende week">&#8594;</button>
+            </div>
+        <div class="calendar-scroll">
+            <div class="calendar" aria-label="Werkorderkalender">
+                <div class="week weekdays">@foreach (var day in new[] { "ma", "di", "wo", "do", "vr", "za", "zo" }) { <strong>@day</strong> }</div>
+                    <div class="week">
+                        @for (var day = 0; day < 7; day++)
+                        {
+                            var date = visibleStart.AddDays(day);
+                            var count = items.Count(i => i.Start <= date && i.EndExclusive > date);
+                            <button class="day @(date == selectedDay ? "chosen" : "")"
+                                    aria-pressed="@(date == selectedDay)" aria-label="@(date.ToString("dd MMMM yyyy", Dutch) + $": {count} werkorders")" @onclick="() => SelectDay(date)">
+                                <span>@date.Day @(date == DateOnly.FromDateTime(DateTime.Today) ? "•" : "")</span>
+                                <strong class="count">@count</strong>
+                                
+                            </button>
+                        }
+                    </div>
+            </div>
+        </div>
+            <button class="today-button" @onclick="Today">Naar vandaag</button>
+            <p class="hint">Het kleine getal is het aantal werkorders. Kies een dag om de lijst te bekijken.</p>
+        </aside>
+        </div>
+    }
+</section>
+
+@code {
+    private static readonly CultureInfo Dutch = CultureInfo.GetCultureInfo("nl-NL");
+    private static DateOnly StartOfWeek(DateOnly date) => date.AddDays(-(((int)date.DayOfWeek + 6) % 7));
+    private DateOnly visibleStart = StartOfWeek(DateOnly.FromDateTime(DateTime.Today));
+    private string WeekLabel => $"{visibleStart.ToString("dd MMM", Dutch)} – {visibleStart.AddDays(6).ToString("dd MMM yyyy", Dutch)}";
+    private List<CalendarItem> items = [];
+    private CalendarResult? summary;
+    private bool busy = true;
+    private string? error;
+    private CancellationTokenSource? request;
+    private bool disposed;
+    private string managerCode = "";
+    private string? ownManagerCode;
+    private bool showAll;
+    private DateOnly selectedDay = DateOnly.FromDateTime(DateTime.Today);
+    private void SelectDay(DateOnly day) { selectedDay = day; showAll = false; }
+    private void ToggleScope() { showAll = !showAll; }
+    private static string Display(string? text) => string.IsNullOrWhiteSpace(text) ? "Niet ingevuld" : text;
+    private static string StatusColor(string status)
+    {
+        var hash = 0;
+        foreach (var ch in status) hash = (hash * 31 + ch) % 360;
+        return $"hsl({hash} 65% 35%)";
+    }
+    // Render the shell first. OnAfterRender does not run during prerendering,
+    // so slow BC calls neither block the initial HTML nor run twice.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Load();
+            if (!disposed) StateHasChanged();
+        }
+    }
+    private async Task ChangeWeek(int change) { visibleStart = visibleStart.AddDays(change * 7); selectedDay = selectedDay.AddDays(change * 7); await Load(); }
+    private async Task Today() { selectedDay = DateOnly.FromDateTime(DateTime.Today); visibleStart = StartOfWeek(selectedDay); await Load(); }
+    private async Task Load()
+    {
+        request?.Cancel();
+        var current = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+        request = current;
+        busy = true;
+        error = null;
+        if (selectedDay < visibleStart || selectedDay >= visibleStart.AddDays(7))
+            selectedDay = visibleStart;
+        items = [];
+        summary = null;
+
+        try
+        {
+            var result = await Calendar.GetAsync(visibleStart, visibleStart.AddDays(7), current.Token,
+                string.IsNullOrEmpty(managerCode) ? null : managerCode);
+            if (!disposed && ReferenceEquals(request, current))
+            {
+                summary = result;
+                ownManagerCode = result.OwnSalespersonCode;
+                items = result.Items;
+            }
+        }
+        catch (ManagerLookupException exception)
+        {
+            if (ReferenceEquals(request, current)) error = exception.Message;
+        }
+        catch (Exception exception)
+        {
+            if (!disposed && ReferenceEquals(request, current))
+            {
+                error = exception switch
+                {
+                    OperationCanceledException when current.IsCancellationRequested => "Het ophalen duurt langer dan 90 seconden. Probeer het opnieuw.",
+                    OperationCanceledException => "Een aanvraag naar Business Central duurt langer dan 60 seconden. Probeer het opnieuw.",
+                    HttpRequestException httpError when httpError.StatusCode is not null =>
+                        $"Business Central weigert de aanvraag (HTTP {(int)httpError.StatusCode.Value}). Probeer het opnieuw.",
+                    HttpRequestException => "De verbinding met Business Central is mislukt. Probeer het opnieuw.",
+                    System.Text.Json.JsonException => "De ontvangen werkordergegevens hebben een onverwacht formaat. Neem contact op met de beheerder.",
+                    _ => "De werkorders konden niet worden opgehaald. Probeer het opnieuw."
+                };
+                Logger.LogWarning("Werkorderkalender ophalen mislukt ({ErrorType}).", exception.GetType().Name);
+                if (exception is System.Text.Json.JsonException jsonError)
+                    Logger.LogWarning("Werkordergegevens konden niet worden ingelezen bij JSON-pad {JsonPath}.", jsonError.Path);
+            }
+        }
+        finally
+        {
+            if (ReferenceEquals(request, current)) { request = null; busy = false; }
+            current.Dispose();
+        }
+    }
+    public void Dispose() { disposed = true; request?.Cancel(); }
+}

@@ -1,6 +1,7 @@
 @page {
     size: A4;
-    margin: 28mm 14mm 18mm;
+    /* 14mm bovenruimte plus 28mm voor de kop op vervolgpagina's. */
+    margin: 42mm 14mm 18mm;
 
     @bottom-left {
         content: "Pagina " counter(page) " van " counter(pages);
@@ -8,6 +9,16 @@
         font-size: 7px;
         color: #64748b;
         vertical-align: middle;
+    }
+
+    @bottom-right-corner {
+        content: "";
+        /* De hoek loopt 16mm door naar links vanuit de rechter paginamarge. */
+        margin-left: -16mm;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 18'%3E%3Cpath d='M0 18H30V0Z' fill='%237FC7E5'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right bottom;
+        background-size: 30mm 18mm;
     }
 }
 
@@ -441,7 +452,7 @@ a {
      * Dan wordt de gap automatisch van de beschikbare
      * breedte afgetrokken.
      */
-    grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 6mm;
     align-items: end;
     width: 100%;
@@ -483,28 +494,30 @@ a {
    ========================================================= */
 
 .cover-footer-right {
-    padding: 5mm 6mm;
+    overflow: hidden;
     background: var(--lighter-blue);
     border: 1px solid var(--border);
-    border-left: 1mm solid var(--bright-blue);
     font-family: Arial, Helvetica, sans-serif;
     box-sizing: border-box;
 }
 
 
 .footer-contact-title {
-    margin-bottom: 4mm;
-    color: var(--perkins-blue);
+    padding: 2mm 3mm;
+    background: var(--perkins-blue);
+    color: white;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 11px;
+    font-size: 7.5pt;
     font-weight: 700;
 }
 
 
 .footer-contact-content {
-    display: flex;
-    align-items: center;
-    gap: 5mm;
+    display: grid;
+    grid-template-columns: 28mm minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    align-items: stretch;
+    min-height: 32mm;
 }
 
 
@@ -513,24 +526,27 @@ a {
    ========================================================= */
 
 .footer-contact-photo {
-    width: 22mm;
-    height: 22mm;
-    flex: 0 0 22mm;
+    position: relative;
+    grid-row: 1 / 3;
+    min-height: 32mm;
+    background: var(--soft-blue);
 }
 
 
     .footer-contact-photo .contact-photo {
+        position: absolute;
+        inset: 0;
         display: block;
-        width: 22mm;
-        height: 22mm;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
-        object-position: center;
+        object-position: center top;
     }
 
 
     .footer-contact-photo .contact-photo-placeholder {
-        width: 22mm;
-        height: 22mm;
+        position: absolute;
+        inset: 0;
         background: var(--border);
     }
 
@@ -541,6 +557,8 @@ a {
 
 .footer-contact-details {
     min-width: 0;
+    align-self: center;
+    padding: 2.5mm 3mm;
     overflow-wrap: anywhere;
 }
 
@@ -549,7 +567,7 @@ a {
     margin-bottom: 1mm;
     color: var(--perkins-blue);
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.2;
     font-weight: 700;
 }

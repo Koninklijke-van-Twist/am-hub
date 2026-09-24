@@ -1,0 +1,75 @@
+.calendar-page {
+    --blue: #00529b;
+    --navy: #003b70;
+    --border: #c9e5f0;
+    --muted: #5d6b78;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 12px 0 40px;
+    color: #1b2a3a;
+}
+.workorder-hero { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; padding: 28px; margin-bottom: 24px; background: linear-gradient(115deg, #003b70, #00529b 70%, #007cab); border-radius: 12px; color: white; }
+h1 { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; margin: 8px 0 12px; }
+.workorder-hero p { color: #eaf7fc; margin: 0; }
+.eyebrow { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: #bdefff; }
+.hero-summary { display: grid; gap: 3px; padding-left: 24px; border-left: 1px solid #ffffff40; }
+.hero-summary strong { font-size: 2rem; line-height: 1.1; }
+.hero-summary span { font-size: .85rem; }
+.hero-summary small { font-size: .65rem; color: #bdefff; overflow-wrap: anywhere; }
+.workorder-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.workorder-content { min-width: 0; }
+h2 { font-size: 1.1rem; font-weight: 700; color: var(--blue); margin: 0; }
+button { border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--navy); padding: 10px 14px; font-size: .82rem; font-weight: 600; }
+button:hover { background: #eaf7fc; border-color: #8ec4df; }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #0099cc; outline-offset: 3px; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.hint { font-size: .78rem; color: var(--muted); margin: 12px 0 20px; line-height: 1.6; }
+.agenda { border: 1px solid var(--border); border-radius: 12px; padding: 22px; background: white; }
+.agenda > p { font-size: .8rem; color: var(--muted); }
+.agenda > .toolbar:last-child { margin: 20px 0 0; justify-content: flex-end; }
+.order-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: start; }
+.entity-card { min-width: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.entity-heading { padding: 10px 12px; background: var(--navy); color: white; }
+.entity-heading h3 { margin: 0; font-size: 1rem; font-weight: 700; overflow-wrap: anywhere; }
+.entity-heading p { margin: 2px 0 0; font-size: .8rem; color: #bdefff; overflow-wrap: anywhere; }
+.component-group { padding: 10px 12px; }
+.component-group + .component-group { border-top: 1px solid var(--border); }
+.component-group h4 { margin: 0; font-size: .9rem; font-weight: 700; color: var(--blue); overflow-wrap: anywhere; }
+.component-group > p { margin: 2px 0 7px; font-size: .8rem; color: var(--muted); overflow-wrap: anywhere; }
+.component-orders { display: grid; gap: 6px; }
+.order { display: flex; flex-direction: column; gap: 2px; text-align: left; border: 1px solid var(--border); border-left: 3px solid; background: white; border-radius: 6px; min-width: 0; padding: 8px 10px; font-size: .8rem; line-height: 1.35; font-weight: 400; overflow-wrap: anywhere; }
+.order .order-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 2px; }
+.order-heading strong { font-size: .9rem; color: var(--blue); }
+.status-badge { padding: 3px 8px; border: 1px solid var(--border); border-radius: 20px; background: #eaf7fc; font-size: .7rem; }
+.order small { margin-top: 0; padding-top: 3px; color: var(--muted); }
+.calendar-panel { padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: white; position: sticky; top: 6rem; }
+.week-navigation { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin: 14px 0; }
+.week-navigation strong { font-size: .85rem; text-transform: capitalize; }
+.week-navigation button { padding: 6px 9px; }
+.calendar { width: 100%; }
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; margin-bottom: 3px; }
+.weekdays { color: var(--muted); font-size: .65rem; text-align: center; padding-block: 6px; }
+.day { min-width: 0; height: 46px; padding: 4px 1px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-color: transparent; font-size: .75rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+.day .count { font-size: .6rem; font-weight: 500; color: var(--blue); }
+.day.outside { color: #7f8b95; background: #f7f9fa; }
+.day.chosen { background: var(--navy); color: white; }
+.day.chosen .count { color: #bdefff; }
+.today-button { width: 100%; margin-top: 12px; }
+.calendar-panel .hint { font-size: .72rem; margin: 12px 0 0; }
+.details, .state-panel { border: 1px solid var(--border); padding: 24px; border-radius: 12px; margin-top: 24px; background: #f4fbfe; }
+.details > p { margin-top: 14px; }
+.close { float: right; }
+dl { display: grid; grid-template-columns: minmax(100px, 180px) 1fr; gap: 10px 16px; font-size: .82rem; }
+dt { color: var(--muted); font-weight: 400; }
+dd { margin: 0; overflow-wrap: anywhere; font-weight: 500; }
+@media (max-width: 1200px) { .order-list { grid-template-columns: 1fr; } .workorder-layout { gap: 16px; } }
+@media (max-width: 900px) {
+    .workorder-layout { grid-template-columns: minmax(0, 1fr); }
+    .calendar-panel { grid-row: 1; position: static; width: 100%; max-width: 340px; justify-self: center; }
+    .workorder-hero { padding: 22px; }
+}
+@media (max-width: 480px) { .agenda { padding: 16px; } .hero-summary { padding-left: 0; border-left: 0; } }
+.manager-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 10px; background: #f4fbfe; }
+.manager-picker label { color: var(--navy); font-size: .85rem; font-weight: 600; }
+.manager-picker select { min-width: 160px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; color: #1b2a3a; }

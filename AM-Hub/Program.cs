@@ -48,6 +48,10 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.Configure<AMHub.Services.WorkOrders.WorkOrderOptions>(builder.Configuration.GetSection("WorkOrderCalendar"));
+builder.Services.AddHttpClient<AMHub.Services.WorkOrders.WorkOrderCalendar>(client => client.Timeout = TimeSpan.FromSeconds(60))
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false })
+    .RemoveAllLoggers();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
