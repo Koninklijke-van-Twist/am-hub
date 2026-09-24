@@ -1,7 +1,24 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Home | AM-Hub</PageTitle>
 
-<h1>Hello, Yanick!</h1>
-
-Welcome to your new app.
+<section class="home-page">
+    <header class="home-header">
+        <h1>Welkom bij AM-Hub</h1>
+        <p>Kies waar je aan de slag wilt.</p>
+    </header>
+    <nav class="page-links" aria-label="Paginaoverzicht">
+        <a class="page-card" href="werkorders">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5v16h14V5h-4 M9 3h6v4H9Z m-1 9 2 2 4-4 M8 17h8" /></svg>
+            <h2>Mijn werkorders</h2>
+            <p>Bekijk de planning en werkorders van jouw klanten per locatie en component.</p>
+            <span>Werkorders bekijken &#8594;</span>
+        </a>
+        <a class="page-card" href="offerte">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5Z M14 3v5h5 M9 12h6 M9 16h6" /></svg>
+            <h2>Offerte</h2>
+            <p>Bekijk het offerteoverzicht en open een offerte voor de details en PDF.</p>
+            <span>Offertes bekijken &#8594;</span>
+        </a>
+    </nav>
+</section>

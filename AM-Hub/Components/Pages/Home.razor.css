@@ -1,0 +1,13 @@
+.home-page { max-width: 1100px; margin: 0 auto; padding: 12px 0 40px; color: #1b2a3a; }
+.home-header { padding: 28px; margin-bottom: 24px; border-radius: 12px; background: #003b70; color: white; }
+.home-header h1 { margin: 0 0 10px; font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; }
+.home-header p { margin: 0; color: #eaf7fc; }
+.page-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.page-card { display: flex; flex-direction: column; gap: 12px; padding: 24px; border: 1px solid #c9e5f0; border-radius: 12px; background: white; color: #1b2a3a; text-decoration: none; }
+.page-card:hover { background: #f4fbfe; border-color: #0099cc; }
+.page-card:focus-visible { outline: 3px solid #0099cc; outline-offset: 3px; }
+.page-card svg { width: 30px; height: 30px; fill: none; stroke: #00529b; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.page-card h2 { margin: 0; color: #00529b; font-size: 1.2rem; font-weight: 700; }
+.page-card p { margin: 0; color: #5d6b78; line-height: 1.6; }
+.page-card span { margin-top: auto; padding-top: 8px; color: #00529b; font-weight: 600; }
+@media (max-width: 640px) { .page-links { grid-template-columns: 1fr; } }
