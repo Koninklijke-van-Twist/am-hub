@@ -819,10 +819,10 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
 
         </table>
 
-        <div class="corrective-note">
-            <strong>
-                Reisuren gelden als gewerkte uren / wettelijke slaapuren gelden als gewerkte uren.
-            </strong>
+        <div class="notice">
+            
+            Reisuren gelden als gewerkte uren / wettelijke slaapuren gelden als gewerkte uren.
+            
         </div>
 
         <section class="corrective-subsection">
