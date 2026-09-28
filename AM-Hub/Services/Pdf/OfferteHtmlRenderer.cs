@@ -127,10 +127,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
             model,
             kvtLogo);
 
-        RenderMultiYearMaintenanceBudget(
-            html,
-            model,
-            kvtLogo);
+        RenderMaintenanceAdvice(html);
 
         RenderCorrectiveRatesAndTerms(
             html,
@@ -709,12 +706,46 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
     }
 
 
-    private static void RenderMultiYearMaintenanceBudget(
-    StringBuilder html,
-    OfferteDocumentModel model,
-    string kvtLogo)
+    private static void RenderMaintenanceAdvice(StringBuilder html)
     {
-        html.Append("""<section class="multi-year-maintenance-budget"></section>""");
+        html.Append("""
+        <section class="document-section">
+            <p>
+                Door middel van het jaarlijks onderhoud houden wij het NSA in optimale conditie. Signaleren we eventuele
+                gebreken die het functioneren (kunnen gaan) beïnvloeden zullen wij de (preventieve of correctieve) herstelwerken
+                op uw verzoek per separate offerte aanbieden.
+            </p>
+
+            <ul>
+                <li>
+                    Er zijn precaire onderdelen in noodstroominstallatie toegepast, die in aanvulling op het jaarlijks
+                    preventief onderhoud om de ca. 4 jaar tot 8 jaar gecontroleerd of preventief vervangen moeten worden.
+                    Wij adviseren, gebaseerd op o.a. onze ervaring, minimaal elke 4 jaar (in combinatie met het jaarlijks
+                    onderhoud) de startbatterijen en de PLC-back Up batterij te vervangen. Ook het koelmedium, de
+                    koelwatervoorverwarming en het luchtfilter kunnen dan vervangen moeten worden. Daarnaast adviseren
+                    wij elke 8 jaar in aanvulling op het voorgaande ook de waterslangen en de V-riemen te vervangen, en de
+                    inspuitapparatuur te laten controleren.
+                </li>
+                <li>
+                    Op basis van onze ervaringen stellen wij de technische levensduur van de NSA-besturing op ca.15 jaar.
+                    Dit omdat de toegepaste componenten en/of software aan veroudering onderhevig zijn en in
+                    voorkomende gevallen niet meer ondersteund worden of niet meer leverbaar zijn.
+                </li>
+                <li>
+                    De technische levensduur van de (diesel) motor stellen wij op ca. 20 jaren (draaiuur onafhankelijk). Dit
+                    omdat onze ervaring heeft geleerd dat er tal van (inwendige) componenten door veroudering (plots)
+                    defect kunnen raken, waardoor de installatie onverwachts buiten bedrijf zal raken, veelal met
+                    onherstelbare schade tot gevolg.
+                </li>
+                <li>
+                    Let op: De noodstroominstallatie zal tijdens de werkzaamheden aan de verbrandingsmotor, de generator
+                    en/of de besturing uit bedrijf genomen worden en niet beschikbaar zijn voor noodbedrijf. Kosten voor het
+                    opstellen en aansluiten van vervangend vermogen zijn expliciet uitgesloten, tenzij anders
+                    overeengekomen.
+                </li>
+            </ul>
+        </section>
+        """);
     }
 
     private static string Budget(decimal? amount)
