@@ -551,6 +551,13 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
             <strong>Let op:</strong> De elektrotechnische inspectie betreft alleen het laagspanningsdeel. De generator- en vermogensschakelaars worden niet door ons geïnspecteerd of onderhouden.
         </div>
 
+        <div class="notice">
+            <strong>Let op:</strong> De noodstroominstallatie zal tijdens de werkzaamheden aan de verbrandingsmotor, de generator
+                en/of de besturing uit bedrijf genomen worden en niet beschikbaar zijn voor noodbedrijf. Kosten voor het
+                opstellen en aansluiten van vervangend vermogen zijn expliciet uitgesloten, tenzij anders
+                overeengekomen.
+        </div>
+
     </section>
     """);
     }
