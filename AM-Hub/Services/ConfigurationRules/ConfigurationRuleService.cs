@@ -53,29 +53,9 @@ public class ConfigurationRuleService : IConfigurationRuleService
                 configurationNumber,
                 cancellationToken);
 
-        var linesNeedingDetails = rules
-            .Where(rule => string.IsNullOrWhiteSpace(rule.ComponentNo))
-            .Select(rule => rule.LineNo)
-            .Distinct()
-            .ToArray();
-
-        var details = new List<ConfigurationRuleDetail>();
-        var escapedNumber = configurationNumber.Replace("'", "''");
-
-        // Beperk de querylengte en haal uitsluitend details voor regels zonder component op.
-        foreach (var lines in linesNeedingDetails.Chunk(50))
-        {
-            var lineFilter = string.Join(" or ", lines.Select(line =>
-                $"Configuration_Line_No eq {line}"));
-            details.AddRange(await _bc.GetAsync<ConfigurationRuleDetail>(
-                "ConfigurationRulesDetails",
-                new ODataQuery
-                {
-                    Filter = $"Configuration_No eq '{escapedNumber}' and ({lineFilter})",
-                    OrderBy = "Configuration_Line_No"
-                },
-                cancellationToken));
-        }
+        var details = await GetDetailsByConfigurationNumberAsync(
+            configurationNumber,
+            cancellationToken);
 
         var detailsByLine = details
             .GroupBy(x => x.ConfigurationLineNo)
@@ -85,11 +65,15 @@ public class ConfigurationRuleService : IConfigurationRuleService
 
         foreach (var rule in rules)
         {
-            if (!string.IsNullOrWhiteSpace(rule.ComponentNo))
+            rule.Details = detailsByLine.TryGetValue(rule.LineNo, out var ruleDetails)
+                ? ruleDetails.ToList()
+                : [];
+
+            if (!string.IsNullOrWhiteSpace(rule.ComponentNo) &&
+                !rule.Details.Any(detail => detail.ComponentNo == rule.ComponentNo))
             {
-                // Gebruik dezelfde componentstructuur voor de matrix en de offerte-PDF.
-                rule.Details =
-                [
+                // Vul de detailcomponenten aan met de component van de hoofdregel.
+                rule.Details.Add(
                     new ConfigurationRuleDetail
                     {
                         ConfigurationNo = rule.ConfigurationNo,
@@ -97,18 +81,7 @@ public class ConfigurationRuleService : IConfigurationRuleService
                         ConfigurationLineNo = rule.LineNo,
                         ComponentNo = rule.ComponentNo,
                         SubEntity = rule.SubEntity
-                    }
-                ];
-            }
-            else if (detailsByLine.TryGetValue(
-                rule.LineNo,
-                out var ruleDetails))
-            {
-                rule.Details = ruleDetails;
-            }
-            else
-            {
-                rule.Details = [];
+                    });
             }
         }
 
