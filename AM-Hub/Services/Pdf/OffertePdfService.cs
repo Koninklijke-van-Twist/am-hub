@@ -1,5 +1,6 @@
 using AMHub.Services.Documents;
 using Microsoft.Playwright;
+using System.Diagnostics;
 
 namespace AMHub.Services.Pdf;
 
@@ -8,21 +9,28 @@ public class OffertePdfService : IOffertePdfService
     private readonly IOfferteDocumentService _documents;
     private readonly IOfferteHtmlRenderer _renderer;
     private readonly PdfBrowser _browser;
+    private readonly PdfRenderCache _cache;
+    private readonly ILogger<OffertePdfService> _logger;
 
     public OffertePdfService(
         IOfferteDocumentService documents,
         IOfferteHtmlRenderer renderer,
-        PdfBrowser browser)
+        PdfBrowser browser,
+        PdfRenderCache cache,
+        ILogger<OffertePdfService> logger)
     {
         _documents = documents;
         _renderer = renderer;
         _browser = browser;
+        _cache = cache;
+        _logger = logger;
     }
 
     public async Task<byte[]> GenerateAsync(
         string offerteNummer,
         CancellationToken cancellationToken = default)
     {
+        var timer = Stopwatch.StartNew();
         var model = await _documents.GetAsync(
             offerteNummer,
             cancellationToken);
@@ -33,27 +41,36 @@ public class OffertePdfService : IOffertePdfService
                 $"Offerte {offerteNummer} niet gevonden.");
         }
 
+        var dataDuration = timer.Elapsed;
         var html = await _renderer.RenderAsync(
             model,
             cancellationToken);
 
+        var htmlDuration = timer.Elapsed - dataDuration;
+        var pdf = await _cache.GetOrCreateAsync(html, token => RenderPdfAsync(html, token), cancellationToken);
+        _logger.LogInformation("Offerte-pdf: gegevens {DataMs} ms, HTML {HtmlMs} ms, PDF/cache {PdfMs} ms, totaal {TotalMs} ms.",
+            dataDuration.TotalMilliseconds, htmlDuration.TotalMilliseconds,
+            (timer.Elapsed - dataDuration - htmlDuration).TotalMilliseconds, timer.Elapsed.TotalMilliseconds);
+        return pdf;
+    }
+
+    private async Task<byte[]> RenderPdfAsync(string html, CancellationToken cancellationToken)
+    {
         await using var context = await _browser.CreateContextAsync(cancellationToken);
-        var page = await context.NewPageAsync();
+        // Disposing this isolated context also stops outstanding browser work on cancellation.
+        var page = await context.NewPageAsync().WaitAsync(cancellationToken);
+
+        await page.EmulateMediaAsync(
+            new PageEmulateMediaOptions { Media = Media.Print }).WaitAsync(cancellationToken);
 
         await page.SetContentAsync(
             html,
             new PageSetContentOptions
             {
-                WaitUntil = WaitUntilState.NetworkIdle
-            });
+                WaitUntil = WaitUntilState.Load
+            }).WaitAsync(cancellationToken);
 
-        await page.EmulateMediaAsync(
-            new PageEmulateMediaOptions
-            {
-                Media = Media.Print
-            });
-
-        await PrepareCoverFooterAsync(page);
+        await PrepareCoverFooterAsync(page).WaitAsync(cancellationToken);
 
         return await page.PdfAsync(
             new PagePdfOptions
@@ -73,7 +90,7 @@ public class OffertePdfService : IOffertePdfService
                     Bottom = "18mm",
                     Left = "14mm"
                 }
-            });
+            }).WaitAsync(cancellationToken);
     }
 
     internal static async Task PrepareCoverFooterAsync(IPage page)

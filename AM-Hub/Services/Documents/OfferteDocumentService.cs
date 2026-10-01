@@ -48,7 +48,7 @@ public class OfferteDocumentService : IOfferteDocumentService
 
             var customerTask =
             !string.IsNullOrWhiteSpace(quote.CustomerNumber)
-                ? _customers.GetByNumberAsync(
+                ? _customers.GetForDocumentAsync(
                     quote.CustomerNumber,
                     cancellationToken)
                 : Task.FromResult<AppCustomerCard?>(null);

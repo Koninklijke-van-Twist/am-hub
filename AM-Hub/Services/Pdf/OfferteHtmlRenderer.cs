@@ -9,13 +9,15 @@ namespace AMHub.Services.Pdf;
 public class OfferteHtmlRenderer : IOfferteHtmlRenderer
 {
     private readonly IWebHostEnvironment _environment;
+    private readonly PdfAssetCache _assets;
 
     private static readonly CultureInfo Nl =
         CultureInfo.GetCultureInfo("nl-NL");
 
-    public OfferteHtmlRenderer(IWebHostEnvironment environment)
+    public OfferteHtmlRenderer(IWebHostEnvironment environment, PdfAssetCache assets)
     {
         _environment = environment;
+        _assets = assets;
     }
 
     public async Task<string> RenderAsync(
@@ -28,13 +30,13 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
             "Pdf",
             "Templates");
 
-        var css = await File.ReadAllTextAsync(
+        var css = await _assets.ReadTextAsync(
             Path.Combine(
                 templatesPath,
                 "offerte.css"),
             cancellationToken);
 
-        var staticContent = await File.ReadAllTextAsync(
+        var staticContent = await _assets.ReadTextAsync(
             Path.Combine(
                 templatesPath,
                 "offerte-static.html"),
@@ -47,7 +49,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
             "kvtlogo.png");
 
         var kvtLogo =
-            GetImageDataUri(logoPath);
+            await _assets.ReadImageAsync(logoPath, cancellationToken);
 
         // Hero afbeelding
         var heroPath = Path.Combine(
@@ -56,14 +58,15 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
             "nsamonteurgespiegeld.png");
 
         var hero =
-            GetImageDataUri(heroPath);
-
-        var html = new StringBuilder();
+            await _assets.ReadImageAsync(heroPath, cancellationToken);
 
         var accountmanagerPhoto =
-            GetAccountmanagerPhoto(
+            await GetAccountmanagerPhotoAsync(
                 templatesPath,
-                model.AccountmanagerCode);
+                model.AccountmanagerCode,
+                cancellationToken);
+
+        var html = new StringBuilder(css.Length + staticContent.Length + hero.Length + 2 * kvtLogo.Length + accountmanagerPhoto.Length + 32768);
 
         html.Append("""
         <!doctype html>
@@ -633,46 +636,10 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
         """;
     }
 
-    private static string GetImageDataUri(
-        string path)
-    {
-        if (string.IsNullOrWhiteSpace(path) ||
-            !File.Exists(path))
-        {
-            return "";
-        }
-
-        var extension =
-            Path.GetExtension(path)
-                .TrimStart('.')
-                .ToLowerInvariant();
-
-        var contentType =
-            extension switch
-            {
-                "jpg" or "jpeg"
-                    => "image/jpeg",
-
-                "svg"
-                    => "image/svg+xml",
-
-                "webp"
-                    => "image/webp",
-
-                _ => "image/png"
-            };
-
-        var bytes =
-            File.ReadAllBytes(path);
-
-        return
-            $"data:{contentType};base64," +
-            Convert.ToBase64String(bytes);
-    }
-
-    private static string GetAccountmanagerPhoto(
+    private async Task<string> GetAccountmanagerPhotoAsync(
         string templatesPath,
-        string? accountmanagerCode)
+        string? accountmanagerCode,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(accountmanagerCode))
             return "";
@@ -691,7 +658,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
             "images",
             $"{safeCode}.jpg");
 
-        return GetImageDataUri(imagePath);
+        return await _assets.ReadImageAsync(imagePath, cancellationToken);
     }
 
     private static string AccountmanagerPhoto(

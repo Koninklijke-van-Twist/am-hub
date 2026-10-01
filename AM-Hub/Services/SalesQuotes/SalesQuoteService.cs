@@ -62,6 +62,7 @@ public class SalesQuoteService : ISalesQuoteService
                 Filter =
                     $"Document_Type eq 'Quote' and No eq '{escapedNumber}'",
 
+                Select = "Document_Type,No,Sell_to_Customer_No,Sell_to_Customer_Name,LVS_Job_Type,LVS_Document_Status,Order_Date,Salesperson_Code,KVT_Quote_Description,Sell_to_Contact,SellToPhoneNo,SellToMobilePhoneNo,SellToEmail",
                 Top = 1
             },
             cancellationToken);

@@ -42,6 +42,21 @@
                 </div>
             </div>
             <div class="hero-actions">
+                @if (missingPdfData.Count > 0)
+                {
+                    <div class="pdf-warning">
+                        <button type="button" class="pdf-warning-icon" aria-label="Er ontbreken gegevens in de PDF" aria-describedby="pdf-missing-data">!</button>
+                        <div id="pdf-missing-data" class="pdf-warning-tooltip" role="tooltip">
+                            <strong>Ontbrekende gegevens in de PDF:</strong>
+                            <ul>
+                                @foreach (var missing in missingPdfData)
+                                {
+                                    <li>@missing</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
                 <button type="button" class="action action-primary" data-pdf-download data-url="@PdfUrl(true)" data-filename="@($"Offerte-{OfferteNummer}.pdf")">Download offerte</button>
                 <span class="pdf-download-status" role="status" aria-live="polite"></span>
                 <a class="action action-secondary" href="@PdfUrl(false)" target="_blank" rel="noopener">Bekijk PDF ↗</a>
@@ -137,6 +152,50 @@
     private bool loading = true;
     private bool loadFailed;
     private int loadVersion;
+    private List<string> missingPdfData = [];
+
+    private void CheckPdfData()
+    {
+        missingPdfData = [];
+        if (quote is null)
+            return;
+
+        void Required(string? value, string label)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                missingPdfData.Add(label);
+        }
+
+        // Gebruik dezelfde bronvelden en terugvalwaarden als OfferteDocumentService.
+        Required(quote.Number, "Offertenummer");
+        Required(customer?.Name ?? quote.CustomerName, "Klantnaam");
+        Required(string.Join(" ", new[] { customer?.Address, customer?.Address2 }), "Klantadres");
+        Required(customer?.PostCode, "Postcode klant");
+        Required(customer?.City, "Plaats klant");
+        Required(quote.ContactName, "Naam contactpersoon");
+        Required(quote.ContactEmail, "E-mailadres contactpersoon");
+        Required(salesPerson?.Name, "Naam accountmanager");
+        Required(salesPerson?.JobTitle, "Functie accountmanager");
+        Required(salesPerson?.PhoneNo, "Telefoonnummer accountmanager");
+        Required(salesPerson?.Email, "E-mailadres accountmanager");
+
+        if (matrix is null || matrix.Components.Count == 0)
+        {
+            missingPdfData.Add("Componenten en werkzaamheden");
+            return;
+        }
+
+        foreach (var component in matrix.Components)
+        {
+            var label = $"Component {component.ComponentNo}";
+            Required(component.ComponentNo, "Componentnummer");
+            Required(component.ComponentDescription, $"{label}: omschrijving");
+            Required(component.LocationDescription, $"{label}: locatie");
+            if (!matrix.Tasks.Any(task =>
+                task.Prices.TryGetValue(component.ComponentNo, out var price) && price.HasValue))
+                missingPdfData.Add($"{label}: werkzaamheden met een gekoppelde prijs");
+        }
+    }
 
     private decimal ComponentTotal(string number) => matrix?.Tasks.Sum(task =>
         task.Prices.TryGetValue(number, out var price) ? price ?? 0m : 0m) ?? 0m;
@@ -159,6 +218,7 @@
         matrix = null;
         customer = null;
         salesPerson = null;
+        missingPdfData = [];
         try
         {
             var loadedQuote = await SalesQuoteService.GetByNumberAsync(number);
@@ -178,6 +238,7 @@
             matrix = await matrixTask;
             customer = await customerTask;
             salesPerson = await salesPersonTask;
+            CheckPdfData();
         }
         catch (Exception exception)
         {

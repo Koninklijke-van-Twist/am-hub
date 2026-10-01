@@ -32,7 +32,12 @@
                 @if (manager != ownManagerCode) { <option value="@manager">@manager</option> }
             }
         </select>
+        <button @onclick="Refresh" disabled="@busy">Verversen</button>
     </div>
+    @if (backgroundNotice is not null)
+    {
+        <p class="hint" role="status">@backgroundNotice</p>
+    }
     @if (busy)
     {
         <div class="toolbar">
@@ -48,10 +53,6 @@
     }
     else
     {
-        var agenda = items.Where(i => showAll || (i.Start <= selectedDay && i.EndExclusive > selectedDay))
-            .OrderBy(i => i.Order.Start).ThenBy(i => i.Order.MaintenanceWorkorderNumber).ToList();
-        var entityGroups = agenda.GroupBy(i => i.Order.MainEntity.Trim(), StringComparer.OrdinalIgnoreCase)
-            .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase).ToList();
         <div class="workorder-layout">
         <div class="workorder-content">
         <section class="agenda" aria-labelledby="agenda-title">
@@ -59,26 +60,26 @@
                 <h2 id="agenda-title">@(showAll ? "Werkorders in de zichtbare week" : selectedDay.ToString("dddd dd MMMM yyyy", Dutch))</h2>
                 <button @onclick="ToggleScope">@(showAll ? "Alleen geselecteerde dag" : "Hele week")</button>
             </div>
-            <p role="status">@agenda.Count werkorders</p>
-            @if (agenda.Count == 0) { <p>Geen werkorders voor deze selectie. Kies een andere dag of week.</p> }
+            <p role="status">@agendaCount werkorders</p>
+            @if (agendaCount == 0) { <p>Geen werkorders voor deze selectie. Kies een andere dag of week.</p> }
             <div class="order-list">
-                @foreach (var entity in entityGroups)
+                @foreach (var entity in entityGroups.Skip(entityPage * EntitiesPerPage).Take(EntitiesPerPage))
                 {
-                    <article class="entity-card">
+                    <article class="entity-card" @key="entity.Number">
                         <header class="entity-heading">
-                            <h3>@(entity.Select(i => i.Order.MainEntityDescription).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d)) ?? "Hoofdentiteit zonder omschrijving")</h3>
-                            <p>@(string.IsNullOrWhiteSpace(entity.Key) ? "Hoofdentiteitnummer niet ingevuld" : entity.Key)</p>
-                            <p>@string.Join(" · ", entity.Select(i => i.Order.CustomerName).Where(name => !string.IsNullOrWhiteSpace(name)).Distinct(StringComparer.OrdinalIgnoreCase))</p>
+                            <h3>@entity.Description</h3>
+                            <p>@(string.IsNullOrWhiteSpace(entity.Number) ? "Hoofdentiteitnummer niet ingevuld" : entity.Number)</p>
+                            <p>@entity.Customers</p>
                         </header>
-                        @foreach (var component in entity.GroupBy(i => i.Order.ComponentNumber.Trim(), StringComparer.OrdinalIgnoreCase).OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
+                        @foreach (var component in entity.Components)
                         {
-                            <section class="component-group">
-                                <h4>@(string.IsNullOrWhiteSpace(component.Key) ? "Componentnummer niet ingevuld" : component.Key)</h4>
-                                <p>@(component.Select(i => i.Order.ComponentDescription).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d)) ?? "Componentomschrijving niet ingevuld")</p>
+                            <section class="component-group" @key="component.Number">
+                                <h4>@(string.IsNullOrWhiteSpace(component.Number) ? "Componentnummer niet ingevuld" : component.Number)</h4>
+                                <p>@component.Description</p>
                                 <div class="component-orders">
-                                    @foreach (var item in component)
+                                    @foreach (var item in component.Items)
                                     {
-                                        <div class="order" style="border-left-color: @StatusColor(item.Order.Status)">
+                                        <div class="order" @key="item.Order.Number" style="border-left-color: @StatusColor(item.Order.Status)">
                                             <span class="order-heading"><strong>@item.Order.MaintenanceWorkorderNumber</strong><span class="status-badge">@Display(item.Order.Status)</span></span>
                                             <span>@item.Order.Description</span>
                                             <small>@item.Order.Start.ToString("dd-MM-yyyy") – @(item.Order.OpenEnded ? "Doorlopend" : item.Order.End?.ToString("dd-MM-yyyy"))</small>
@@ -90,6 +91,14 @@
                     </article>
                 }
             </div>
+            @if (entityGroups.Count > EntitiesPerPage)
+            {
+                <nav class="toolbar" aria-label="Hoofdentiteiten bladeren">
+                    <button disabled="@(entityPage == 0)" @onclick="() => entityPage--">Vorige</button>
+                    <span>Pagina @(entityPage + 1) van @((entityGroups.Count + EntitiesPerPage - 1) / EntitiesPerPage)</span>
+                    <button disabled="@((entityPage + 1) * EntitiesPerPage >= entityGroups.Count)" @onclick="() => entityPage++">Volgende</button>
+                </nav>
+            }
         </section>
         </div>
         <aside class="calendar-panel" aria-labelledby="calendar-title">
@@ -106,7 +115,7 @@
                         @for (var day = 0; day < 7; day++)
                         {
                             var date = visibleStart.AddDays(day);
-                            var count = items.Count(i => i.Start <= date && i.EndExclusive > date);
+                            var count = dayCounts[day];
                             <button class="day @(date == selectedDay ? "chosen" : "")"
                                     aria-pressed="@(date == selectedDay)" aria-label="@(date.ToString("dd MMMM yyyy", Dutch) + $": {count} werkorders")" @onclick="() => SelectDay(date)">
                                 <span>@date.Day @(date == DateOnly.FromDateTime(DateTime.Today) ? "•" : "")</span>
@@ -130,17 +139,42 @@
     private DateOnly visibleStart = StartOfWeek(DateOnly.FromDateTime(DateTime.Today));
     private string WeekLabel => $"{visibleStart.ToString("dd MMM", Dutch)} – {visibleStart.AddDays(6).ToString("dd MMM yyyy", Dutch)}";
     private List<CalendarItem> items = [];
+    private const int EntitiesPerPage = 15;
+    private sealed record ComponentGroup(string Number, string Description, List<CalendarItem> Items);
+    private sealed record EntityGroup(string Number, string Description, string Customers, List<ComponentGroup> Components);
+    private List<EntityGroup> entityGroups = [];
+    private int agendaCount;
+    private int entityPage;
+    private int[] dayCounts = new int[7];
     private CalendarResult? summary;
     private bool busy = true;
     private string? error;
+    private string? backgroundNotice;
     private CancellationTokenSource? request;
     private bool disposed;
     private string managerCode = "";
     private string? ownManagerCode;
     private bool showAll;
     private DateOnly selectedDay = DateOnly.FromDateTime(DateTime.Today);
-    private void SelectDay(DateOnly day) { selectedDay = day; showAll = false; }
-    private void ToggleScope() { showAll = !showAll; }
+    private void SelectDay(DateOnly day) { selectedDay = day; showAll = false; UpdateAgenda(); }
+    private void ToggleScope() { showAll = !showAll; UpdateAgenda(); }
+    private void UpdateAgenda()
+    {
+        entityPage = 0;
+        // The service already sorts items. Group only when the selection/data changes.
+        var agenda = items.Where(i => showAll || (i.Start <= selectedDay && i.EndExclusive > selectedDay)).ToList();
+        agendaCount = agenda.Count;
+        entityGroups = agenda.GroupBy(i => i.Order.MainEntity.Trim(), StringComparer.OrdinalIgnoreCase)
+            .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(entity => new EntityGroup(entity.Key,
+                entity.Select(i => i.Order.MainEntityDescription).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d)) ?? "Hoofdentiteit zonder omschrijving",
+                string.Join(" · ", entity.Select(i => i.Order.CustomerName).Where(n => !string.IsNullOrWhiteSpace(n)).Distinct(StringComparer.OrdinalIgnoreCase)),
+                entity.GroupBy(i => i.Order.ComponentNumber.Trim(), StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+                    .Select(component => new ComponentGroup(component.Key,
+                        component.Select(i => i.Order.ComponentDescription).FirstOrDefault(d => !string.IsNullOrWhiteSpace(d)) ?? "Componentomschrijving niet ingevuld",
+                        component.ToList())).ToList())).ToList();
+    }
     private static string Display(string? text) => string.IsNullOrWhiteSpace(text) ? "Niet ingevuld" : text;
     private static string StatusColor(string status)
     {
@@ -160,13 +194,17 @@
     }
     private async Task ChangeWeek(int change) { visibleStart = visibleStart.AddDays(change * 7); selectedDay = selectedDay.AddDays(change * 7); await Load(); }
     private async Task Today() { selectedDay = DateOnly.FromDateTime(DateTime.Today); visibleStart = StartOfWeek(selectedDay); await Load(); }
-    private async Task Load()
+    private Task Load() => LoadCore(false);
+    private Task Refresh() => LoadCore(true);
+    private async Task LoadCore(bool refresh)
     {
         request?.Cancel();
         var current = new CancellationTokenSource(TimeSpan.FromSeconds(90));
         request = current;
         busy = true;
         error = null;
+        backgroundNotice = null;
+        var hasResult = false;
         if (selectedDay < visibleStart || selectedDay >= visibleStart.AddDays(7))
             selectedDay = visibleStart;
         items = [];
@@ -174,24 +212,45 @@
 
         try
         {
-            var result = await Calendar.GetAsync(visibleStart, visibleStart.AddDays(7), current.Token,
-                string.IsNullOrEmpty(managerCode) ? null : managerCode);
-            if (!disposed && ReferenceEquals(request, current))
+            await foreach (var result in Calendar.GetUpdatesAsync(visibleStart, visibleStart.AddDays(7), current.Token,
+                string.IsNullOrEmpty(managerCode) ? null : managerCode, refresh))
             {
+                if (disposed || !ReferenceEquals(request, current)) break;
+                var previousPage = entityPage;
                 summary = result;
                 ownManagerCode = result.OwnSalespersonCode;
                 items = result.Items;
+                for (var day = 0; day < dayCounts.Length; day++)
+                {
+                    var date = visibleStart.AddDays(day);
+                    dayCounts[day] = items.Count(i => i.Start <= date && i.EndExclusive > date);
+                }
+                UpdateAgenda();
+                if (hasResult)
+                    entityPage = Math.Min(previousPage, Math.Max(0, (entityGroups.Count - 1) / EntitiesPerPage));
+                hasResult = true;
+                busy = false;
+                // Flush the initial result before starting customer revalidation.
+                StateHasChanged();
+                await Task.Yield();
             }
         }
         catch (ManagerLookupException exception)
         {
-            if (ReferenceEquals(request, current)) error = exception.Message;
+            if (!disposed && ReferenceEquals(request, current))
+            {
+                error = exception.Message;
+                items = [];
+                summary = null;
+            }
         }
         catch (Exception exception)
         {
             if (!disposed && ReferenceEquals(request, current))
             {
-                error = exception switch
+                if (hasResult)
+                    backgroundNotice = "De klantkoppelingen konden niet worden bijgewerkt. De eerder geladen werkorders blijven zichtbaar. Probeer Verversen opnieuw.";
+                else error = exception switch
                 {
                     OperationCanceledException when current.IsCancellationRequested => "Het ophalen duurt langer dan 90 seconden. Probeer het opnieuw.",
                     OperationCanceledException => "Een aanvraag naar Business Central duurt langer dan 60 seconden. Probeer het opnieuw.",

@@ -48,6 +48,9 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddScoped<AMHub.Services.WorkOrders.WorkOrderDataCache>();
+builder.Services.AddSingleton<AMHub.Services.WorkOrders.CustomerAssignmentCache>();
 builder.Services.Configure<AMHub.Services.WorkOrders.WorkOrderOptions>(builder.Configuration.GetSection("WorkOrderCalendar"));
 builder.Services.AddHttpClient<AMHub.Services.WorkOrders.WorkOrderCalendar>(client => client.Timeout = TimeSpan.FromSeconds(60))
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false })
@@ -62,6 +65,9 @@ builder.Services.AddScoped<IOfferteDocumentService, OfferteDocumentService>();
 builder.Services.AddScoped<IOfferteHtmlRenderer, OfferteHtmlRenderer>();
 builder.Services.AddScoped<IOffertePdfService, OffertePdfService>();
 builder.Services.AddSingleton<PdfBrowser>();
+builder.Services.AddSingleton<PdfAssetCache>();
+builder.Services.AddSingleton<PdfRenderCache>();
+builder.Services.AddHostedService<PdfBrowserWarmup>();
 builder.Services.AddScoped< IAppCustomerService,AppCustomerService>();
 builder.Services.AddScoped<ISalesPersonService, SalesPersonService>();
 

@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -16,6 +18,7 @@ public sealed class WorkOrderOptions
     public string CustomerManagerField { get; set; } = "LVS_After_Sales_Person_Code";
     public int MaxUrlLength { get; set; } = 7000;
     public int MaxConcurrentRequests { get; set; } = 3;
+    public int CacheSeconds { get; set; } = 30;
 }
 
 public sealed class WorkOrder
@@ -49,7 +52,7 @@ public sealed class ManagerLookupException(string message) : Exception(message);
 
 public sealed class WorkOrderCalendar(HttpClient http, AuthenticationStateProvider authentication,
     IOptions<BusinessCentralOptions> bcOptions, IOptions<WorkOrderOptions> calendarOptions,
-    ILogger<WorkOrderCalendar> logger)
+    ILogger<WorkOrderCalendar> logger, WorkOrderDataCache cache, CustomerAssignmentCache customerCache)
 {
     public static IReadOnlyList<string> SelectableManagers { get; } = Array.AsReadOnly(new[] { "AW", "LL", "FR", "YB", "NVD", "NZ", "FJ", "MS", "WM" });
     private sealed class Customer
@@ -64,8 +67,33 @@ public sealed class WorkOrderCalendar(HttpClient http, AuthenticationStateProvid
     private static string Escape(string value) => value.Replace("'", "''");
     private const string WorkorderFields = "No,Task_Description,Bill_to_Customer_No,Bill_to_Name,KVT_Document_Status,Status,Main_Entity,Main_Entity_Description,Component_No,Component_Description,Start_Date,End_Date";
 
-    public async Task<CalendarResult> GetAsync(DateOnly start, DateOnly end, CancellationToken token, string? selectedManager = null)
+    private sealed record CalendarLoad(CalendarResult Result, CustomerAssignmentCache.Key Key, CustomerAssignmentCache.Snapshot Customers);
+
+    public async Task<CalendarResult> GetAsync(DateOnly start, DateOnly end, CancellationToken token, string? selectedManager = null, bool refresh = false) =>
+        (await LoadAsync(start, end, token, selectedManager, refresh)).Result;
+
+    public async IAsyncEnumerable<CalendarResult> GetUpdatesAsync(DateOnly start, DateOnly end,
+        [EnumeratorCancellation] CancellationToken token, string? selectedManager = null, bool refresh = false)
     {
+        var initial = await LoadAsync(start, end, token, selectedManager, refresh);
+        yield return initial.Result;
+        // The component displays the first result before advancing this iterator.
+        // No timer/polling: only an actual visit triggers an age-based check.
+        // A just-loaded list may be too large to retain; do not fetch it twice.
+        if (!customerCache.NeedsRevalidation(initial.Customers)) yield break;
+        var current = await customerCache.RevalidateAsync(initial.Key, ct => ReadCustomerNumbersAsync(initial.Key.Query, ct), token);
+        token.ThrowIfCancellationRequested();
+        if (!initial.Customers.Numbers.SetEquals(current.Numbers))
+            yield return await GetAsync(start, end, token, selectedManager);
+    }
+
+    private async Task<IEnumerable<string>> ReadCustomerNumbersAsync(Uri query, CancellationToken token) =>
+        (await ReadAsync<Customer>(query, token)).Select(customer => customer.Number);
+
+    private async Task<CalendarLoad> LoadAsync(DateOnly start, DateOnly end, CancellationToken token, string? selectedManager, bool refresh)
+    {
+        token.ThrowIfCancellationRequested();
+        if (refresh) cache.Clear();
         var timer = Stopwatch.StartNew();
         var steps = new List<CalendarLoadStep>();
         var previous = TimeSpan.Zero;
@@ -92,6 +120,8 @@ public sealed class WorkOrderCalendar(HttpClient http, AuthenticationStateProvid
             throw new InvalidOperationException("Ongeldige maximale URL-lengte.");
         if (options.MaxConcurrentRequests is < 1 or > 6)
             throw new InvalidOperationException("Ongeldig aantal gelijktijdige aanvragen.");
+        if (options.CacheSeconds is < 0 or > 300)
+            throw new InvalidOperationException("Ongeldige cacheduur.");
 
         CompleteStep("Aanmelding en instellingen controleren");
         var salespeople = await ReadAsync<SalesPersonCard>(Build("SalesPersonCard", "Code,E_Mail,Blocked,Privacy_Blocked",
@@ -106,10 +136,14 @@ public sealed class WorkOrderCalendar(HttpClient http, AuthenticationStateProvid
             throw new ManagerLookupException("Je accountmanagerkaart in Business Central is geblokkeerd of heeft geen code. Neem contact op met de beheerder.");
         var ownManager = person.Code.Trim().ToUpperInvariant();
         var manager = selectedManager is null ? ownManager : selectedManager.Trim().ToUpperInvariant();
+        var cacheScope = options.CacheSeconds == 0 ? null : email.ToUpperInvariant();
         CompleteStep("Accountmanager ophalen en controleren");
-        var customers = await ReadAsync<Customer>(Build("AppCustomerCard", "No",
-            $"{options.CustomerManagerField} eq '{Escape(manager)}'"), token);
-        var numbers = customers.Select(c => c.Number).Where(n => !string.IsNullOrWhiteSpace(n)).ToHashSet(StringComparer.Ordinal);
+        var customerQuery = Build("AppCustomerCard", "No", $"{options.CustomerManagerField} eq '{Escape(manager)}'");
+        var credentials = bcOptions.Value;
+        var customerKey = new CustomerAssignmentCache.Key(customerQuery,
+            Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes($"{credentials.Username}\0{credentials.Password}"))), options.MaxUrlLength);
+        var customers = await customerCache.GetAsync(customerKey, ct => ReadCustomerNumbersAsync(customerQuery, ct), token, refresh);
+        var numbers = customers.Numbers;
         CompleteStep($"Klanten ophalen ({numbers.Count})");
         logger.LogInformation("Werkorderkalender: {CustomerCount} klanten via {ManagerField}; periode {Start} tot {End} (exclusief).",
             numbers.Count, options.CustomerManagerField, start, end);
@@ -117,11 +151,11 @@ public sealed class WorkOrderCalendar(HttpClient http, AuthenticationStateProvid
         var received = 0;
         var rejectedCustomer = 0;
         var rejectedDate = 0;
-        string WorkorderFilter(IEnumerable<string> parts) => $"({string.Join(" or ", parts)}) and Start_Date ne 0001-01-01 and Start_Date lt {end:yyyy-MM-dd} and (End_Date ge {start:yyyy-MM-dd} or End_Date eq 0001-01-01 or End_Date eq null)";
+        string WorkorderFilter(IEnumerable<string> parts) => $"({string.Join(" or ", parts)}) and Status ne 'Open' and Start_Date ne 0001-01-01 and Start_Date lt {end:yyyy-MM-dd} and (End_Date ge {start:yyyy-MM-dd} or End_Date eq 0001-01-01 or End_Date eq null)";
         var workorderQueries = BuildChunks("LVS_MainWorkOrderCard", WorkorderFields,
             numbers.Order(StringComparer.Ordinal).Select(number => $"Bill_to_Customer_No eq '{Escape(number)}'"), WorkorderFilter);
         CompleteStep($"Werkorderaanvragen voorbereiden ({workorderQueries.Count} groepen)");
-        var fetchedOrders = await ReadChunksAsync<WorkOrder>(workorderQueries, token);
+        var fetchedOrders = await ReadChunksAsync<WorkOrder>(workorderQueries, token, cacheScope);
         CompleteStep("Werkorders ophalen (inclusief vervolgpagina's)");
         foreach (var order in fetchedOrders)
         {
@@ -144,11 +178,15 @@ public sealed class WorkOrderCalendar(HttpClient http, AuthenticationStateProvid
             o.Start < start ? start : o.Start,
             o.OpenEnded || o.End >= end.AddDays(-1) ? end : o.End!.Value.AddDays(1))).ToList();
         CompleteStep($"Werkorders filteren en kalender opbouwen ({items.Count} items)");
-        return new CalendarResult(manager, options.CustomerManagerField, numbers.Count, items, ownManager)
+        logger.LogInformation("Werkorderkalender: totaal {TotalMs} ms; stappen {Steps}.",
+            timer.Elapsed.TotalMilliseconds,
+            string.Join("; ", steps.Select(step => $"{step.Name}: {step.Duration.TotalMilliseconds:F0} ms")));
+        var result = new CalendarResult(manager, options.CustomerManagerField, numbers.Count, items, ownManager)
         {
             LoadDuration = previous,
             LoadSteps = steps.AsReadOnly()
         };
+        return new CalendarLoad(result, customerKey, customers);
     }
 
     private List<Uri> BuildChunks(string endpoint, string select, IEnumerable<string> clauses,
@@ -171,14 +209,14 @@ public sealed class WorkOrderCalendar(HttpClient http, AuthenticationStateProvid
         return result;
     }
 
-    private async Task<IEnumerable<T>> ReadChunksAsync<T>(List<Uri> queries, CancellationToken token)
+    private async Task<IEnumerable<T>> ReadChunksAsync<T>(List<Uri> queries, CancellationToken token, string? cacheScope)
     {
         var results = new List<T>[queries.Count];
         await Parallel.ForEachAsync(Enumerable.Range(0, queries.Count), new ParallelOptions
         {
             MaxDegreeOfParallelism = calendarOptions.Value.MaxConcurrentRequests,
             CancellationToken = token
-        }, async (index, cancellation) => results[index] = await ReadAsync<T>(queries[index], cancellation));
+        }, async (index, cancellation) => results[index] = await ReadAsync<T>(queries[index], cancellation, cacheScope));
         return results.SelectMany(result => result);
     }
 
@@ -189,8 +227,12 @@ public sealed class WorkOrderCalendar(HttpClient http, AuthenticationStateProvid
             $"Company('{Uri.EscapeDataString(Escape(options.Company))}')/{endpoint}?$select={Uri.EscapeDataString(select)}&$filter={Uri.EscapeDataString(filter)}");
     }
 
-    private async Task<List<T>> ReadAsync<T>(Uri first, CancellationToken token)
+    private async Task<List<T>> ReadAsync<T>(Uri first, CancellationToken token, string? cacheScope = null)
     {
+        token.ThrowIfCancellationRequested();
+        var generation = cache.Generation;
+        if (cacheScope is not null && cache.TryGet<T>(cacheScope, first, out var cached))
+            return cached;
         var options = bcOptions.Value;
         var result = new List<T>();
         var visited = new HashSet<string>();
@@ -213,6 +255,9 @@ public sealed class WorkOrderCalendar(HttpClient http, AuthenticationStateProvid
             result.AddRange(page.Value);
             next = string.IsNullOrWhiteSpace(page.Next) ? null : new Uri(next, page.Next);
         }
+        token.ThrowIfCancellationRequested();
+        if (cacheScope is not null)
+            cache.Set(cacheScope, first, result, calendarOptions.Value.CacheSeconds, generation);
         return result;
     }
 }
