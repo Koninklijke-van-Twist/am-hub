@@ -234,10 +234,10 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
                 </div>
 
                 <div class="company-header-contact">
-                    <div>⌖ &nbsp; Keerweer 62, 3316 KA Dordrecht</div>
-                    <div>✎ &nbsp; Postbus 156, 3300 AD Dordrecht</div>
-                    <div>☎ &nbsp; +31(0)78 - 632 66 00</div>
-                    <div>✉ &nbsp; info@kvt.nl &nbsp;&nbsp; ◉ &nbsp; www.kvt.nl</div>
+                    <div>Keerweer 62, 3316 KA Dordrecht</div>
+                    <div>Postbus 156, 3300 AD Dordrecht</div>
+                    <div>+31(0)78 - 632 66 00</div>
+                    <div>www.kvt.nl</div>
                 </div>
 
                 <div class="company-header-details">
@@ -310,7 +310,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
                     </h3>
 
                     <p>
-                        Hierbij ontvangt u ons een voorstel voor een “Service Onderhoudscontract” voor de noodstroom- installatie(s) op de onderstaande locatie(s). Ons voorstel bestaat uit jaarlijks uit te voeren werkzaamheden, aangevuld met optionele diensten. In de bijlage worden deze diensten verder omschreven. Wanneer u verdere toelichting wilt, kunt u uiteraard contact met mij opnemen. Op basis van uw aanvraag en op basis van hetgeen ons momenteel bekend is, kan ik u het onderstaande aanbieden.
+                        Hierbij ontvangt u ons een voorstel voor een “Service Onderhoudscontract” voor de noodstroominstallatie(s) op de onderstaande locatie(s). Ons voorstel bestaat uit jaarlijks uit te voeren werkzaamheden, aangevuld met optionele diensten. In de bijlage worden deze diensten verder omschreven. Wanneer u verdere toelichting wilt, kunt u uiteraard contact met mij opnemen.
                     </p>
 
                 </div>
@@ -320,7 +320,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
             <section class="investment-summary">
 
                 <h3>
-                    Samenvatting investering
+                    Jaarlijkse onderhoudskosten
                 </h3>
 
                 <table>
@@ -377,14 +377,15 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
     <section class="document-chapter page-start">
 
         <h1 class="page-title">
-            Taken per noodstroom installatie
+            Onderhoudsvoorstel per noodstroominstallatie
         </h1>
 
         <p class="document-section">
-            Wij kunnen u de volgende (verplichte) werkzaamheden aanbieden:
-            Het jaarlijks preventief onderhoud en daarnaast de deelname aan de 24/7 storingsdienst.
-            <br><br>
-            In aanvulling op het jaarlijks onderhoud kunnen wij u additionele werkzaamheden aanbieden. Zo moet een bovengronds opgestelde brandstoftank jaarlijks geïnspecteerd worden, is het raadzaam de NSA minimaal maandelijks te controleren en op te starten en is het ook belangrijk om de NSA minimaal jaarlijks op (vol)last te testen. Wanneer u nog meer zekerheid wilt hebben over de (inwendige) staat van het NSA, en de smeerolie, het koelmedium of de brandstof frequent beoordeelt wilt hebben kunnen wij u (extra) analyses aanbieden. De monstername dient in combinatie met een regulier service bezoek uitgevoerd te kunnen worden. Het NSA staat continu paraat, en moet direct opstarten bij netuitval. Het NSA-besturingspaneel is hierin een cruciaal onderdeel. Dit paneel wordt tijdens het jaarlijks onderhoud beoordeeld op juist functioneren. Om nog meer zekerheid te garanderen adviseren wij het besturingspaneel en de elektrotechnische componenten op een rond de dieselmotor eenmaal per 4 jaar door een Elektrotechnische Engineer te laten beoordelen. Wij kunnen u daarom de volgende vaste taken en aanvullende opties aanbieden:
+            De onderstaande onderhoudstaken bieden wij u aan. Het uitgangspunt in onze dienstlevering is dat minimaal het jaarlijks preventief onderhoud, inclusief onze 24/7 storingsdienst, wordt afgenomen. <br><br>
+            Naast de onderstaande werkzaamheden heeft Koninklijke van Twist tal van aanvullende servicediensten die de
+            betrouwbaarheid van uw installatie vergroten. In het
+            hoofdstuk ‘Uitgangspunten’ treft u een nadere omschrijving van de aangeboden werkzaamheden en eventuele aanvullende diensten.
+        
         </p>
 
         <div class="aggregate-summary-table">
@@ -395,8 +396,12 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
                     Component / Omschrijving
                 </div>
 
-                <div>
-                    Werkzaamheden
+                <div class="money">
+                    Aantal
+                </div>
+
+                <div class="money">
+                    Prijs per stuk
                 </div>
 
                 <div class="money">
@@ -436,6 +441,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
 
                 </div>
 
+                <div></div>
                 <div></div>
 
                 <div class="aggregate-summary-component-total">
@@ -505,6 +511,14 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
                     </div>
 
                     <div class="aggregate-summary-task-price">
+                        {{task.Aantal.ToString("0.############################", Nl)}}
+                    </div>
+
+                    <div class="aggregate-summary-task-price">
+                        {{Money(task.Prijs)}}
+                    </div>
+
+                    <div class="aggregate-summary-task-price">
                         {{Money(task.Totaal)}}
                     </div>
 
@@ -547,19 +561,23 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
         </section>
 
         <div class="notice">
-            <strong>Let op:</strong> De installatie moet elke 4 jaar wettelijk verplicht SCIOS Scope 4d en/of 7C geïnspecteerd worden.
-        </div>
-
-        <div class="notice">
-            <strong>Let op:</strong> De elektrotechnische inspectie betreft alleen het laagspanningsdeel. De generator- en vermogensschakelaars worden niet door ons geïnspecteerd of onderhouden.
-        </div>
-
-        <div class="notice">
             <strong>Let op:</strong> De noodstroominstallatie zal tijdens de werkzaamheden aan de verbrandingsmotor, de generator
                 en/of de besturing uit bedrijf genomen worden en niet beschikbaar zijn voor noodbedrijf. Kosten voor het
                 opstellen en aansluiten van vervangend vermogen zijn expliciet uitgesloten, tenzij anders
                 overeengekomen.
         </div>
+
+        <div class="notice">
+            <strong>Let op:</strong> De installatie moet elke 4 jaar wettelijk verplicht SCIOS Scope 4d en/of 7C geïnspecteerd worden. Een offerte zal op aanvraag worden aangeboden.
+        </div>
+
+        <div class="notice">
+            <strong>Let op:</strong> De elektrotechnische inspectie betreft alleen het laagspanningsdeel. De generator- en vermogensschakelaars worden niet door ons geïnspecteerd of onderhouden en vallen buiten onze scope.
+        </div>
+
+        
+
+        
 
     </section>
     """);
@@ -707,8 +725,8 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
 
         <p class="corrective-intro">
             De kosten voor extra uit te voeren werkzaamheden, waaronder het
-            verhelpen van eerstelijns-storingen, worden op basis van nacalculatie
-            aan u doorbelast. Wij hanteren hiervoor in 2026 de onderstaande tarieven:
+            verhelpen van eerstelijnsstoringen, worden op basis van nacalculatie
+            aan u doorbelast. Wij hanteren hiervoor in 2027 de onderstaande tarieven:
         </p>
 
         <table class="corrective-rate-table">
@@ -724,62 +742,62 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
 
                 <tr>
                     <td>Servicemonteur</td>
-                    <td class="money">€ 105,00</td>
+                    <td class="money">€ 110,25</td>
                 </tr>
 
                 <tr>
                     <td>Sr. Service monteur / teamlead</td>
-                    <td class="money">€ 135,00</td>
+                    <td class="money">€ 141,75</td>
                 </tr>
 
                 <tr>
                     <td>Technical Support engineer (diagnostiek)</td>
-                    <td class="money">€ 135,00</td>
+                    <td class="money">€ 141,75</td>
                 </tr>
 
                 <tr>
                     <td>Servicemonteur OEM specialist</td>
-                    <td class="money">€ 135,00</td>
+                    <td class="money">€ 141,75</td>
                 </tr>
 
                 <tr>
                     <td>Inspecteur (SCIOS / E-Inspectie)</td>
-                    <td class="money">€ 135,00</td>
+                    <td class="money">€ 141,75</td>
                 </tr>
 
                 <tr>
                     <td>Commissioning engineer</td>
-                    <td class="money">€ 135,00</td>
+                    <td class="money">€ 141,75</td>
                 </tr>
 
                 <tr>
                     <td>Werkvoorbereider / Facturist</td>
-                    <td class="money">€ 105,00</td>
+                    <td class="money">€ 110,25</td>
                 </tr>
 
                 <tr>
                     <td>Planner / Coördinator</td>
-                    <td class="money">€ 105,00</td>
+                    <td class="money">€ 110,25</td>
                 </tr>
 
                 <tr>
                     <td>V&amp;G / KAM Coördinator</td>
-                    <td class="money">€ 105,00</td>
+                    <td class="money">€ 110,25</td>
                 </tr>
 
                 <tr>
                     <td>Voorrijkosten per keer</td>
-                    <td class="money">€ 227,23</td>
+                    <td class="money">€ 238,59</td>
                 </tr>
 
                 <tr>
                     <td>KM tarief servicewagen per kilometer</td>
-                    <td class="money">€ 1,01</td>
+                    <td class="money">€ 1,06</td>
                 </tr>
 
                 <tr>
                     <td>Weekendtoeslag / starttarief per order</td>
-                    <td class="money">€ 209,45</td>
+                    <td class="money">€ 219,92</td>
                 </tr>
 
             </tbody>
@@ -788,7 +806,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
 
         <div class="notice">
             
-            Reisuren gelden als gewerkte uren / wettelijke slaapuren gelden als gewerkte uren.
+            <strong>Let op:</strong> Reisuren gelden als gewerkte uren / wettelijke slaapuren gelden als gewerkte uren.
             
         </div>
 
@@ -892,7 +910,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
 
                     <br><br>
 
-                    Daarnaast zullen we 2 uur à € 105,- per uur doorbelasten ter
+                    Daarnaast zullen we 2 uur à € 110,25 per uur doorbelasten ter
                     compensatie van de ontstane planschade.
 
                     <br><br>
@@ -906,7 +924,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
                 </dt>
 
                 <dd>
-                    De prijzen in deze aanbieding zijn vast t/m 31 december 2026.
+                    De prijzen in deze aanbieding zijn vast t/m 31 december 2027.
                 </dd>
 
             </dl>

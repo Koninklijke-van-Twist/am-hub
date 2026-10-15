@@ -44,7 +44,7 @@ public class OfferteWerkzaamheid
     public string Code { get; set; } = "";
     public string Omschrijving { get; set; } = "";
     public string Frequentie { get; set; } = "";
-    public int Aantal { get; set; }
+    public decimal Aantal { get; set; }
     public decimal Prijs { get; set; }
 
     public decimal Totaal => Aantal * Prijs;

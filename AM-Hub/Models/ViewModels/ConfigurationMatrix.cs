@@ -20,4 +20,5 @@ public class ConfigurationTaskRow
     public string Description { get; set; } = string.Empty;
 
     public Dictionary<string, decimal?> Prices { get; set; } = [];
+    public Dictionary<string, decimal> Quantities { get; set; } = [];
 }

@@ -128,7 +128,11 @@ public class ConfigurationRuleService : IConfigurationRuleService
     .Where(r =>
         !string.IsNullOrWhiteSpace(r.ItemNo) &&
         !string.IsNullOrWhiteSpace(r.Description))
-    .GroupBy(r => r.ItemNo)
+    .GroupBy(r => (
+        TaskCode: r.ItemNo,
+        Description: string.Equals(r.ItemNo, "KSP", StringComparison.OrdinalIgnoreCase)
+            ? r.Description
+            : null))
     .ToList();
 
         foreach (var group in taskGroups)
@@ -148,8 +152,9 @@ public class ConfigurationRuleService : IConfigurationRuleService
             {
                 foreach (var detail in rule.Details)
                 {
-                    if (!string.IsNullOrWhiteSpace(detail.ComponentNo))
-                        prices.TryAdd(detail.ComponentNo, rule.UnitPrice);
+                    if (!string.IsNullOrWhiteSpace(detail.ComponentNo) &&
+                        prices.TryAdd(detail.ComponentNo, rule.UnitPrice))
+                        row.Quantities[detail.ComponentNo] = rule.Quantity;
                 }
             }
 

@@ -723,7 +723,7 @@ td {
 
 .aggregate-summary-columns {
     display: grid;
-    grid-template-columns: 54% 26% 20%;
+    grid-template-columns: minmax(0, 1fr) 14mm 28mm 28mm;
     align-items: center;
     min-height: 9mm;
     padding: 0 3mm;
@@ -764,7 +764,7 @@ td {
 
 .aggregate-summary-component-row {
     display: grid;
-    grid-template-columns: 54% 26% 20%;
+    grid-template-columns: minmax(0, 1fr) 14mm 28mm 28mm;
     align-items: center;
     min-height: 13mm;
     padding: 2.3mm 3mm;
@@ -853,7 +853,7 @@ td {
     /*
      * De boomstructuur iets laten inspringen.
      */
-    padding-left: 6mm;
+    padding-left: 0;
     border: none;
 }
 
@@ -864,10 +864,10 @@ td {
 
 .aggregate-summary-task-row {
     display: grid;
-    grid-template-columns: 13mm 1fr 28mm;
+    grid-template-columns: 13mm minmax(0, 1fr) 14mm 28mm 28mm;
     align-items: center;
     min-height: 8mm;
-    padding-right: 3mm;
+    padding: 0 3mm;
     /*
      * Geen lijnen meer tussen de taken.
      */

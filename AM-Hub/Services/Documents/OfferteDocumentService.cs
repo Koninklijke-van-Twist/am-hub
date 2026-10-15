@@ -172,7 +172,7 @@ public class OfferteDocumentService : IOfferteDocumentService
                         Prijs =
                             price.Value,
 
-                        Aantal = 1
+                        Aantal = task.Quantities[component.ComponentNo]
                     });
             }
 
