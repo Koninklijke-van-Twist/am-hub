@@ -458,6 +458,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
                 StringComparer.OrdinalIgnoreCase)
             {
                 ["GOH"] = 10,
+                ["ST24"] = 15,
                 ["KOH"] = 20,
                 ["PD"] = 30,
                 ["PD2M"] = 40,
