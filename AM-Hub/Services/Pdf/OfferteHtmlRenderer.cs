@@ -516,11 +516,11 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
                     </div>
 
                     <div class="aggregate-summary-task-price">
-                        {{Money(task.Prijs)}}
+                        {{(task.Prijs == 0 ? "incl." : Money(task.Prijs))}}
                     </div>
 
                     <div class="aggregate-summary-task-price">
-                        {{Money(task.Totaal)}}
+                        {{(task.Totaal == 0 ? "incl." : Money(task.Totaal))}}
                     </div>
 
                 </div>
