@@ -4,23 +4,28 @@
 
 <PageTitle>Offerte zoeken</PageTitle>
 
-<div class="container py-4">
-    <h1>Offerte</h1>
+<div class="quote-search-page">
+    <header class="quote-search-hero">
+        <h1>Offerte</h1>
+        <p>Zoek een offerte om de details te bekijken en de PDF te downloaden.</p>
+    </header>
 
-    <div class="mt-4">
-        <div class="input-group">
-            <input class="form-control"
+    <section class="search-panel" aria-labelledby="search-title">
+        <h2 id="search-title">Offerte zoeken</h2>
+        <label for="quote-number">Offertenummer</label>
+        <div class="search-controls">
+            <input id="quote-number"
                    placeholder="Voer een offertenummer in..."
                    @bind="searchTerm"
                    @bind:event="oninput" />
 
-            <button class="btn btn-primary"
+            <button
                     type="button"
                     @onclick="Search">
                 Zoeken
             </button>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

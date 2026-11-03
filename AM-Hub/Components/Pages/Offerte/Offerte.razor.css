@@ -1,0 +1,23 @@
+.quote-search-page {
+    --blue: #00529b;
+    --border: #c9e5f0;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 12px 0 40px;
+    color: #1b2a3a;
+}
+.quote-search-hero { padding: 28px; margin-bottom: 24px; background: linear-gradient(115deg, #003b70, #00529b 70%, #007cab); color: white; }
+h1 { margin: 0 0 10px; font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; }
+.quote-search-hero p { margin: 0; color: #eaf7fc; }
+.search-panel { padding: 22px; border: 1px solid var(--border); background: white; }
+h2 { margin: -22px -22px 22px; padding: 12px 16px; border-bottom: 2px solid #0099cc; background: var(--blue); color: white; font-size: 1.1rem; font-weight: 700; }
+label { display: block; margin-bottom: 8px; color: #5d6b78; font-size: .82rem; }
+.search-controls { display: flex; gap: 10px; }
+input { flex: 1; min-width: 0; padding: 11px 14px; border: 1px solid var(--border); border-radius: 4px; background: white; color: #1b2a3a; font-size: .88rem; }
+button { padding: 11px 18px; border: 1px solid var(--blue); border-radius: 4px; background: var(--blue); color: white; font-size: .88rem; font-weight: 700; }
+button:hover { background: #003b70; border-color: #003b70; }
+input:focus-visible, button:focus-visible { outline: 3px solid #0099cc; outline-offset: 3px; }
+@media (max-width: 640px) {
+    .quote-search-hero { padding: 24px; }
+    .search-controls { flex-direction: column; }
+}

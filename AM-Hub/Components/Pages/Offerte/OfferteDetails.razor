@@ -93,11 +93,7 @@
                 <dl><dt>Naam</dt><dd>@Display(salesPerson?.Name)</dd><dt>E-mail</dt><dd>@Display(salesPerson?.Email)</dd></dl>
             </article>
         </section>
-        <section class="scope-panel" aria-labelledby="scope-title">
-            <div class="section-heading">
-                <h2 id="scope-title">Werkzaamhedenmatrix</h2>
-                <span>Bedragen per jaar, exclusief btw</span>
-            </div>
+        <section class="scope-panel" aria-label="Werkzaamhedenmatrix">
             @if (matrix is null || matrix.Components.Count == 0)
             {
                 <p class="empty-message">Er zijn nog geen componenten en werkzaamheden beschikbaar voor deze offerte.</p>
@@ -106,8 +102,10 @@
             {
                     <div class="table-scroll" tabindex="0" role="region" aria-label="Werkzaamheden en prijzen per component">
                         <table>
-                            <caption>Jaarprijzen per component. Een streepje betekent dat geen prijs is gekoppeld.</caption>
-                            <thead><tr><th scope="col">Werkzaamheid</th>
+                            
+                            <thead><tr><th scope="col">
+                                <h2 class="matrix-title">Werkzaamhedenmatrix</h2>
+                            </th>
                                 @foreach (var component in matrix.Components)
                                 {
                                     <th scope="col">
