@@ -33,8 +33,8 @@ static class ViewerBrowserChecks
             </head><body><div class="test-sidebar"></div><div class="test-topbar"></div><main>
             <section class="report-detail"><div class="report-layout"><div class="workorder-column"><header class="workorder-intro"><a class="back">Rapporten</a><h1>Werkorder WO2605670</h1><p>Rapport en werkordergegevens.</p></header>
             <aside class="workorder-information"><h2>Werkordergegevens</h2><dl class="order-summary"><div><dt>Taak</dt><dd>CO</dd></div><div><dt>Taakomschrijving</dt><dd>Correctief onderhoud</dd></div><div><dt>Monteur</dt><dd>Test monteur</dd></div></dl></aside></div>
-            <section class="pdf-panel"><div class="pdf-heading"><h2>Monteursrapport</h2><div class="actions"><a>Open in SharePoint</a></div></div>
-            <hub-pdf-viewer data-pdf-url="SOURCE"></hub-pdf-viewer><p class="viewer-help">Open de PDF rechtstreeks in SharePoint als alternatief.</p></section></div></section></main>
+            <section class="pdf-panel" aria-label="Monteursrapport">
+            <hub-pdf-viewer data-pdf-url="SOURCE" data-sharepoint-url="https://kvtnl.sharepoint.com/sites/BCDocumentRepository/test.pdf"></hub-pdf-viewer><p class="viewer-help">Open de PDF rechtstreeks in SharePoint als alternatief.</p></section></div></section></main>
             <script type="module" src="js/report-pdf-viewer.mjs"></script></body></html>
             """.Replace("SOURCE", denied == true ? "denied.pdf" : "fixture.pdf"), "text/html"));
         await app.StartAsync();
@@ -66,6 +66,41 @@ static class ViewerBrowserChecks
             Check(await page.EvaluateAsync<bool>("document.querySelector('.workorder-information').getBoundingClientRect().right < document.querySelector('.pdf-panel').getBoundingClientRect().left"), "Workorder information must be left of the report");
             Directory.CreateDirectory(Path.Combine(root, ".artifacts", "viewer"));
             await page.ScreenshotAsync(new() { Path = Path.Combine(root, ".artifacts", "viewer", "wide.png"), FullPage = true });
+            // Force space-consuming scrollbars, as on Windows desktops (headless often uses overlays).
+            await page.AddStyleTagAsync(new() { Content = "hub-pdf-viewer .hub-pdf-stage::-webkit-scrollbar { width: 17px; height: 17px; }" });
+            await page.EvaluateAsync("""
+                () => {
+                    window.partialSpreads = 0;
+                    const viewer = document.querySelector('hub-pdf-viewer');
+                    window.spreadObserver = new MutationObserver(() => {
+                        const expected = Math.min(viewer.columns, viewer.pdf.numPages - viewer.firstPage + 1);
+                        if (viewer.querySelectorAll('.hub-pdf-sheet').length !== expected) window.partialSpreads++;
+                    });
+                    window.spreadObserver.observe(viewer.querySelector('.hub-pdf-stage'), {childList: true, subtree: true});
+                }
+                """);
+            foreach (var zoom in new[] { 125, 150, 175, 200 })
+            {
+                await page.Locator("[data-action='in']").ClickAsync();
+                await page.WaitForFunctionAsync($"document.querySelector('hub-pdf-viewer').getAttribute('aria-busy') === 'false' && document.querySelector('[data-action=fit]').textContent.includes('{zoom}%')", null, new() { Timeout = 10000 });
+                await page.WaitForTimeoutAsync(600);
+                var revision = await page.EvaluateAsync<int>("document.querySelector('hub-pdf-viewer').revision");
+                await page.WaitForTimeoutAsync(600);
+                Check(await page.EvaluateAsync<int>("document.querySelector('hub-pdf-viewer').revision") == revision, $"Zoom {zoom}% keeps triggering new renders");
+                Check(await page.Locator(".hub-pdf-sheet").CountAsync() == await page.EvaluateAsync<int>("document.querySelector('hub-pdf-viewer').columns"), $"Zoom {zoom}% has an incomplete spread");
+            }
+            Check(await page.Locator(".hub-pdf-sheet").CountAsync() == 1, "Zoom must switch to one page when two no longer fit");
+            foreach (var zoom in new[] { 175, 150, 125, 100 })
+            {
+                await page.Locator("[data-action='out']").ClickAsync();
+                var label = $"textContent === '{zoom}%'";
+                await page.WaitForFunctionAsync($"document.querySelector('hub-pdf-viewer').getAttribute('aria-busy') === 'false' && document.querySelector('[data-action=fit]').{label}");
+            }
+            Check(await page.Locator(".hub-pdf-sheet").CountAsync() == 2, "Zooming out must restore two pages when they fit");
+            Check(await page.EvaluateAsync<int>("window.partialSpreads") == 0, "Zooming must not clear or show partially rendered spreads");
+            await page.EvaluateAsync("window.spreadObserver.disconnect()");
+            await page.Locator("[data-action='fit']").ClickAsync();
+            await page.WaitForFunctionAsync("document.querySelector('hub-pdf-viewer').getAttribute('aria-busy') === 'false' && document.querySelector('[data-action=fit]').textContent === '100%'");
             await page.Locator("[data-action='next']").ClickAsync();
             await page.WaitForFunctionAsync("document.querySelector('hub-pdf-viewer').getAttribute('aria-busy') === 'false' && document.querySelector('.hub-pdf-position').textContent.includes('3 van')");
             Check(await page.Locator(".hub-pdf-sheet").CountAsync() == 1 && await page.Locator("[data-action='next']").IsDisabledAsync(), "Odd last page not handled");
@@ -78,7 +113,7 @@ static class ViewerBrowserChecks
             await page.Locator("[data-action='in']").ClickAsync();
             await page.WaitForFunctionAsync("document.querySelector('hub-pdf-viewer').getAttribute('aria-busy') === 'false' && document.querySelector('[data-action=fit]').textContent.includes('125%')");
             await page.Locator("[data-action='fit']").ClickAsync();
-            await page.WaitForFunctionAsync("document.querySelector('hub-pdf-viewer').getAttribute('aria-busy') === 'false' && document.querySelector('[data-action=fit]').textContent === 'Hele pagina'");
+            await page.WaitForFunctionAsync("document.querySelector('hub-pdf-viewer').getAttribute('aria-busy') === 'false' && document.querySelector('[data-action=fit]').textContent === '100%'");
             Check(await page.EvaluateAsync<bool>(wholePages), "Fit button must restore whole-page display");
             await page.SetViewportSizeAsync(1440, 650);
             await page.WaitForTimeoutAsync(500);

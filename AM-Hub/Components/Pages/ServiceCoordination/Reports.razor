@@ -46,7 +46,7 @@
             var rows = SortedRows;
             var total = rows.Count;
             <div class="table-scroll">
-                <table aria-label="Uitgevoerde werkorders">
+                <table aria-label="Werkorders met directe onderliggende werkorders">
                     <thead><tr>
                         @foreach (var column in Columns)
                         {
@@ -58,19 +58,14 @@
                     <tbody>
                         @foreach (var order in rows)
                         {
-                            <tr @key="order.Number">
-                                <td>
-                                    <a href="@($"sc/werkorders/{Uri.EscapeDataString(order.Number)}")" data-enhance-nav="false">@order.Number</a>
-                                    @if (order.SafePdfUrl is not null)
-                                    {
-                                        <span class="available-report" title="Rapport beschikbaar" role="img" aria-label="Rapport beschikbaar">
-                                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 3h9l5 5v13H5Z M14 3v6h5 M9 13h6 M9 17h6" /></svg>
-                                        </span>
-                                    }
-                                </td>
-                                <td>@order.TaskCode</td><td>@order.Description</td><td>@order.ResourceName</td>
-                                <td class="date">@(order.Date is { } date && date != DateOnly.MinValue ? date.ToString("dd-MM-yyyy") : "—")</td>
-                            </tr>
+                            @WorkOrderRow(order, false)
+                            @if (IsExpanded(order.Number))
+                            {
+                                @foreach (var child in SortRows(children.GetValueOrDefault(order.Number) ?? []))
+                                {
+                                    @WorkOrderRow(child, true)
+                                }
+                            }
                         }
                     </tbody>
                 </table>
@@ -80,7 +75,7 @@
                 <p class="state" role="status">@(string.IsNullOrWhiteSpace(Search) ? "Er zijn geen uitgevoerde werkorders voor de gekozen servicecoördinator." : "Geen werkorders gevonden voor deze zoekopdracht.")</p>
             }
             <footer class="table-footer">
-                <span role="status">@total resultaten</span>
+                <span role="status">@total bovenliggende werkorders · @orders.Count werkorders totaal</span>
             </footer>
         }
     </div>
@@ -89,6 +84,8 @@
 @code {
     private readonly CancellationTokenSource lifetime = new();
     private List<ReportWorkOrder> orders = [];
+    private Dictionary<string, List<ReportWorkOrder>> children = new(StringComparer.Ordinal);
+    private readonly HashSet<string> expanded = new(StringComparer.Ordinal);
     private bool loading = true;
     private string? error;
     private string search = "";
@@ -96,28 +93,64 @@
     private string sort = "date";
     private bool descending = true;
     private static readonly (string Key, string Label)[] Columns =
-        [("number", "Werkorder nummer"), ("task", "Taak"), ("description", "Taak omschrijving"), ("resource", "Monteur"), ("date", "Datum")];
+        [("number", "Werkorder nummer"), ("task", "Taak"), ("description", "Taak omschrijving"), ("location", "Servicelocatie"), ("resource", "Monteur"), ("date", "Datum"), ("status", "Status")];
 
     private string Search { get => search; set => search = value; }
     private List<ReportWorkOrder> SortedRows
     {
         get
         {
-            var filtered = orders.Where(order => string.IsNullOrWhiteSpace(search) ||
-                new[] { order.Number, order.TaskCode, order.Description, order.ResourceName, order.Date?.ToString("dd-MM-yyyy") }
-                    .Any(value => value?.Contains(search.Trim(), StringComparison.OrdinalIgnoreCase) == true));
+            return SortRows(orders.Where(order => string.IsNullOrWhiteSpace(order.ParentNumber)
+                && (Matches(order) || (children.GetValueOrDefault(order.Number)?.Any(Matches) ?? false))));
+        }
+    }
+    private bool Matches(ReportWorkOrder order) => string.IsNullOrWhiteSpace(search) ||
+        new[] { order.Number, order.TaskCode, order.Description, order.ServiceLocationDescription, order.ResourceName, order.Status, order.Date?.ToString("dd-MM-yyyy") }
+            .Any(value => value?.Contains(search.Trim(), StringComparison.OrdinalIgnoreCase) == true);
+    private List<ReportWorkOrder> SortRows(IEnumerable<ReportWorkOrder> rows)
+    {
             Func<ReportWorkOrder, string> key = sort switch
             {
                 "task" => order => order.TaskCode,
                 "description" => order => order.Description,
                 "resource" => order => order.ResourceName,
+                "location" => order => order.ServiceLocationDescription,
                 "date" => order => order.Date?.ToString("yyyy-MM-dd") ?? "",
+                "status" => order => order.Status,
                 _ => order => order.Number
             };
-            return (descending ? filtered.OrderByDescending(key, StringComparer.CurrentCultureIgnoreCase)
-                : filtered.OrderBy(key, StringComparer.CurrentCultureIgnoreCase)).ThenBy(order => order.Number).ToList();
-        }
+            return (descending ? rows.OrderByDescending(key, StringComparer.CurrentCultureIgnoreCase)
+                : rows.OrderBy(key, StringComparer.CurrentCultureIgnoreCase)).ThenBy(order => order.Number).ToList();
     }
+    private bool IsExpanded(string number) => expanded.Contains(number) || !string.IsNullOrWhiteSpace(search);
+    private void Toggle(string number)
+    {
+        if (!children.ContainsKey(number)) return;
+        if (!expanded.Add(number)) expanded.Remove(number);
+    }
+    private RenderFragment WorkOrderRow(ReportWorkOrder order, bool child) => @<tr @key="order.Number"
+        class="@(child ? "child-order" : children.ContainsKey(order.Number) ? "parent-order expandable" : "parent-order")"
+        @onclick="() => { if (!child) Toggle(order.Number); }">
+        <td>
+            @if (!child && children.ContainsKey(order.Number))
+            {
+                <button type="button" class="expand-order" aria-label="@($"Onderliggende werkorders van {order.Number} {(IsExpanded(order.Number) ? "inklappen" : "uitklappen")}")"
+                    aria-expanded="@IsExpanded(order.Number)" @onclick="() => Toggle(order.Number)" @onclick:stopPropagation="true">
+                    <svg class="@(IsExpanded(order.Number) ? "expanded" : "")" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+                </button>
+            }
+            <a href="@($"sc/werkorders/{Uri.EscapeDataString(order.Number)}")" data-enhance-nav="false" @onclick:stopPropagation="true">@order.Number</a>
+            @if (order.SafePdfUrl is not null)
+            {
+                <span class="available-report" title="Rapport beschikbaar" role="img" aria-label="Rapport beschikbaar">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 3h9l5 5v13H5Z M14 3v6h5 M9 13h6 M9 17h6" /></svg>
+                </span>
+            }
+        </td>
+        <td>@order.TaskCode</td><td>@order.Description</td><td>@order.ServiceLocationDescription</td><td>@order.ResourceName</td>
+        <td class="date">@(order.Date is { } date && date != DateOnly.MinValue ? date.ToString("dd-MM-yyyy") : "—")</td>
+        <td><span class="order-status">@order.Status</span></td>
+    </tr>;
     private void Sort(string key)
     {
         descending = sort == key && !descending;
@@ -131,6 +164,10 @@
         try
         {
             orders = await ReportsService.GetAsync(lifetime.Token, string.IsNullOrEmpty(selectedCoordinator) ? null : selectedCoordinator);
+            children = orders.Where(order => !string.IsNullOrWhiteSpace(order.ParentNumber))
+                .GroupBy(order => order.ParentNumber, StringComparer.Ordinal)
+                .ToDictionary(group => group.Key, group => group.ToList(), StringComparer.Ordinal);
+            expanded.Clear();
         }
         catch (OperationCanceledException) when (lifetime.IsCancellationRequested) { }
         catch (CoordinatorLookupException exception) { error = exception.Message; }

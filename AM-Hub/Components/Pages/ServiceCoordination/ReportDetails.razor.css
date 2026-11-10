@@ -13,14 +13,12 @@ header p { color: #315e9a; margin: 0; font-size: .85rem; }
 .workorder-column .workorder-information { flex: 1; }
 .workorder-information h2 { padding: 14px 16px; background: #00529b; color: white; border-bottom: 2px solid #0099cc; font-size: 1rem; }
 .order-summary { display: grid; grid-template-columns: 1fr; gap: 18px; padding: 18px 16px; margin: 0; }
+.bc-link { display: block; padding: 14px 16px; border-top: 1px solid #c9e5f0; color: #00529b; font-size: .85rem; }
 dt { font-size: .85rem; color: #315e9a; margin-bottom: 5px; }
 dd { margin: 0; overflow-wrap: anywhere; }
 .pdf-panel { min-width: 0; min-height: 0; border: 1px solid #b9dcec; border-radius: 0; overflow: hidden; display: flex; flex-direction: column; }
 .pdf-panel ::deep hub-pdf-viewer { flex: 1; min-height: 0; }
-.pdf-heading { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; padding: 12px 16px; flex: none; }
 h2 { font-size: 1.25rem; margin: 0; font-weight: 700; }
-.actions { display: flex; gap: 16px; flex-wrap: wrap; }
-.actions a { color: #205599; font-size: .8rem; }
 .notice, .pdf-notice { padding: 20px 22px; background: #fff8e8; color: #72531f; }
 .pdf-notice p { margin-bottom: 12px; }
 .sign-in { display: inline-block; padding: 10px 16px; background: #0050b8; color: white; border-radius: 0; text-decoration: none; }

@@ -5,8 +5,10 @@ namespace AMHub.Services.ServiceCoordination;
 public sealed class ReportWorkOrder
 {
     [JsonPropertyName("No")] public string Number { get; set; } = "";
+    [JsonPropertyName("Parent_Work_Order_No")] public string ParentNumber { get; set; } = "";
     [JsonPropertyName("Task_Code")] public string TaskCode { get; set; } = "";
     [JsonPropertyName("Task_Description")] public string Description { get; set; } = "";
+    [JsonPropertyName("Main_Entity_Description")] public string ServiceLocationDescription { get; set; } = "";
     [JsonPropertyName("Resource_Name")] public string ResourceName { get; set; } = "";
     [JsonPropertyName("Start_Date")] public DateOnly? Date { get; set; }
     [JsonPropertyName("Status")] public string Status { get; set; } = "";

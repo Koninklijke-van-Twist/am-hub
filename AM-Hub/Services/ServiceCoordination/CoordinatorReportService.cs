@@ -33,23 +33,71 @@ public sealed class CoordinatorReportService(HttpClient http, AuthenticationStat
         var code = selection ?? ownCode;
         var orders = await ReadAsync<ReportWorkOrder>(Build("LVS_MainWorkOrderCard", ReportFields,
             $"Status eq 'Completed' and KVT_Service_Coordinator eq '{Escape(code)}'"), token);
-        return orders.Where(order => order.Status == "Completed"
+        var selected = orders.Where(order => order.Status == "Completed"
                 && string.Equals(order.Coordinator?.Trim(), code, StringComparison.OrdinalIgnoreCase))
-            .DistinctBy(order => order.Number).OrderByDescending(order => order.Date).ThenBy(order => order.Number).ToList();
+            .Where(order => !string.IsNullOrWhiteSpace(order.Number))
+            .DistinctBy(order => order.Number).ToDictionary(order => order.Number, StringComparer.Ordinal);
+        if (selected.Count == 0) return [];
+
+        var family = new Dictionary<string, ReportWorkOrder>(selected, StringComparer.Ordinal);
+        var parentNumbers = selected.Values.Where(order => !string.IsNullOrWhiteSpace(order.ParentNumber))
+            .Select(order => order.ParentNumber).ToHashSet(StringComparer.Ordinal);
+        foreach (var parent in await ReadRelatedAsync("No", parentNumbers.Where(number => !family.ContainsKey(number)), token))
+            family[parent.Number] = parent;
+        foreach (var number in parentNumbers)
+        {
+            if (!family.TryGetValue(number, out var parent))
+                throw new CoordinatorLookupException($"De bovenliggende werkorder {number} kon niet worden gevonden. Controleer de koppeling in BC.");
+            if (!string.IsNullOrWhiteSpace(parent.ParentNumber))
+                throw new CoordinatorLookupException($"Werkorder {number} heeft zelf een bovenliggende werkorder. Dit overzicht ondersteunt één parent met directe children.");
+        }
+        var roots = family.Values.Where(order => string.IsNullOrWhiteSpace(order.ParentNumber))
+            .Select(order => order.Number).ToHashSet(StringComparer.Ordinal);
+        foreach (var child in await ReadRelatedAsync("Parent_Work_Order_No", roots, token))
+            family[child.Number] = child;
+        return family.Values.OrderByDescending(order => order.Date).ThenBy(order => order.Number).ToList();
     }
 
-    private const string ReportFields = "No,Task_Code,Task_Description,Resource_Name,Start_Date,Status,KVT_Service_Coordinator,KVT_URL_Workorder_Report_PDF";
+    private const string ReportFields = "No,Parent_Work_Order_No,Task_Code,Task_Description,Main_Entity_Description,Resource_Name,Start_Date,Status,KVT_Service_Coordinator,KVT_URL_Workorder_Report_PDF";
+
+    private async Task<List<ReportWorkOrder>> ReadRelatedAsync(string field, IEnumerable<string> numbers, CancellationToken token)
+    {
+        var results = new List<ReportWorkOrder>();
+        // Bounded same-field OR queries avoid one HTTP request per workorder and long OData URLs.
+        foreach (var chunk in numbers.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).Chunk(30))
+        {
+            var wanted = chunk.ToHashSet(StringComparer.Ordinal);
+            var filter = string.Join(" or ", chunk.Select(number => $"{field} eq '{Escape(number)}'"));
+            var rows = await ReadAsync<ReportWorkOrder>(Build("LVS_MainWorkOrderCard", ReportFields, filter), token);
+            results.AddRange(rows.Where(order => !string.IsNullOrWhiteSpace(order.Number)
+                && wanted.Contains(field == "No" ? order.Number : order.ParentNumber)));
+        }
+        return results;
+    }
 
     public async Task<ReportWorkOrder?> GetDetailAsync(string number, ClaimsPrincipal user, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
         var ownCode = await GetOwnCodeAsync(user, token);
         if (string.IsNullOrWhiteSpace(number) || number.Length > 100) return null;
-        var orders = await ReadAsync<ReportWorkOrder>(Build("LVS_MainWorkOrderCard", ReportFields,
-            $"No eq '{Escape(number)}' and Status eq 'Completed'"), token);
-        return orders.FirstOrDefault(order => order.Number == number && order.Status == "Completed"
-            && (string.Equals(order.Coordinator?.Trim(), ownCode, StringComparison.OrdinalIgnoreCase)
-                || SelectableCoordinators.Contains(order.Coordinator?.Trim().ToUpperInvariant())));
+        var order = (await ReadRelatedAsync("No", [number], token)).FirstOrDefault();
+        if (order is null) return null;
+        bool IsEntry(ReportWorkOrder item) => item.Status == "Completed"
+            && (string.Equals(item.Coordinator?.Trim(), ownCode, StringComparison.OrdinalIgnoreCase)
+                || SelectableCoordinators.Contains(item.Coordinator?.Trim().ToUpperInvariant()));
+        if (IsEntry(order)) return order;
+        var parent = order;
+        if (!string.IsNullOrWhiteSpace(order.ParentNumber))
+        {
+            parent = (await ReadRelatedAsync("No", [order.ParentNumber], token)).FirstOrDefault();
+            if (parent is null || !string.IsNullOrWhiteSpace(parent.ParentNumber)) return null;
+            if (IsEntry(parent)) return order;
+        }
+        var codes = SelectableCoordinators.Append(ownCode).Distinct(StringComparer.OrdinalIgnoreCase);
+        var filter = $"Parent_Work_Order_No eq '{Escape(parent.Number)}' and Status eq 'Completed' and ("
+            + string.Join(" or ", codes.Select(code => $"KVT_Service_Coordinator eq '{Escape(code)}'")) + ")";
+        var children = await ReadAsync<ReportWorkOrder>(Build("LVS_MainWorkOrderCard", ReportFields, filter), token);
+        return children.Any(child => child.ParentNumber == parent.Number && IsEntry(child)) ? order : null;
     }
 
     private async Task<string> GetOwnCodeAsync(ClaimsPrincipal user, CancellationToken token)

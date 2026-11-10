@@ -2,19 +2,20 @@
 
 <div class="top-row navbar navbar-dark">
     <div class="container-fluid p-0">
-        <a class="navbar-brand @(Hub == "am" ? "" : "department-brand")" href="@Hub" aria-label="@($"{Title} home")">
+        <a class="navbar-brand" href="@Hub" aria-label="@($"{Title} home")">
             @if (Hub == "am")
             {
                 <img class="brand-logo" src="images/AMhub-wit.png" alt="AM-Hub" />
             }
             else
             {
-                <svg class="department-logo" viewBox="0 0 120 100" aria-hidden="true">
-                    <g fill="currentColor"><circle cx="15" cy="12" r="7"/><circle cx="60" cy="12" r="7"/><circle cx="105" cy="12" r="7"/></g>
-                    <path d="M8 32v60h104V32L63 66Z" fill="none" stroke="currentColor" stroke-width="4"/>
-                    <path d="m38 51 22-20 23 21M8 32l78 60H8Z" fill="currentColor"/>
+                <svg class="brand-logo" viewBox="0 0 1254 1254" role="img" aria-label="@Title">
+                    <defs>
+                        <clipPath id="department-hub-crown"><rect width="1254" height="750" /></clipPath>
+                    </defs>
+                    <image href="images/AMhub-wit.png" width="1254" height="1254" clip-path="url(#department-hub-crown)" />
+                    <text x="627" y="922" text-anchor="middle" fill="#f8f9fa" font-family="Arial, Helvetica, sans-serif" font-size="190" font-weight="700">@Title</text>
                 </svg>
-                <span>@Title</span>
             }
         </a>
     </div>

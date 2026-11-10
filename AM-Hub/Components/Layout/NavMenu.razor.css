@@ -20,8 +20,6 @@
     object-fit: contain;
     object-position: left center;
 }
-.navbar-brand.department-brand { flex-direction: column; gap: 8px; padding: 36px 20px 28px; color: white; font-size: 2.3rem; font-weight: 700; max-width: 100%; }
-.department-logo { width: 110px; height: 95px; }
 .navbar-toggler {
     appearance: none;
     cursor: pointer;

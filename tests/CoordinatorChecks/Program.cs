@@ -34,7 +34,7 @@ handler.Responses.Enqueue("""{"value":[{"No":"NEW","Status":"Completed","KVT_Ser
 var first = handler.Urls.Count;
 var orders = await service.GetAsync(default);
 Check(orders.Count == 2 && orders[0].Number == "NEW" && orders[1].Number == "OLD", "Backlog, deduplication, ordering or isolation failed");
-Check(handler.Urls.Count == first + 3, "Pagination failed");
+Check(handler.Urls.Count == first + 4, "Pagination or direct children query failed");
 var query = Uri.UnescapeDataString(handler.Urls[first + 1]);
 Check(query.Contains("Status eq 'Completed' and KVT_Service_Coordinator eq 'S''C'"), "Server-side filter or escaping incorrect");
 Check(!query.Contains("Start_Date eq") && !query.Contains("Start_Date ge"), "Old backlog excluded");
@@ -91,12 +91,13 @@ foreach (var coordinator in new[] { "S'C", "MDM", "RK", "SH", "VBR", "OTHER", ""
     first = handler.Urls.Count;
     var detail = await service.GetDetailAsync("DETAIL'1", principal, default);
     Check((detail is not null) == (coordinator is not ("OTHER" or "")), "Detail authorization incorrect");
-    Check(Uri.UnescapeDataString(handler.Urls[first + 1]).Contains("No eq 'DETAIL''1' and Status eq 'Completed'"), "Detail must query one workorder with escaped number");
+    Check(Uri.UnescapeDataString(handler.Urls[first + 1]).Contains("No eq 'DETAIL''1'"), "Detail must query one workorder with escaped number");
 }
 handler.Responses.Enqueue(person);
 handler.Responses.Enqueue("""{"value":[{"No":"CHECKED","Status":"Checked","KVT_Service_Coordinator":"MDM"}]}""");
 Check(await service.GetDetailAsync("CHECKED", principal, default) is null, "Completed status bypassed on detail");
 Console.WriteLine("Coordinator checks passed: identity, selection, filters, paging, backlog, detail authorization, mapping, PDF links and cancellation.");
+await FamilyChecks.RunAsync();
 
 sealed class FakeAuth : AuthenticationStateProvider
 {
@@ -112,6 +113,8 @@ sealed class FakeHandler : HttpMessageHandler
     {
         cancellationToken.ThrowIfCancellationRequested();
         Urls.Add(request.RequestUri!.AbsoluteUri);
+        if (Uri.UnescapeDataString(request.RequestUri.Query).Contains("Parent_Work_Order_No eq"))
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"value\":[]}", Encoding.UTF8, "application/json") });
         return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(Responses.Dequeue(), Encoding.UTF8, "application/json") });
     }
 }

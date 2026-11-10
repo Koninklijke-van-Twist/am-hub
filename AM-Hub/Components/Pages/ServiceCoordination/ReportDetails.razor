@@ -25,11 +25,9 @@
         <div class="workorder-column">
         <header class="workorder-intro">
             <a class="back" href="sc">← Rapporten</a>
-            <h1>Werkorder @Number</h1>
-            <p>Rapport en werkordergegevens.</p>
         </header>
         <aside class="workorder-information" aria-label="Werkordergegevens">
-        <h2>Werkordergegevens</h2>
+        <h2>Werkorder @Number</h2>
         <dl class="order-summary">
             <div><dt>Taak</dt><dd>@order.TaskCode</dd></div>
             <div><dt>Taakomschrijving</dt><dd>@order.Description</dd></div>
@@ -37,26 +35,18 @@
             <div><dt>Datum</dt><dd>@(order.Date is { } date && date != DateOnly.MinValue ? date.ToString("dd-MM-yyyy") : "—")</dd></div>
             <div><dt>Servicecoördinator</dt><dd>@order.Coordinator</dd></div>
         </dl>
+        <a class="bc-link" href="@BusinessCentralUrl" target="_blank" rel="noopener noreferrer">Open werkorder in BC ↗</a>
         </aside>
         </div>
-        <section class="pdf-panel" aria-labelledby="report-title">
-            <div class="pdf-heading">
-                <h2 id="report-title">Monteursrapport</h2>
-                <div class="actions">
-                    @if (sharePointUrl is not null)
-                    {
-                        <a href="@sharePointUrl" target="_blank" rel="noopener noreferrer">Open in SharePoint ↗</a>
-                    }
-                    @if (ready)
-                    {
-                        <a href="@PdfPath" target="_blank" rel="noopener noreferrer">PDF in nieuw tabblad ↗</a>
-                    }
-                </div>
-            </div>
+        <section class="pdf-panel" aria-label="Monteursrapport">
             @if (pdfMessage is not null)
             {
                 <div class="pdf-notice" role="status">
                     <p>@pdfMessage</p>
+                    @if (sharePointUrl is not null)
+                    {
+                        <a href="@sharePointUrl" target="_blank" rel="noopener noreferrer">Open in SharePoint ↗</a>
+                    }
                     @if (needsSignIn)
                     {
                         <a class="sign-in" href="@($"sc/werkorders/{Uri.EscapeDataString(Number)}/aanmelden")" data-enhance-nav="false">Aanmelden voor SharePoint</a>
@@ -65,8 +55,8 @@
             }
             @if (ready)
             {
-                <ReportPdfViewer Source="@PdfPath" WorkOrderNumber="@Number" />
-                <p class="viewer-help">Verschijnt de PDF niet? Open deze in een nieuw tabblad of rechtstreeks in SharePoint.</p>
+                <ReportPdfViewer Source="@PdfPath" WorkOrderNumber="@Number" SharePointUrl="@sharePointUrl" />
+                <p class="viewer-help">Verschijnt de PDF niet? Open deze rechtstreeks in SharePoint.</p>
             }
         </section>
         </div>
@@ -83,6 +73,9 @@
     private bool needsSignIn;
     private bool ready;
     private string PdfPath => $"sc/werkorders/{Uri.EscapeDataString(Number)}/rapport.pdf";
+    private string BusinessCentralUrl =>
+        "https://kvtmd365.kvt.nl/KVTMDLive_AAD/?company=Koninklijke%20van%20Twist&page=11333028&filter="
+        + Uri.EscapeDataString($"'No.' IS '{(order?.Number ?? Number).Replace("'", "''")}'").Replace("'", "%27");
 
     protected override async Task OnParametersSetAsync()
     {

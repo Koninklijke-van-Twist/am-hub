@@ -24,9 +24,10 @@ class HubPdfViewer extends HTMLElement {
                     <span class="hub-pdf-position" role="status" aria-live="polite">Rapport laden…</span>
                     <button type="button" data-action="next" aria-label="Volgende pagina’s" disabled><span>Volgende</span> ›</button>
                 </div>
+                <div class="hub-pdf-external"></div>
                 <div class="hub-pdf-zoom">
                     <button type="button" data-action="out" aria-label="Uitzoomen" disabled>−</button>
-                    <button type="button" data-action="fit" title="De hele pagina passend in beeld" disabled>Hele pagina</button>
+                    <button type="button" data-action="fit" title="Terug naar 100%" disabled>100%</button>
                     <button type="button" data-action="in" aria-label="Inzoomen" disabled>+</button>
                 </div>
             </div>
@@ -35,6 +36,19 @@ class HubPdfViewer extends HTMLElement {
         this.stage = this.querySelector(".hub-pdf-stage");
         this.message = this.querySelector(".hub-pdf-message");
         this.position = this.querySelector(".hub-pdf-position");
+        if (this.dataset.sharepointUrl) {
+            try {
+                const url = new URL(this.dataset.sharepointUrl);
+                if (url.protocol === "https:" && !url.username && !url.password) {
+                    const link = document.createElement("a");
+                    link.href = url.href;
+                    link.target = "_blank";
+                    link.rel = "noopener noreferrer";
+                    link.textContent = "Open in SharePoint ↗";
+                    this.querySelector(".hub-pdf-external").append(link);
+                }
+            } catch { /* An invalid optional link must not prevent rendering the PDF. */ }
+        }
         this.addEventListener("click", event => {
             const button = event.target.closest("button[data-action]");
             if (!button || button.disabled || !this.pdf) return;
@@ -54,14 +68,17 @@ class HubPdfViewer extends HTMLElement {
             event.preventDefault();
         }, { signal: this.controller.signal });
         this.observer = new ResizeObserver(() => {
-            const width = this.stage.clientWidth;
-            const height = this.stage.clientHeight;
+            // Scrollbars change clientWidth/clientHeight while rendering, not the viewer's
+            // actual allocated space. Observing those changes can create a redraw loop.
+            const bounds = this.stage.getBoundingClientRect();
+            const width = Math.round(bounds.width);
+            const height = Math.round(bounds.height);
             if (width === this.width && height === this.height) return;
             this.width = width;
             this.height = height;
             if (this.pdf) this.scheduleRender();
         });
-        this.observer.observe(this.stage);
+        this.observer.observe(this.stage, { box: "border-box" });
         this.load(this.controller.signal);
     }
 
@@ -115,7 +132,7 @@ class HubPdfViewer extends HTMLElement {
         const signal = this.controller.signal;
         const width = Math.max(1, this.stage.clientWidth - 40);
         const height = Math.max(1, this.stage.clientHeight - 40);
-        // Two pages are only shown when both fit at the full available height.
+        // Two pages are only shown when both fit at the current zoom level.
         // Account for each page's aspect ratio, including mixed portrait/landscape reports.
         this.firstPage = Math.max(1, Math.min(this.firstPage, this.pdf.numPages));
         const pairStart = this.firstPage - (this.firstPage - 1) % 2;
@@ -124,7 +141,7 @@ class HubPdfViewer extends HTMLElement {
         if (revision !== this.revision || signal.aborted) return;
         const leftSize = left.getViewport({ scale: 1 });
         const rightSize = right.getViewport({ scale: 1 });
-        const pairWidth = height * (leftSize.width / leftSize.height + rightSize.width / rightSize.height) + 20;
+        const pairWidth = height * (leftSize.width / leftSize.height + rightSize.width / rightSize.height) * this.zoom + 20;
         this.columns = this.pdf.numPages > 1 && width >= Math.max(920, pairWidth) ? 2 : 1;
         if (this.columns === 2) this.firstPage -= (this.firstPage - 1) % 2;
         const last = Math.min(this.firstPage + this.columns - 1, this.pdf.numPages);
@@ -137,12 +154,12 @@ class HubPdfViewer extends HTMLElement {
         );
         this.updateControls(last);
         this.setAttribute("aria-busy", "true");
-        this.message.hidden = false;
+        this.message.hidden = this.stage.childElementCount > 0;
         this.message.textContent = "Pagina’s laden…";
-        this.stage.replaceChildren();
+        // Render the complete spread off-screen. Keep the existing pages visible
+        // until both canvases and their text layers are ready to replace them.
         const spread = document.createElement("div");
         spread.className = "hub-pdf-spread";
-        this.stage.append(spread);
         try {
             // Only the visible one or two pages are rendered. No full-document canvas allocation.
             for (let number = this.firstPage; number <= last; number++) {
@@ -185,6 +202,7 @@ class HubPdfViewer extends HTMLElement {
                 page.cleanup();
             }
             if (revision === this.revision) {
+                this.stage.replaceChildren(spread);
                 this.message.hidden = true;
                 this.setAttribute("aria-busy", "false");
             }
@@ -202,7 +220,7 @@ class HubPdfViewer extends HTMLElement {
         this.querySelector('[data-action="in"]').disabled = this.zoom >= 2;
         const fit = this.querySelector('[data-action="fit"]');
         fit.disabled = false;
-        fit.textContent = this.zoom === 1 ? "Hele pagina" : `${Math.round(this.zoom * 100)}% · Passend`;
+        fit.textContent = `${Math.round(this.zoom * 100)}%`;
     }
 
     showError(error) {

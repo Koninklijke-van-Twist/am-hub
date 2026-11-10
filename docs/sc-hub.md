@@ -12,10 +12,14 @@ Daarna wordt `LVS_MainWorkOrderCard` bevraagd met:
 
 ```text
 $filter=Status eq 'Completed' and KVT_Service_Coordinator eq '<eigen code>'
-$select=No,Task_Code,Task_Description,Resource_Name,Start_Date,Status,KVT_Service_Coordinator,KVT_URL_Workorder_Report_PDF
+$select=No,Parent_Work_Order_No,Task_Code,Task_Description,Resource_Name,Start_Date,Status,KVT_Service_Coordinator,KVT_URL_Workorder_Report_PDF
 ```
 
 Alle vervolgpagina's worden gevolgd, uitsluitend op hetzelfde endpoint en zonder redirects. De resultaten worden aanvullend gecontroleerd op status en coördinator, en ontdubbeld op werkordernummer. Er is geen datumfilter: ook oude uitgevoerde werkorders blijven zichtbaar.
+
+De bovenstaande query vormt de startselectie. Van geselecteerde children worden de directe parents opgehaald op `No`; van alle zo gevonden parents en geselecteerde parents worden alle directe children opgehaald op `Parent_Work_Order_No`. Deze aanvullende queries hebben geen status- of coördinatorfilter. De service gebruikt groepen van maximaal 30 nummers per aanvraag en volgt de vervolgpagina's. Kleinkinderen worden niet opgehaald. Ontbrekende parents of een parent die zelf een parent heeft geven een melding, zodat geselecteerde children niet stilzwijgend verdwijnen.
+
+De lijst toont standaard uitsluitend regels met een leeg `Parent_Work_Order_No`. Klikken op een parentregel of de uitklapknop toont diens directe children, ingesprongen onder de parent. Het werkordernummer blijft een afzonderlijke link naar de rapportdetails. De statuskolom toont de BC-status van elke regel en kan gesorteerd en doorzocht worden. Zoeken op een child houdt de parent zichtbaar en klapt de familie open. Sorteren behoudt de parent-childgroepering; er is geen paginalimiet.
 
 Datum toont voorlopig `Start_Date`, standaard aflopend gesorteerd. Alle werkorders die aan de filters voldoen worden op één pagina getoond, zonder paginalimiet. Zoeken en sorteren gebruiken de geladen gegevens en doen geen nieuwe BC-aanvragen. Openen en Vernieuwen laden actuele BC-gegevens. Prerendering is voor het overzicht uitgeschakeld om dubbele aanvragen te voorkomen.
 
@@ -46,7 +50,7 @@ Optionele niet-geheime instellingen:
 }
 ```
 
-De PDF wordt pas opgehaald wanneer de detailpagina de viewer laadt. Het beveiligde endpoint `/sc/werkorders/{nummer}/rapport.pdf` bepaalt de werkorder en bestandslink opnieuw in BC. Het controleert de eigen medewerkerskaart, status Completed en toewijzing aan de eigen code of MDM/RK/SH/VBR; een willekeurige URL kan niet worden meegegeven. Het bestand wordt met een groottebegrenzing in het geheugen gelezen, op een PDF-header gecontroleerd en als `application/pdf` inline aangeboden met ondersteuning voor range requests. Geen permanente kopieën of gedeelde PDF-cache; responses bevatten `private, no-store`.
+De PDF wordt pas opgehaald wanneer de detailpagina de viewer laadt. Het beveiligde endpoint `/sc/werkorders/{nummer}/rapport.pdf` bepaalt de werkorder en bestandslink opnieuw in BC. Het controleert de eigen medewerkerskaart en of de werkorder zelf Completed is voor de eigen code of MDM/RK/SH/VBR, of tot een directe parent-childfamilie met zo'n Completed-werkorder behoort. Daardoor zijn ook de zichtbare familieleden met andere statussen te openen. Niet-gerelateerde werkorders blijven uitgesloten; de relatie wordt bij elke aanvraag opnieuw gecontroleerd. Een willekeurige URL kan niet worden meegegeven. Het bestand wordt met een groottebegrenzing in het geheugen gelezen, op een PDF-header gecontroleerd en als `application/pdf` inline aangeboden met ondersteuning voor range requests. Geen permanente kopieën of gedeelde PDF-cache; responses bevatten `private, no-store`.
 
 ## Controle
 
