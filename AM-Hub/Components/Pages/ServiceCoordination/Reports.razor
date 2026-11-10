@@ -1,0 +1,145 @@
+@page "/sc"
+@page "/sc/rapporten"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
+@using AMHub.Services.ServiceCoordination
+@inject CoordinatorReportService ReportsService
+@inject ILogger<Reports> Logger
+
+<PageTitle>Rapporten | SC-Hub</PageTitle>
+
+<section class="reports-page">
+    <header class="reports-header">
+        <span class="eyebrow">Service &amp; rapporten</span>
+        <h1>Rapporten</h1>
+        <p>Overzicht van werkorders en taken.</p>
+    </header>
+    <div class="manager-picker">
+            <label class="coordinator-filter">
+                <span>Servicecoördinator</span>
+                <select @bind="selectedCoordinator" @bind:after="LoadAsync" disabled="@loading">
+                    <option value="">Mijn rapporten</option>
+                    @foreach (var coordinator in CoordinatorReportService.SelectableCoordinators)
+                    {
+                        <option value="@coordinator">@coordinator</option>
+                    }
+                </select>
+            </label>
+            <button class="refresh" type="button" disabled="@loading" @onclick="LoadAsync">Vernieuwen</button>
+            <label class="search">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg>
+                <span class="visually-hidden">Rapporten zoeken</span>
+                <input type="search" placeholder="Zoeken..." @bind="Search" @bind:event="oninput" />
+            </label>
+    </div>
+    <div class="reports-panel" aria-busy="@loading.ToString().ToLowerInvariant()">
+        @if (loading)
+        {
+            <p class="state" role="status">Werkorders ophalen…</p>
+        }
+        else if (error is not null)
+        {
+            <p class="state error" role="alert">@error</p>
+        }
+        else
+        {
+            var rows = SortedRows;
+            var total = rows.Count;
+            <div class="table-scroll">
+                <table aria-label="Uitgevoerde werkorders">
+                    <thead><tr>
+                        @foreach (var column in Columns)
+                        {
+                            <th scope="col" aria-sort="@(sort == column.Key ? descending ? "descending" : "ascending" : "none")">
+                                <button type="button" @onclick="() => Sort(column.Key)">@column.Label <span aria-hidden="true">@(sort == column.Key ? descending ? "↓" : "↑" : "↕")</span></button>
+                            </th>
+                        }
+                    </tr></thead>
+                    <tbody>
+                        @foreach (var order in rows)
+                        {
+                            <tr @key="order.Number">
+                                <td>
+                                    <a href="@($"sc/werkorders/{Uri.EscapeDataString(order.Number)}")" data-enhance-nav="false">@order.Number</a>
+                                    @if (order.SafePdfUrl is not null)
+                                    {
+                                        <span class="available-report" title="Rapport beschikbaar" role="img" aria-label="Rapport beschikbaar">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 3h9l5 5v13H5Z M14 3v6h5 M9 13h6 M9 17h6" /></svg>
+                                        </span>
+                                    }
+                                </td>
+                                <td>@order.TaskCode</td><td>@order.Description</td><td>@order.ResourceName</td>
+                                <td class="date">@(order.Date is { } date && date != DateOnly.MinValue ? date.ToString("dd-MM-yyyy") : "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (total == 0)
+            {
+                <p class="state" role="status">@(string.IsNullOrWhiteSpace(Search) ? "Er zijn geen uitgevoerde werkorders voor de gekozen servicecoördinator." : "Geen werkorders gevonden voor deze zoekopdracht.")</p>
+            }
+            <footer class="table-footer">
+                <span role="status">@total resultaten</span>
+            </footer>
+        }
+    </div>
+</section>
+
+@code {
+    private readonly CancellationTokenSource lifetime = new();
+    private List<ReportWorkOrder> orders = [];
+    private bool loading = true;
+    private string? error;
+    private string search = "";
+    private string selectedCoordinator = "";
+    private string sort = "date";
+    private bool descending = true;
+    private static readonly (string Key, string Label)[] Columns =
+        [("number", "Werkorder nummer"), ("task", "Taak"), ("description", "Taak omschrijving"), ("resource", "Monteur"), ("date", "Datum")];
+
+    private string Search { get => search; set => search = value; }
+    private List<ReportWorkOrder> SortedRows
+    {
+        get
+        {
+            var filtered = orders.Where(order => string.IsNullOrWhiteSpace(search) ||
+                new[] { order.Number, order.TaskCode, order.Description, order.ResourceName, order.Date?.ToString("dd-MM-yyyy") }
+                    .Any(value => value?.Contains(search.Trim(), StringComparison.OrdinalIgnoreCase) == true));
+            Func<ReportWorkOrder, string> key = sort switch
+            {
+                "task" => order => order.TaskCode,
+                "description" => order => order.Description,
+                "resource" => order => order.ResourceName,
+                "date" => order => order.Date?.ToString("yyyy-MM-dd") ?? "",
+                _ => order => order.Number
+            };
+            return (descending ? filtered.OrderByDescending(key, StringComparer.CurrentCultureIgnoreCase)
+                : filtered.OrderBy(key, StringComparer.CurrentCultureIgnoreCase)).ThenBy(order => order.Number).ToList();
+        }
+    }
+    private void Sort(string key)
+    {
+        descending = sort == key && !descending;
+        sort = key;
+    }
+    protected override Task OnInitializedAsync() => LoadAsync();
+    private async Task LoadAsync()
+    {
+        loading = true;
+        error = null;
+        try
+        {
+            orders = await ReportsService.GetAsync(lifetime.Token, string.IsNullOrEmpty(selectedCoordinator) ? null : selectedCoordinator);
+        }
+        catch (OperationCanceledException) when (lifetime.IsCancellationRequested) { }
+        catch (CoordinatorLookupException exception) { error = exception.Message; }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "SC-werkorders ophalen mislukt.");
+            error = "De werkorders konden niet worden opgehaald. Probeer opnieuw via Vernieuwen.";
+        }
+        finally { loading = false; }
+    }
+    public void Dispose() { lifetime.Cancel(); lifetime.Dispose(); }
+}

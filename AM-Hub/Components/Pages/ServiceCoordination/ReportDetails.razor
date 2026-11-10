@@ -1,0 +1,126 @@
+@page "/sc/werkorders/{Number}"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@using AMHub.Services.ServiceCoordination
+@using AM_Hub.Components.Shared
+@inject CoordinatorReportService Reports
+@inject SharePointReportPdf Pdf
+@inject IReportAccessToken Tokens
+@inject ILogger<ReportDetails> Logger
+
+<PageTitle>@Number | SC-Hub</PageTitle>
+
+<section class="report-detail">
+    @if (order is null)
+    {
+        <a class="back" href="sc">← Rapporten</a>
+        <h1>Werkorder @Number</h1>
+    }
+    @if (error is not null)
+    {
+        <p class="notice" role="alert">@error</p>
+    }
+    @if (order is not null)
+    {
+        <div class="report-layout">
+        <div class="workorder-column">
+        <header class="workorder-intro">
+            <a class="back" href="sc">← Rapporten</a>
+            <h1>Werkorder @Number</h1>
+            <p>Rapport en werkordergegevens.</p>
+        </header>
+        <aside class="workorder-information" aria-label="Werkordergegevens">
+        <h2>Werkordergegevens</h2>
+        <dl class="order-summary">
+            <div><dt>Taak</dt><dd>@order.TaskCode</dd></div>
+            <div><dt>Taakomschrijving</dt><dd>@order.Description</dd></div>
+            <div><dt>Monteur</dt><dd>@order.ResourceName</dd></div>
+            <div><dt>Datum</dt><dd>@(order.Date is { } date && date != DateOnly.MinValue ? date.ToString("dd-MM-yyyy") : "—")</dd></div>
+            <div><dt>Servicecoördinator</dt><dd>@order.Coordinator</dd></div>
+        </dl>
+        </aside>
+        </div>
+        <section class="pdf-panel" aria-labelledby="report-title">
+            <div class="pdf-heading">
+                <h2 id="report-title">Monteursrapport</h2>
+                <div class="actions">
+                    @if (sharePointUrl is not null)
+                    {
+                        <a href="@sharePointUrl" target="_blank" rel="noopener noreferrer">Open in SharePoint ↗</a>
+                    }
+                    @if (ready)
+                    {
+                        <a href="@PdfPath" target="_blank" rel="noopener noreferrer">PDF in nieuw tabblad ↗</a>
+                    }
+                </div>
+            </div>
+            @if (pdfMessage is not null)
+            {
+                <div class="pdf-notice" role="status">
+                    <p>@pdfMessage</p>
+                    @if (needsSignIn)
+                    {
+                        <a class="sign-in" href="@($"sc/werkorders/{Uri.EscapeDataString(Number)}/aanmelden")" data-enhance-nav="false">Aanmelden voor SharePoint</a>
+                    }
+                </div>
+            }
+            @if (ready)
+            {
+                <ReportPdfViewer Source="@PdfPath" WorkOrderNumber="@Number" />
+                <p class="viewer-help">Verschijnt de PDF niet? Open deze in een nieuw tabblad of rechtstreeks in SharePoint.</p>
+            }
+        </section>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter] public string Number { get; set; } = "";
+    [CascadingParameter] public HttpContext HttpContext { get; set; } = default!;
+    private ReportWorkOrder? order;
+    private string? error;
+    private string? pdfMessage;
+    private string? sharePointUrl;
+    private bool needsSignIn;
+    private bool ready;
+    private string PdfPath => $"sc/werkorders/{Uri.EscapeDataString(Number)}/rapport.pdf";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        HttpContext.Response.Headers.CacheControl = "private, no-store";
+        order = null;
+        error = pdfMessage = sharePointUrl = null;
+        ready = needsSignIn = false;
+        try
+        {
+            order = await Reports.GetDetailAsync(Number, HttpContext.User, HttpContext.RequestAborted);
+            if (order is null)
+            {
+                HttpContext.Response.StatusCode = 404;
+                error = "Deze werkorder is niet beschikbaar in jouw werkvoorraad. Mogelijk is de status of toewijzing gewijzigd.";
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(order.PdfUrl))
+            {
+                pdfMessage = "Bij deze werkorder ontbreekt de PDF-link in Business Central.";
+                return;
+            }
+            sharePointUrl = Pdf.GetFileUri(order.PdfUrl).AbsoluteUri;
+            await Tokens.GetAsync(HttpContext.User, HttpContext.RequestAborted);
+            ready = true;
+        }
+        catch (CoordinatorLookupException exception) { error = exception.Message; HttpContext.Response.StatusCode = 403; }
+        catch (ReportPdfException exception) { pdfMessage = exception.Message; }
+        catch (Exception exception) when (ReportAccessToken.NeedsSignIn(exception))
+        {
+            needsSignIn = true;
+            pdfMessage = "Meld je aan voor SharePoint om het rapport binnen de hub te bekijken.";
+        }
+        catch (OperationCanceledException) when (HttpContext.RequestAborted.IsCancellationRequested) { }
+        catch (Exception exception)
+        {
+            Logger.LogWarning("Rapportdetail laden mislukt ({ExceptionType}).", exception.GetType().Name);
+            if (order is null) error = "De werkorder kon niet worden opgehaald. Probeer het later opnieuw.";
+            else pdfMessage = "De SharePoint-koppeling kon niet worden gestart. Controleer de appconfiguratie of open het rapport in SharePoint.";
+        }
+    }
+}

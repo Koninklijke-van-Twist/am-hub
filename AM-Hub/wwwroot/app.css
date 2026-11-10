@@ -2,6 +2,20 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+/* Shared hub design: square corners, including Bootstrap and component controls. */
+:root {
+    --bs-border-radius: 0;
+    --bs-border-radius-sm: 0;
+    --bs-border-radius-lg: 0;
+    --bs-border-radius-xl: 0;
+    --bs-border-radius-xxl: 0;
+    --bs-border-radius-pill: 0;
+}
+
+*, *::before, *::after {
+    border-radius: 0 !important;
+}
+
 a, .btn-link {
     color: #006bb7;
 }

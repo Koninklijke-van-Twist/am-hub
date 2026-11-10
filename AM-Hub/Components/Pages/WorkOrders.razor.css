@@ -19,7 +19,7 @@ h1 { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; margin: 8px 0 12px
 .workorder-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
 .workorder-content { min-width: 0; }
 h2 { font-size: 1.1rem; font-weight: 700; color: var(--blue); margin: 0; }
-button { border: 1px solid var(--border); border-radius: 6px; background: white; color: var(--navy); padding: 10px 14px; font-size: .82rem; font-weight: 600; }
+button { border: 1px solid var(--border); border-radius: 0; background: white; color: var(--navy); padding: 10px 14px; font-size: .82rem; font-weight: 600; }
 button:hover { background: #eaf7fc; border-color: #8ec4df; }
 button:disabled { opacity: .45; cursor: default; }
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #0099cc; outline-offset: 3px; }
@@ -45,7 +45,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .order { display: flex; flex-direction: column; gap: 2px; text-align: left; border: 1px solid var(--border); border-left: 3px solid; background: white; border-radius: 0; min-width: 0; padding: 8px 10px; font-size: .8rem; line-height: 1.35; font-weight: 400; overflow-wrap: anywhere; }
 .order .order-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 2px; }
 .order-heading strong { font-size: .9rem; color: var(--blue); }
-.status-badge { padding: 3px 8px; border: 1px solid var(--border); border-radius: 20px; background: #eaf7fc; font-size: .7rem; }
+.status-badge { padding: 3px 8px; border: 1px solid var(--border); border-radius: 0; background: #eaf7fc; font-size: .7rem; }
 .order small { margin-top: 0; padding-top: 3px; color: var(--muted); }
 .calendar-panel { padding: 16px; border: 1px solid var(--border); border-radius: 0; background: white; position: sticky; top: 6rem; }
 .week-navigation { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin: 14px 0; }
@@ -78,4 +78,4 @@ dd { margin: 0; overflow-wrap: anywhere; font-weight: 500; }
 @media (max-width: 480px) { .agenda > .toolbar:first-child { margin: -16px -16px 16px; } }
 .manager-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding: 16px 20px; border: 1px solid var(--border); border-radius: 0; background: #f4fbfe; }
 .manager-picker label { color: var(--navy); font-size: .85rem; font-weight: 600; }
-.manager-picker select { min-width: 160px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; color: #1b2a3a; }
+.manager-picker select { min-width: 160px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 0; background: white; color: #1b2a3a; }

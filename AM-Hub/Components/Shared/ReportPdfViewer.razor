@@ -1,0 +1,9 @@
+<hub-pdf-viewer data-pdf-url="@Source" aria-label="@($"Monteursrapport bij werkorder {WorkOrderNumber}")">
+    <p class="pdf-viewer-loading" role="status">Rapport laden…</p>
+    <noscript>Schakel JavaScript in om het rapport hier te bekijken, of open de PDF via de bovenstaande link.</noscript>
+</hub-pdf-viewer>
+
+@code {
+    [Parameter, EditorRequired] public string Source { get; set; } = "";
+    [Parameter, EditorRequired] public string WorkOrderNumber { get; set; } = "";
+}

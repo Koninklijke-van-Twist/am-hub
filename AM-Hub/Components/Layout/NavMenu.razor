@@ -1,27 +1,45 @@
+@inject NavigationManager Navigation
+
 <div class="top-row navbar navbar-dark">
     <div class="container-fluid p-0">
-        <a class="navbar-brand" href="" aria-label="AM-Hub home">
-            <img class="brand-logo" src="images/AMhub-wit.png" alt="AM-Hub" />
+        <a class="navbar-brand @(Hub == "am" ? "" : "department-brand")" href="@Hub" aria-label="@($"{Title} home")">
+            @if (Hub == "am")
+            {
+                <img class="brand-logo" src="images/AMhub-wit.png" alt="AM-Hub" />
+            }
+            else
+            {
+                <svg class="department-logo" viewBox="0 0 120 100" aria-hidden="true">
+                    <g fill="currentColor"><circle cx="15" cy="12" r="7"/><circle cx="60" cy="12" r="7"/><circle cx="105" cy="12" r="7"/></g>
+                    <path d="M8 32v60h104V32L63 66Z" fill="none" stroke="currentColor" stroke-width="4"/>
+                    <path d="m38 51 22-20 23 21M8 32l78 60H8Z" fill="currentColor"/>
+                </svg>
+                <span>@Title</span>
+            }
         </a>
     </div>
 </div>
-
 <input type="checkbox" aria-label="Navigatiemenu openen of sluiten" aria-controls="main-navigation" class="navbar-toggler" />
-
 <div class="nav-scrollable" id="main-navigation" onclick="if (event.target.closest('a')) document.querySelector('.navbar-toggler').checked = false">
     <nav class="nav flex-column" aria-label="Hoofdnavigatie">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="werkorders">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5v16h14V5h-4 M9 3h6v4H9Z m-1 9 2 2 4-4 M8 17h8" /></svg> Geplande werkorders
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="offerte">
-                <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5Z M14 3v5h5 M9 12h6 M9 16h6" /></svg> Offerte
-            </NavLink>
-        </div> 
-
-        
+        @if (Hub == "am")
+        {
+            <div class="nav-item px-3"><NavLink class="nav-link" href="am/werkorders"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5v16h14V5h-4 M9 3h6v4H9Z m-1 9 2 2 4-4 M8 17h8" /></svg> Geplande werkorders</NavLink></div>
+            <div class="nav-item px-3"><NavLink class="nav-link" href="am/offerte"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5Z M14 3v5h5 M9 12h6 M9 16h6" /></svg> Offerte</NavLink></div>
+        }
+        else if (Hub == "sc")
+        {
+            <div class="nav-item px-3"><NavLink class="nav-link" href="sc"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h10l4 4v14H5Z M14 3v5h5 M9 12h6 M9 16h6" /></svg> Rapporten</NavLink></div>
+        }
     </nav>
 </div>
 
+@code {
+    private string Hub => Navigation.ToBaseRelativePath(Navigation.Uri).Split('/', '?', '#')[0].ToLowerInvariant() switch
+    {
+        "sc" => "sc",
+        "f" => "f",
+        _ => "am"
+    };
+    private string Title => Hub == "sc" ? "SC-hub" : Hub == "f" ? "F-hub" : "AM-Hub";
+}

@@ -381,9 +381,9 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
         </h1>
 
         <p class="document-section">
-            De onderstaande onderhoudstaken bieden wij u aan. Het uitgangspunt in onze dienstlevering is dat minimaal het jaarlijks preventief onderhoud wordt afgenomen, eventueel aangevuld met onze 24/7 storingsdienst. <br><br>
+            De onderstaande onderhoudswerkzaamheden bieden wij u aan. Het uitgangspunt in onze dienstlevering is dat minimaal het jaarlijks preventief onderhoud wordt afgenomen, eventueel aangevuld met onze 24/7 storingsdienst. <br><br>
             Naast de onderstaande werkzaamheden heeft Koninklijke van Twist tal van aanvullende servicediensten die de
-            betrouwbaarheid van uw installatie vergroten. In het
+            betrouwbaarheid van uw installatie verhogen. In het
             hoofdstuk ‘Uitgangspunten’ treft u een nadere omschrijving van de aangeboden werkzaamheden en eventuele aanvullende diensten.
         
         </p>
@@ -393,7 +393,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
             <div class="aggregate-summary-columns">
 
                 <div>
-                    Component / Omschrijving
+                    Installatie / Omschrijving
                 </div>
 
                 <div class="money">
@@ -551,7 +551,7 @@ public class OfferteHtmlRenderer : IOfferteHtmlRenderer
                 </span>
 
                 <div class="aggregate-summary-grand-total-subtitle">
-                    Totaal voor alle componenten en werkzaamheden
+                    Totaal voor alle installaties en werkzaamheden
                 </div>
             </div>
 
