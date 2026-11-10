@@ -1,5 +1,4 @@
 using AMHub.Models.Documents;
-using Microsoft.AspNetCore.Hosting;
 using System.Globalization;
 using System.Net;
 using System.Text;
