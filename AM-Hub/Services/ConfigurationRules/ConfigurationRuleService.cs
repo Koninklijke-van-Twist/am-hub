@@ -115,6 +115,7 @@ public class ConfigurationRuleService : IConfigurationRuleService
                 return new ConfigurationComponentColumn
                 {
                     ComponentNo = detail.ComponentNo ?? "",
+                    LocationNumber = detail.MainEntity ?? "",
                     SubEntity = detail.SubEntity ?? "",
                     ComponentDescription =
                         detail.ComponentDescription ?? "",

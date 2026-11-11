@@ -20,6 +20,9 @@
 .quote-page .quote-nav, .quote-page .info-grid { margin-bottom: 0; }
 .quote-hero { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px; padding: 28px; background: linear-gradient(115deg, #003b70, #00529b 70%, #007cab); border-radius: 0; color: white; }
 .quote-hero > div:first-child { min-width: 0; }
+.quote-title { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.info-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.record-with-bc-link, .component-number.record-with-bc-link { display: flex; align-items: center; justify-content: center; gap: 6px; }
 h1 { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; margin: 10px 0; overflow-wrap: anywhere; }
 .quote-description { margin: 0 0 20px; color: #eaf7fc; overflow-wrap: anywhere; }
 .hero-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; font-size: .8rem; }

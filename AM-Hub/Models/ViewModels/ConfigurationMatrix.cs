@@ -12,6 +12,7 @@ public class ConfigurationComponentColumn
     public string ComponentDescription { get; set; } = string.Empty;
     public string SubEntity { get; set; } = string.Empty;
     public string LocationDescription { get; set; } = string.Empty;
+    public string LocationNumber { get; set; } = string.Empty;
 }
 
 public class ConfigurationTaskRow

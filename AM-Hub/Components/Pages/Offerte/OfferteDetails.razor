@@ -7,6 +7,7 @@
 @using AMHub.Services.ConfigurationRules
 @using AMHub.Services.Customers
 @using AMHub.Services.SalesPersons
+@using AM_Hub.Components.Shared
 @inject ISalesQuoteService SalesQuoteService
 @inject IConfigurationRuleService ConfigurationRuleService
 @inject IAppCustomerService AppCustomerService
@@ -34,7 +35,7 @@
         <header class="quote-hero">
             <div>
                 
-                <h1>Offerte @OfferteNummer</h1>
+                <h1 class="quote-title">Offerte @OfferteNummer <BusinessCentralLink Page="41" RecordNumber="@quote.Number" RecordLabel="offerte" /></h1>
                 <p class="quote-description">@Display(quote.Description)</p>
                 <div class="hero-tags">
                     <span class="status-badge">@Display(quote.DocumentStatus)</span>
@@ -77,7 +78,7 @@
         </div>
         <section class="info-grid" aria-label="Klant en accountmanager">
             <article class="info-card">
-                <h2>Klantgegevens</h2>
+                <h2 class="info-card-heading"><span>Klantgegevens</span><BusinessCentralLink Page="21" RecordNumber="@quote.CustomerNumber" RecordLabel="klant" /></h2>
                 <p class="customer-name">@Display(customer?.Name ?? quote.CustomerName)</p>
                 <dl>
                     <dt>Klantnummer</dt><dd>@Display(quote.CustomerNumber)</dd>
@@ -90,7 +91,7 @@
                 <dl><dt>Naam</dt><dd>@Display(quote.ContactName)</dd><dt>E-mail</dt><dd>@Display(quote.ContactEmail)</dd></dl>
             </article>
             <article class="info-card">
-                <h2>Accountmanager</h2>
+                <h2 class="info-card-heading"><span>Accountmanager</span><BusinessCentralLink Page="5116" RecordNumber="@quote.SalespersonCode" KeyField="Code" RecordLabel="accountmanager" /></h2>
                 <dl><dt>Naam</dt><dd>@Display(salesPerson?.Name)</dd><dt>E-mail</dt><dd>@Display(salesPerson?.Email)</dd></dl>
             </article>
         </section>
@@ -110,9 +111,9 @@
                                 @foreach (var component in matrix.Components)
                                 {
                                     <th scope="col">
-                                        <span class="component-number">@component.ComponentNo</span>
+                                        <span class="component-number record-with-bc-link">@component.ComponentNo <BusinessCentralLink Page="11332880" RecordNumber="@component.ComponentNo" RecordLabel="component" /></span>
                                         <span class="component-description">@Display(component.ComponentDescription)</span>
-                                        <small>@Display(component.LocationDescription)</small>
+                                        <small class="record-with-bc-link">@Display(component.LocationDescription) <BusinessCentralLink Page="11333009" RecordNumber="@component.LocationNumber" RecordLabel="servicelocatie" /></small>
                                     </th>
                                 }
                             </tr></thead>

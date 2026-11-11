@@ -1,0 +1,33 @@
+@using AMHub.Services.BusinessCentral
+
+@if (!string.IsNullOrWhiteSpace(RecordNumber))
+{
+    <a class="bc-record-link" href="@BusinessCentralRecordUrl.Build(Page, RecordNumber, KeyField)"
+       target="_blank" rel="noopener noreferrer" title="@AccessibleLabel" aria-label="@AccessibleLabel">
+        @Icon
+    </a>
+}
+else
+{
+    <span class="bc-record-link unavailable" role="img" title="@MissingLabel" aria-label="@MissingLabel">@Icon</span>
+}
+
+@code {
+    [Parameter, EditorRequired] public int Page { get; set; }
+    [Parameter] public string? RecordNumber { get; set; }
+    [Parameter] public string KeyField { get; set; } = "No.";
+    [Parameter] public string RecordLabel { get; set; } = "record";
+    private readonly string maskId = "bc-icon-" + Guid.NewGuid().ToString("N");
+    private string AccessibleLabel => $"Open {RecordLabel} {RecordNumber} in BC (nieuw tabblad)";
+    private string MissingLabel => $"BC-link voor {RecordLabel} niet beschikbaar: recordnummer ontbreekt";
+    private RenderFragment Icon => @<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <defs>
+            <mask id="@maskId" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+                <rect width="64" height="64" fill="white" />
+                <text x="10" y="47" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="900" fill="black">BC</text>
+            </mask>
+        </defs>
+        <path d="M14 16h29c6 0 9 4 9 10v24c0 6-3 9-9 9H14c-6 0-9-3-9-9V26c0-6 3-10 9-10Z" fill="currentColor" mask="@($"url(#{maskId})")" />
+        <path d="M43 5h16v16M58 6 42 22" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>;
+}
