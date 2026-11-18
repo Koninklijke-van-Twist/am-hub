@@ -1,4 +1,11 @@
 .report-detail { height: calc(100dvh - 5.6rem); box-sizing: border-box; padding: 12px 0; color: #002b68; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.status-form { padding: 0 16px 18px; }
+.status-form button + button { margin-top: 10px; }
+.status-feedback { margin: 12px 0 0; font-size: .85rem; overflow-wrap: anywhere; }
+.status-feedback[role="alert"] { color: #a32020; }
+.status-form button { width: 100%; padding: 12px; border: 0; background: #00529b; color: white; font: inherit; cursor: pointer; }
+.status-form button:disabled { opacity: .5; cursor: default; }
+.status-form button:focus-visible { outline: 2px solid #0059b5; outline-offset: 3px; }
 .back { color: #205599; text-decoration: none; }
 .back:hover { text-decoration: underline; }
 header { margin: 0; }

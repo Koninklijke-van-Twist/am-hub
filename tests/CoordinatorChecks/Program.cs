@@ -81,6 +81,22 @@ first = handler.Urls.Count;
 try { await service.GetAsync(cancellation.Token); throw new Exception("Cancellation ignored"); }
 catch (OperationCanceledException) { Check(handler.Urls.Count == first, "Request sent after cancellation"); }
 var principal = (await auth.GetAuthenticationStateAsync()).User;
+foreach (var (body, expected) in new[]
+{
+    ("""{"error":{"code":"BadRequest","message":"Status Checked is niet toegestaan."}}""", "Status Checked is niet toegestaan."),
+    ("""{"error":{"message":{"lang":"nl","value":"Wijzigen niet toegestaan."}}}""", "Wijzigen niet toegestaan."),
+    ("<html>proxy failure</html>", "BC heeft geen leesbare foutmelding teruggegeven."),
+    ("{}", "BC heeft geen leesbare foutmelding teruggegeven.")
+})
+{
+    using var response = new HttpResponseMessage(HttpStatusCode.BadRequest) { Content = new StringContent(body) };
+    try { await BusinessCentralRequestException.EnsureSuccessAsync(response, default); throw new Exception("BC failure accepted"); }
+    catch (BusinessCentralRequestException exception)
+    {
+        Check(exception.StatusCode == 400 && exception.Message.Contains("HTTP 400") && exception.Message.Contains(expected), "BC error details lost");
+        Check(!exception.Message.Contains("<html>"), "Raw proxy body exposed");
+    }
+}
 foreach (var coordinator in new[] { "S'C", "MDM", "RK", "SH", "VBR", "OTHER", "" })
 {
     handler.Responses.Enqueue(person);
@@ -96,7 +112,34 @@ foreach (var coordinator in new[] { "S'C", "MDM", "RK", "SH", "VBR", "OTHER", ""
 handler.Responses.Enqueue(person);
 handler.Responses.Enqueue("""{"value":[{"No":"CHECKED","Status":"Checked","KVT_Service_Coordinator":"MDM"}]}""");
 Check(await service.GetDetailAsync("CHECKED", principal, default) is null, "Completed status bypassed on detail");
-Console.WriteLine("Coordinator checks passed: identity, selection, filters, paging, backlog, detail authorization, mapping, PDF links and cancellation.");
+handler.Responses.Enqueue(person);
+handler.Responses.Enqueue("""{"value":[{"No":"WO'1","Status":"Completed","KVT_Service_Coordinator":"MDM","@odata.etag":"W/\"version1\""}]}""");
+handler.Responses.Enqueue("""{"value":[{"id":"71445ea7-90fe-f011-ac80-00155d0a3441","no":"WO'1","status":"Completed","@odata.etag":"W/\"api1\""}]}""");
+handler.Responses.Enqueue("{}");
+await service.MarkCheckedAsync("WO'1", principal, default);
+Check(handler.PatchUri == "https://bc.test/api/logicVision/serviceApp/v2.0/maintenanceworkorders(71445ea7-90fe-f011-ac80-00155d0a3441)?company=Test", "PATCH must target LogicVision API, configured environment, company and GUID");
+Check(handler.Urls.Any(url => Uri.UnescapeDataString(url).Contains("no eq 'WO''1'")), "API lookup must escape workorder number");
+Check(handler.PatchBody == "{\"status\":\"Checked\"}" && handler.IfMatch == "W/\"api1\"", "PATCH must send only lowercase status and API ETag");
+handler.Responses.Enqueue(person);
+handler.Responses.Enqueue("""{"value":[{"No":"WO1","Status":"Completed","KVT_Service_Coordinator":"MDM","@odata.etag":"W/\"version2\""}]}""");
+handler.Responses.Enqueue("""{"value":[{"id":"71445ea7-90fe-f011-ac80-00155d0a3441","no":"WO1","status":"Completed","@odata.etag":"W/\"api2\""}]}""");
+handler.Responses.Enqueue("{}");
+await service.ChangeStatusAsync("WO1", "Signed", principal, default);
+Check(handler.PatchBody == "{\"status\":\"Signed\"}" && handler.IfMatch == "W/\"api2\"", "Signed PATCH payload or ETag incorrect");
+foreach (var status in new[] { "Open", "Completed" })
+{
+    handler.Responses.Enqueue(person);
+    handler.Responses.Enqueue(System.Text.Json.JsonSerializer.Serialize(new { value = new[] {
+        new { No = "WO2", Status = status, KVT_Service_Coordinator = "MDM", Parent_Work_Order_No = "WO'1" } } }));
+    if (status == "Open")
+        handler.Responses.Enqueue("""{"value":[{"No":"WO'1","Status":"Completed","KVT_Service_Coordinator":"MDM"}]}""");
+    else
+        handler.Responses.Enqueue("""{"value":[{"id":"71445ea7-90fe-f011-ac80-00155d0a3441","no":"WO2","status":"Completed"}]}""");
+    var patches = handler.PatchCount;
+    try { await service.MarkCheckedAsync("WO2", principal, default); throw new Exception("Invalid transition or missing ETag accepted"); }
+    catch (CoordinatorLookupException) { Check(handler.PatchCount == patches, "Invalid update sent to BC"); }
+}
+Console.WriteLine("Coordinator checks passed, including Checked write target, payload, ETag and transition validation.");
 await FamilyChecks.RunAsync();
 
 sealed class FakeAuth : AuthenticationStateProvider
@@ -109,12 +152,21 @@ sealed class FakeHandler : HttpMessageHandler
 {
     public Queue<string> Responses { get; } = new();
     public List<string> Urls { get; } = [];
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    public string? PatchUri, PatchBody, IfMatch;
+    public int PatchCount;
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         Urls.Add(request.RequestUri!.AbsoluteUri);
+        if (request.Method == HttpMethod.Patch)
+        {
+            PatchCount++;
+            PatchUri = request.RequestUri.AbsoluteUri;
+            PatchBody = await request.Content!.ReadAsStringAsync(cancellationToken);
+            IfMatch = request.Headers.GetValues("If-Match").Single();
+        }
         if (Uri.UnescapeDataString(request.RequestUri.Query).Contains("Parent_Work_Order_No eq"))
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"value\":[]}", Encoding.UTF8, "application/json") });
-        return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(Responses.Dequeue(), Encoding.UTF8, "application/json") });
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"value\":[]}", Encoding.UTF8, "application/json") };
+        return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(Responses.Dequeue(), Encoding.UTF8, "application/json") };
     }
 }

@@ -34,7 +34,16 @@
             <div><dt>Monteur</dt><dd>@order.ResourceName</dd></div>
             <div><dt>Datum</dt><dd>@(order.Date is { } date && date != DateOnly.MinValue ? date.ToString("dd-MM-yyyy") : "—")</dd></div>
             <div><dt>Servicecoördinator</dt><dd>@order.Coordinator</dd></div>
+            <div><dt>Status</dt><dd data-workorder-status>@order.Status</dd></div>
         </dl>
+        <hub-report-status>
+        <form method="post" action="@($"sc/werkorders/{Uri.EscapeDataString(Number)}/checked")" data-enhance="false" class="status-form">
+            <AntiforgeryToken />
+            <button type="submit" data-status="Signed" formaction="@($"sc/werkorders/{Uri.EscapeDataString(Number)}/signed")" disabled="@(order.Status != "Completed")">Status wijzigen naar Signed</button>
+            <button type="submit" data-status="Checked" disabled="@(order.Status != "Completed")">Status wijzigen naar Checked</button>
+            <p class="status-feedback" role="status" aria-live="polite" hidden></p>
+        </form>
+        </hub-report-status>
         <a class="bc-link" href="@BusinessCentralUrl" target="_blank" rel="noopener noreferrer">Open werkorder in BC ↗</a>
         </aside>
         </div>

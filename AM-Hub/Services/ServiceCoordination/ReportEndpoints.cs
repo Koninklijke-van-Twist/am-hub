@@ -9,8 +9,57 @@ public static class ReportEndpoints
 {
     public static void MapCoordinatorReportEndpoints(this WebApplication app)
     {
+        app.MapPost("/sc/werkorders/{number}/checked", CheckedAsync).RequireAuthorization();
+        app.MapPost("/sc/werkorders/{number}/signed", SignedAsync).RequireAuthorization();
         app.MapGet("/sc/werkorders/{number}/rapport.pdf", PdfAsync).RequireAuthorization();
         app.MapGet("/sc/werkorders/{number}/aanmelden", SignInAsync).RequireAuthorization();
+    }
+
+    private static Task<IResult> CheckedAsync(string number, HttpContext context,
+        CoordinatorReportService reports, ILoggerFactory logs) => ChangeStatusAsync(number, "Checked", context, reports, logs);
+
+    private static Task<IResult> SignedAsync(string number, HttpContext context,
+        CoordinatorReportService reports, ILoggerFactory logs) => ChangeStatusAsync(number, "Signed", context, reports, logs);
+
+    private static async Task<IResult> ChangeStatusAsync(string number, string status, HttpContext context,
+        CoordinatorReportService reports, ILoggerFactory logs)
+    {
+        PrivateResponse(context);
+        var antiforgery = context.RequestServices.GetRequiredService<Microsoft.AspNetCore.Antiforgery.IAntiforgery>();
+        try { await antiforgery.ValidateRequestAsync(context); }
+        catch (Microsoft.AspNetCore.Antiforgery.AntiforgeryValidationException)
+        {
+            return Results.Text("De pagina is verlopen. Vernieuw de pagina en probeer opnieuw.", statusCode: 400);
+        }
+        try
+        {
+            await reports.ChangeStatusAsync(number, status, context.User, context.RequestAborted);
+            context.RequestServices.GetService<AMHub.Services.WorkOrders.WorkOrderDataCache>()?.Clear();
+            if (context.Request.Headers.Accept.Any(value => value?.Contains("application/json", StringComparison.OrdinalIgnoreCase) == true))
+                return Results.Json(new { status, message = $"Status gewijzigd naar {status}." });
+            if (status == "Signed") return Results.LocalRedirect($"{context.Request.PathBase}/sc/rapporten");
+            return Results.LocalRedirect($"{context.Request.PathBase}/sc/rapporten?checked={Uri.EscapeDataString(number)}");
+        }
+        catch (CoordinatorLookupException exception) { return Results.Text(exception.Message, statusCode: 409); }
+        catch (BusinessCentralRequestException exception)
+        {
+            logs.CreateLogger("SC.Status").LogWarning("BC heeft het statusverzoek geweigerd (HTTP {StatusCode}).", exception.StatusCode);
+            return Results.Text(exception.Message, statusCode: 502);
+        }
+        catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested) { return Results.StatusCode(499); }
+        catch (OperationCanceledException)
+        {
+            return Results.Text("De verbinding met BC duurde te lang. De wijziging is mogelijk al verwerkt. Controleer de status in BC voordat je opnieuw probeert.", statusCode: 504);
+        }
+        catch (HttpRequestException)
+        {
+            return Results.Text("De verbinding met BC is mislukt of onderbroken. Controleer de bereikbaarheid en de status in BC voordat je opnieuw probeert.", statusCode: 502);
+        }
+        catch (Exception exception)
+        {
+            logs.CreateLogger("SC.Status").LogWarning("Status wijzigen mislukt ({ExceptionType}).", exception.GetType().Name);
+            return Results.Text("De status kon niet worden bevestigd. Ga terug en vernieuw de pagina. Controleer de werkorder in BC voordat je opnieuw probeert.", statusCode: 502);
+        }
     }
 
     private static async Task<IResult> PdfAsync(string number, HttpContext context,

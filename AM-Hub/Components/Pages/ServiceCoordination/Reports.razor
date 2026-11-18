@@ -14,6 +14,10 @@
         <h1>Rapporten</h1>
         <p>Overzicht van werkorders en taken.</p>
     </header>
+    @if (!string.IsNullOrWhiteSpace(CheckedNumber))
+    {
+        <p role="status">Status van werkorder @CheckedNumber gewijzigd naar Checked.</p>
+    }
     <div class="manager-picker">
             <label class="coordinator-filter">
                 <span>Servicecoördinator</span>
@@ -82,6 +86,7 @@
 </section>
 
 @code {
+    [SupplyParameterFromQuery(Name = "checked")] public string? CheckedNumber { get; set; }
     private readonly CancellationTokenSource lifetime = new();
     private List<ReportWorkOrder> orders = [];
     private Dictionary<string, List<ReportWorkOrder>> children = new(StringComparer.Ordinal);

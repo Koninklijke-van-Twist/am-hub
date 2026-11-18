@@ -64,6 +64,11 @@ tbody tr:nth-child(odd) { background: white; }
 tbody tr:nth-child(even) { background: #f6fbfe; }
 tbody th { font-weight: 500; }
 td { white-space: nowrap; text-align: center; font-variant-numeric: tabular-nums; }
+.task-quantity { color: #0073c4; font-weight: 700; margin-right: 10px; }
+.task-total { display: none; margin-top: 6px; color: var(--blue); font-size: .75rem; }
+tbody tr:hover .task-total, tbody tr:focus-within .task-total { display: block; }
+tbody td:focus-visible { outline: 2px solid #0099cc; outline-offset: -2px; }
+@media (hover: none) { .task-total { display: block; } }
 tfoot { background: var(--blue); color: white; font-weight: 700; }
 tfoot th, tfoot td { border-top: 2px solid #0099cc; border-bottom: 0; }
 .state-panel, .empty-message { padding: 28px; color: var(--muted); margin: 0; }

@@ -100,6 +100,52 @@ public sealed class CoordinatorReportService(HttpClient http, AuthenticationStat
         return children.Any(child => child.ParentNumber == parent.Number && IsEntry(child)) ? order : null;
     }
 
+    public Task MarkCheckedAsync(string number, ClaimsPrincipal user, CancellationToken token) =>
+        ChangeStatusAsync(number, "Checked", user, token);
+
+    private sealed class ApiWorkOrder
+    {
+        [JsonPropertyName("id")] public Guid Id { get; set; }
+        [JsonPropertyName("no")] public string Number { get; set; } = "";
+        [JsonPropertyName("status")] public string Status { get; set; } = "";
+        [JsonPropertyName("@odata.etag")] public string? ETag { get; set; }
+    }
+
+    public async Task ChangeStatusAsync(string number, string status, ClaimsPrincipal user, CancellationToken token)
+    {
+        if (status is not ("Checked" or "Signed"))
+            throw new CoordinatorLookupException("Deze doelstatus wordt niet ondersteund.");
+        var order = await GetDetailAsync(number, user, token)
+            ?? throw new CoordinatorLookupException("Deze werkorder is niet beschikbaar in jouw werkvoorraad.");
+        if (order.Status == status) return;
+        if (order.Status != "Completed")
+            throw new CoordinatorLookupException($"Alleen een werkorder met status Completed kan naar {status} worden gewijzigd.");
+        var options = configuration.Value;
+        var odataRoot = new Uri(options.BaseUrl.TrimEnd('/') + "/");
+        if (!odataRoot.AbsolutePath.EndsWith("/ODataV4/", StringComparison.OrdinalIgnoreCase))
+            throw new CoordinatorLookupException("De BC BaseUrl moet eindigen op /ODataV4/ om de werkorder-API te bepalen.");
+        var apiRoot = new Uri(odataRoot, "../api/logicVision/serviceApp/v2.0/");
+        var company = Uri.EscapeDataString(options.Company);
+        var lookup = new Uri(apiRoot, $"maintenanceworkorders?company={company}&$select=id,no,status&$top=2&$filter={Uri.EscapeDataString($"no eq '{Escape(order.Number)}'")}");
+        var matches = await ReadAsync<ApiWorkOrder>(lookup, token);
+        if (matches.Count != 1 || matches[0].Number != order.Number || matches[0].Id == Guid.Empty)
+            throw new CoordinatorLookupException("De werkorder kon niet uniek worden gevonden in de LogicVision-API. De status is niet gewijzigd.");
+        var apiOrder = matches[0];
+        if (apiOrder.Status == status) return;
+        if (apiOrder.Status != "Completed")
+            throw new CoordinatorLookupException($"De huidige API-status is {apiOrder.Status}. Vernieuw de pagina; de status is niet gewijzigd.");
+        if (string.IsNullOrWhiteSpace(apiOrder.ETag))
+            throw new CoordinatorLookupException("De werkorder-API heeft geen versiekenmerk teruggegeven. De status is niet gewijzigd.");
+        var uri = new Uri(apiRoot, $"maintenanceworkorders({apiOrder.Id:D})?company={company}");
+        using var request = new HttpRequestMessage(HttpMethod.Patch, uri);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Basic",
+            Convert.ToBase64String(Encoding.ASCII.GetBytes($"{options.Username}:{options.Password}")));
+        request.Headers.TryAddWithoutValidation("If-Match", apiOrder.ETag);
+        request.Content = JsonContent.Create(new Dictionary<string, string> { ["status"] = status });
+        using var response = await http.SendAsync(request, token);
+        await BusinessCentralRequestException.EnsureSuccessAsync(response, token);
+    }
+
     private async Task<string> GetOwnCodeAsync(ClaimsPrincipal user, CancellationToken token)
     {
         var email = new[] { ClaimTypes.Email, "email", "preferred_username", ClaimTypes.Upn, "upn" }
@@ -144,7 +190,7 @@ public sealed class CoordinatorReportService(HttpClient http, AuthenticationStat
             request.Headers.Authorization = new AuthenticationHeaderValue("Basic",
                 Convert.ToBase64String(Encoding.ASCII.GetBytes($"{options.Username}:{options.Password}")));
             using var response = await http.SendAsync(request, token);
-            response.EnsureSuccessStatusCode();
+            await BusinessCentralRequestException.EnsureSuccessAsync(response, token);
             var page = await response.Content.ReadFromJsonAsync<Page<T>>(cancellationToken: token)
                 ?? throw new InvalidOperationException("Lege OData-response.");
             result.AddRange(page.Value);

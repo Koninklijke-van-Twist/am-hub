@@ -123,7 +123,25 @@
                                     <tr><th scope="row"><small>@task.TaskCode</small>@task.Description</th>
                                         @foreach (var component in matrix.Components)
                                         {
-                                            <td>@(task.Prices.TryGetValue(component.ComponentNo, out var price) && price.HasValue ? Money(price.Value) : "—")</td>
+                                            @if (task.Prices.TryGetValue(component.ComponentNo, out var price) && price.HasValue)
+                                            {
+                                                var quantity = TaskQuantity(task, component.ComponentNo);
+                                                <td tabindex="@(quantity > 1m ? "0" : null)">
+                                                    @if (quantity != 1m)
+                                                    {
+                                                        <span class="task-quantity">@Quantity(quantity)×</span>
+                                                    }
+                                                    @Money(price.Value)
+                                                    @if (quantity > 1m)
+                                                    {
+                                                        <span class="task-total">@Money(quantity * price.Value)</span>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td>—</td>
+                                            }
                                         }
                                     </tr>
                                 }
@@ -198,7 +216,10 @@
     }
 
     private decimal ComponentTotal(string number) => matrix?.Tasks.Sum(task =>
-        task.Prices.TryGetValue(number, out var price) ? price ?? 0m : 0m) ?? 0m;
+        task.Prices.TryGetValue(number, out var price) ? (price ?? 0m) * TaskQuantity(task, number) : 0m) ?? 0m;
+    private static decimal TaskQuantity(ConfigurationTaskRow task, string number) =>
+        task.Quantities.TryGetValue(number, out var quantity) ? quantity : 1m;
+    private static string Quantity(decimal value) => value.ToString("0.############################", Nl);
     private decimal Total => matrix?.Components.Sum(c => ComponentTotal(c.ComponentNo)) ?? 0m;
     private int WorkCount => matrix?.Components.Sum(c => matrix.Tasks.Count(t =>
         t.Prices.TryGetValue(c.ComponentNo, out var price) && price.HasValue)) ?? 0;

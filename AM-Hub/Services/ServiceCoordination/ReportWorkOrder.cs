@@ -4,6 +4,7 @@ namespace AMHub.Services.ServiceCoordination;
 
 public sealed class ReportWorkOrder
 {
+    [JsonPropertyName("@odata.etag")] public string? ETag { get; set; }
     [JsonPropertyName("No")] public string Number { get; set; } = "";
     [JsonPropertyName("Parent_Work_Order_No")] public string ParentNumber { get; set; } = "";
     [JsonPropertyName("Task_Code")] public string TaskCode { get; set; } = "";
